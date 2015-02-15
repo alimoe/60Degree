@@ -83,15 +83,78 @@ public class Hexagon:MonoBehaviour  {
 	{
 		this.transform.localPosition = new Vector3 (_posX, _posY, 0);
 	}
+	public bool IsEmpty(bool up)
+	{
+		if (up)return upper == null;
+		else return !isBoard && lower == null;
+							
+	}
+	public bool CanCross(Piece piece ,BoardDirection direction)
+	{
+		switch (direction) {
+		case BoardDirection.BottomRight:
+			if(this.y<piece.y)return upper == null;
+			else return lower == null;
+			break;
+		case BoardDirection.BottomLeft:
+			if(this.y<piece.y)return upper == null;
+			else return lower == null;
+			break;
+		case BoardDirection.TopLeft:
+			if(piece.isUpper)
+			{
+				if(this.y>piece.y)return upper == null;
+				else return lower == null;
+			}
+			else
+			{
+				if(this.y>piece.y)return lower == null;
+				else return lower == null;
+			}
 
-	public bool IsEmpty()
+			break;
+		case BoardDirection.TopRight:
+			if(this.y>piece.y)return upper == null;
+			else return lower == null;
+			break;
+		case BoardDirection.Left:
+			if(this.y<piece.y)return lower == null;
+			else return upper == null;
+			break;
+		case BoardDirection.Right:
+			if(this.y<piece.y)return lower == null;
+			else return upper == null;
+			break;
+		}
+		return false;
+	}
+	public bool HasEmptySlot()
 	{
 		if (isBoard) {
 			return upper==null;
 		}
 		return upper == null || lower == null;
 	}
-
+	public bool IsPureEmpty()
+	{
+		return upper == null && lower == null;
+	}
+	public bool IsPureEmpty(Piece piece)
+	{
+		if (piece == upper)return lower == null;
+		if (piece == lower)return upper == null;		
+		return upper == null && lower == null;
+	}
+	public bool CanFit(Piece piece)
+	{
+		if (isBoard) {
+			if(piece.isUpper)return upper==piece || upper == null;
+			return false;
+		}
+		if(piece.isUpper) return upper==piece ||upper == null;
+		else return lower==piece ||lower == null;
+		
+	}
 	public HexagonPosition GetRandomPosition()
 	{
 		HexagonPosition position = HexagonPosition.None;
@@ -107,25 +170,69 @@ public class Hexagon:MonoBehaviour  {
 		}
 		return position;
 	}
-
-	public void SetPiece(Piece piece ,HexagonPosition position)
+	public HexagonPosition GetRandomPosition(bool needUp)
 	{
-		if (position == HexagonPosition.Lower && this.isBoard) {
-			if(piece!=null)EntityPool.Instance.Reclaim( piece.gameObject,  piece.type.ToString()+((int)position).ToString());
-			return;
+		HexagonPosition position = HexagonPosition.None;
+		if (!isBoard && lower == null && upper == null) {
+			position = (!needUp) ? HexagonPosition.Lower : HexagonPosition.Upper;
+		} 
+		else if (lower == null && !isBoard) {
+			position = HexagonPosition.Lower;
 		}
-		if (position == HexagonPosition.Lower) {
-			lower = piece;
-			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY-halfH*.5f);
+		else if (upper == null) {
+			position = HexagonPosition.Upper;
+		}
+		return position;
+	}
+	public override string ToString ()
+	{
+		return string.Format ("[Hexagon: x={0}, y={1}]", x, y);
+	}
+	public void SetPiece(Piece piece , bool updateLocation)
+	{
 
+		SetPiece( piece );
+		if (!piece.isUpper) {
+			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY-halfH*.5f);
+			
 		} else {
-			upper = piece;
 			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY+halfH*.5f);
 		}
 	}
+	public void SetPiece(Piece piece )
+	{
+		if (piece != null) {
+			piece.x = this.x;
+			piece.y = this.y;
+		}
+		if (!piece.isUpper && this.isBoard) {
+			if(piece!=null)EntityPool.Instance.Reclaim( piece.gameObject,  piece.iditentyType);
+			return;
+		}
+		if (!piece.isUpper) {
+			lower = piece;
+				
 
+		} else {
+			upper = piece;
+			
+		}
+	}
+
+	public void RemovePiece(Piece piece)
+	{
+		if (upper == piece) {
+			upper = null;
+		} 
+		if(lower == piece) 
+		{
+			lower = null;
+		}
+
+	}
 	public void Render()
 	{
+
 		if (sharedMesh == null ) {
 
 				
@@ -188,14 +295,20 @@ public class Hexagon:MonoBehaviour  {
 			sharedBoardMesh = mesh;
 		}
 		if (!isBoard) {
-			//this.gameObject.GetComponent<MeshFilter> ().sharedMesh = sharedMesh;
+			this.gameObject.GetComponent<MeshFilter> ().sharedMesh = sharedMesh;
+
+
 		} else {
-			//this.gameObject.GetComponent<MeshFilter> ().sharedMesh = sharedBoardMesh;
+			this.gameObject.GetComponent<MeshFilter> ().sharedMesh = sharedBoardMesh;
 		}
 		if ((( this.y) & 1) != 0) {
 			//this.gameObject.GetComponent<MeshRenderer> ().material = oddMaterial;
 		} else {
 			//this.gameObject.GetComponent<MeshRenderer> ().material = evenMaterial;
+		}
+		if (this.gameObject.GetComponent<MeshCollider> () == null) {
+			this.gameObject.AddComponent<MeshCollider>();
+				
 		}
 	}
 }
