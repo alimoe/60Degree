@@ -15,17 +15,26 @@ public class DropDown : TimeEffect {
 	private float duration;
 	private Counter upTimer;
 	private Counter delayTimer;
-	public virtual void Init(Piece p, Vector3 targetPosition, Vector3 direction,float delay, OnCompleteWithParam callback = null)
+	public virtual void Init(Piece p, Vector3 targetPosition, Vector3 d,float delay,float upTime = .4f, OnCompleteWithParam callback = null)
 	{
 		TimerControl.Instance.effects += DropDownUpdate;
 		piece = p;
 		piece.isFadeAway = true;
-		implusDirection = direction;
-		inDropdownState = false;
+		implusDirection = d;
+		
+		inDropdownState = (upTime == 0f);
 		finalPosition = targetPosition;
 		initPosition = piece.transform.localPosition;
-		upTimer = new Counter (.4f);
+		upTimer = new Counter (upTime);
 		delayTimer = new Counter (delay);
+
+		direction = finalPosition - piece.transform.position;
+
+		//Debug.LogWarning ("Init direction" + direction);
+		//Debug.LogWarning ("Init inDropdownState" + inDropdownState);
+		duration = Mathf.Sqrt(direction.magnitude*2f/G);
+		progress = new Counter(duration);
+
 		onCompleteCallbackWithParam = callback;
 	}
 
@@ -40,6 +49,7 @@ public class DropDown : TimeEffect {
 					initPosition = piece.transform.localPosition;
 					direction = finalPosition - piece.transform.position;
 					duration = Mathf.Sqrt(direction.magnitude*2f/G);
+					
 					progress = new Counter(duration);
 					inDropdownState = true;
 					delayTimer.Reset();
@@ -67,6 +77,8 @@ public class DropDown : TimeEffect {
 				else
 				{
 					float time = progress.percent*duration;
+					Debug.LogWarning (" DropDownUpdate direction" + direction);
+					Debug.LogWarning (" DropDownUpdate time" + time);
 					piece.transform.localPosition = initPosition+direction.normalized*G*time*time;
 				}
 			}
