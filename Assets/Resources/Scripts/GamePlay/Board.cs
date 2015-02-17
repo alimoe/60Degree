@@ -172,7 +172,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 	}
 
-	public void AddWall(Hexagon hexagon,WallFace direction)
+	private void AddWall(Hexagon hexagon,WallFace direction)
 	{
 		Wall wall = null;
 		GameObject wallObject = Instantiate(Resources.Load ("Prefabs/Wall")) as GameObject;
@@ -202,7 +202,7 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 	}
-	public void AddLine(Vector3 a, Vector3 b)
+	private void AddLine(Vector3 a, Vector3 b)
 	{
 
 		GameObject line = Instantiate (Resources.Load ("Prefabs/Line")) as GameObject;
@@ -221,9 +221,9 @@ public class Board : Core.MonoSingleton<Board> {
 		hexagons.TryGetValue(x+"_"+y,out hexagon);
 		return hexagon;
 	}
-	public PieceColor GetRandomColor()
+
+	private PieceColor GetRandomColor()
 	{
-		
 		if (colors.Count > 0)return colors [UnityEngine.Random.Range (0, colors.Count)];
 		return PieceColor.None;		
 	}
@@ -278,7 +278,7 @@ public class Board : Core.MonoSingleton<Board> {
 		EliminatePieces(totalEliminate);
 
 	}
-	private void EliminatePieces(List<Piece> eliminate)
+	public void EliminatePieces(List<Piece> eliminate)
 	{
 		for (int i = 0; i<eliminate.Count; i++) {
 			Hexagon hexagon = GetHexagonAt(eliminate[i].x,eliminate[i].y);
@@ -294,18 +294,22 @@ public class Board : Core.MonoSingleton<Board> {
 		List<Piece> existPiece = new List<Piece> ();
 		Vector3 delta = Vector3.zero;
 		float delayTime = 0f;
-		int step = 0;
+		int step = (eliminate[eliminate.Count-1].isUpper)?0:1;
+		Piece lastPiece = null;
 		for (int i = eliminate.Count-1; i>=0; i--) {
 
 			Piece piece = eliminate[i];
 			Hexagon first;
 			Hexagon hexagon = GetHexagonAt(piece.x,piece.y);
 			hexagon.RemovePiece(piece);
+
 			if(step<count)
 			{
 				MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
 				step++;
+				if(lastPiece!=null&&lastPiece.isUpper == piece.isUpper)step++;
 				pieces.Remove(piece);
+				lastPiece = piece;
 				Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition(eliminate[i].type);
 				delayTime+=length*2f/moveSpeed;
 				moveBy.Init(piece, trackingPosition,finalPosition, moveSpeed*.4f,delayTime,OnPopEliminateAnimationDone);
@@ -313,9 +317,12 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 			else
 			{
-				int final = (eliminate[eliminate.Count-1].isUpper == false)?step+1:step;
-				first = GetHexagonByStep(hexagon,direction,piece.isUpper,final);
-				
+				if(existPiece.Count == 0)
+				{
+					step = GetEmptyPieceSlotCount(piece,direction);
+				}
+				first = GetHexagonByStep(hexagon,direction,piece.isUpper,step);
+				lastPiece = piece;
 				if(first!=null)
 				{
 					first.SetPiece(piece);
@@ -348,7 +355,7 @@ public class Board : Core.MonoSingleton<Board> {
 		if (dropDown != null)EntityPool.Instance.Reclaim (dropDown.piece.gameObject, dropDown.piece.iditentyType);
 		
 	}
-	private List<Piece> GetSurroundPiece(Piece piece)
+	public List<Piece> GetSurroundPiece(Piece piece)
 	{
 		List<Piece> neighbour = new List<Piece> ();
 		Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
@@ -372,7 +379,30 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return neighbour;
 	}
-	private List<Piece> GetSurroundSameColorPiece(Piece piece, PieceColor color)
+
+	public List<Piece> GetSameColorPieces(Piece piece)
+	{
+		List<Piece> same = new List<Piece> ();
+		foreach (var i in pieces) {
+			if(piece.type == i.type)same.Add(i);
+		}
+		return same;
+	}
+
+	public List<Piece> GetEdgetPieces()
+	{
+		List<Piece> edgetPiece = new List<Piece> ();
+		foreach (var i in hexagons.Values) {
+			if(IsEdget(i))
+			{
+				if(i.upper!=null)edgetPiece.Add(i.upper);
+				if(i.lower!=null)edgetPiece.Add(i.lower);
+			}
+		}
+		return edgetPiece;
+	}
+
+	public List<Piece> GetSurroundSameColorPiece(Piece piece, PieceColor color)
 	{
 		List<Piece> neighbour = GetSurroundPiece (piece);
 		int index = neighbour.Count - 1;
@@ -406,6 +436,13 @@ public class Board : Core.MonoSingleton<Board> {
 			Debug.Log("Step "+step);
 			MovePieceByStep(pieces,direction,step);
 
+		}
+
+	}
+	private void RepearWalls()
+	{
+		foreach (var i in walls) {
+			i.Repear();
 		}
 
 	}
@@ -493,8 +530,7 @@ public class Board : Core.MonoSingleton<Board> {
 					Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
 					if(hexagon!=null)
 					{
-						int eliminateCount = piece.isUpper?4:3;
-						PopEliminatePieces (pieces, direction,piece.transform.localPosition+delta,hexagon,eliminateCount);
+						PopEliminatePieces (pieces, direction,piece.transform.localPosition+delta,hexagon,4);
 					}
 					DelayCall delayCall = new DelayCall();
 					delayCall.Init(1f,wall,OnResetWall);
@@ -541,8 +577,8 @@ public class Board : Core.MonoSingleton<Board> {
 			Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
 			if(hexagon!=null)
 			{
-				int eliminateCount = piece.isUpper?4:3;
-				PopEliminatePieces (groupMoveBy.pieces, groupMoveBy.direction,piece.transform.localPosition+groupMoveBy.directionPosition.normalized*this.length,hexagon,eliminateCount);
+				//int eliminateCount = piece.isUpper?4:3;
+				PopEliminatePieces (groupMoveBy.pieces, groupMoveBy.direction,piece.transform.localPosition+groupMoveBy.directionPosition.normalized*this.length,hexagon,4);
 			}
 
 		}
@@ -568,8 +604,10 @@ public class Board : Core.MonoSingleton<Board> {
 	private void OnPiecesMoveDone()
 	{
 		CheckBoard();
-		GeneratePiece ();
-		
+		new DelayCall ().Init (.2f, GeneratePiece);
+		new DelayCall ().Init (.3f, CheckBoard);
+		//GeneratePiece ();
+		RepearWalls ();
 	}
 
 	private void OnHitEdget(object data)
@@ -773,6 +811,29 @@ public class Board : Core.MonoSingleton<Board> {
 				pieces.Add (candidate);
 				candidate = loopFuc(candidate);
 			}
+		}
+		if (pieces.Count > 0) {
+			Piece last = pieces[pieces.Count-1];
+			Hexagon hexagon = GetHexagonAt(last.x,last.y);
+
+			while(hexagon!=null && last!=null)
+			{
+				bool isUpper = last.isUpper;
+				hexagon = GetHexagonByStep(hexagon,direction,isUpper,1);
+				if(hexagon==null)break;
+				last = hexagon.GetPiece(!isUpper);
+				if(last!=null && !pieces.Contains(last))pieces.Add(last);
+
+				if(last == null)
+				{
+					hexagon = GetHexagonByStep(hexagon,direction,!isUpper,1);
+					if(hexagon==null)break;
+					last = hexagon.GetPiece(isUpper);
+					if(last!=null && !pieces.Contains(last))pieces.Add(last);
+				}
+
+			}
+
 		}
 		return pieces;
 	}
@@ -983,6 +1044,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return piece;
 	}
+
 	public Hexagon GetHexagonFromPosition(Vector3 position)
 	{
 

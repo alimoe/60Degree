@@ -24,6 +24,7 @@ public class Wall :MonoBehaviour {
 	private Color32 lastTimeColor;
 	private Counter colorTimer;
 	public WallFace face;
+	private int repearProcess = 0;
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
@@ -48,8 +49,17 @@ public class Wall :MonoBehaviour {
 	{
 		life--;
 		life = Math.Min(Math.Max (life, 0),totalLife);
+		if (IsBroken ())repearProcess = 0;
+						
 		UpdateColor ();
 		Render ();
+	}
+	public void Repear()
+	{
+		if (IsBroken ()) {
+			repearProcess++;
+			if(repearProcess>1)Reset();
+		}
 	}
 	public void UpdateColor()
 	{

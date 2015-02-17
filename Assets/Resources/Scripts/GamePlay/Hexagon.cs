@@ -89,45 +89,13 @@ public class Hexagon:MonoBehaviour  {
 		else return !isBoard && lower == null;
 							
 	}
-	public bool CanCross(Piece piece ,BoardDirection direction)
+	public Piece GetPiece(bool up)
 	{
-		switch (direction) {
-		case BoardDirection.BottomRight:
-			if(this.y<piece.y)return upper == null;
-			else return lower == null;
-			break;
-		case BoardDirection.BottomLeft:
-			if(this.y<piece.y)return upper == null;
-			else return lower == null;
-			break;
-		case BoardDirection.TopLeft:
-			if(piece.isUpper)
-			{
-				if(this.y>piece.y)return upper == null;
-				else return lower == null;
-			}
-			else
-			{
-				if(this.y>piece.y)return lower == null;
-				else return lower == null;
-			}
+		if (up)return upper;
+		else return lower;			
 
-			break;
-		case BoardDirection.TopRight:
-			if(this.y>piece.y)return upper == null;
-			else return lower == null;
-			break;
-		case BoardDirection.Left:
-			if(this.y<piece.y)return lower == null;
-			else return upper == null;
-			break;
-		case BoardDirection.Right:
-			if(this.y<piece.y)return lower == null;
-			else return upper == null;
-			break;
-		}
-		return false;
 	}
+	
 	public bool HasEmptySlot()
 	{
 		if (isBoard) {

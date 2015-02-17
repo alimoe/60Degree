@@ -48,7 +48,7 @@ public class MoveByWithAccelerate :TimeEffect {
 			else
 			{
 				headGravity = true;
-				currentSpeed*=1.02f;
+				currentSpeed*=1.05f;
 				//currentSpeed = Mathf.Min(moveSpeed*6f,currentSpeed);
 			}
 			direction=(direction+gravityDirection*.1f).normalized;

@@ -10,12 +10,19 @@ public class DelayCall : TimeEffect {
 		onCompleteCallbackWithParam = callback;
 		progress = new Counter (delay);
 	}
+	public void Init(float delay, OnComplete callback = null)
+	{
+		TimerControl.Instance.effects += DelayCallUpdate;
+		onCompleteCallback = callback;
+		progress = new Counter (delay);
+	}
 	public void DelayCallUpdate()
 	{
 		progress.Tick (Time.deltaTime);
 		if (progress.Expired ()) {
 			TimerControl.Instance.effects -= DelayCallUpdate;
 			if(onCompleteCallbackWithParam!=null)onCompleteCallbackWithParam(data);
+			if(onCompleteCallback!=null)onCompleteCallback();
 		} 
 	}
 }
