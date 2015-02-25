@@ -55,7 +55,7 @@ public class Board : Core.MonoSingleton<Board> {
 		colors = new List<PieceColor> ();
 		colors.Add (PieceColor.Blue);
 		colors.Add (PieceColor.Green);
-		colors.Add (PieceColor.Yellow);
+		colors.Add (PieceColor.Red);
 	}
 
 	public void GenerateHexagon()
@@ -102,6 +102,10 @@ public class Board : Core.MonoSingleton<Board> {
 			i.Render();
 		}
 
+
+	}
+	public void GenerateLines()
+	{
 		for (int i = 0; i<segment; i++) {
 			Hexagon ah = GetHexagonAt(i,0);
 			Hexagon bh = GetHexagonAt(0,i);
@@ -118,7 +122,7 @@ public class Board : Core.MonoSingleton<Board> {
 			Hexagon ah = GetHexagonAt(0,i);
 			Hexagon bh = GetHexagonAt(segment-1 - i,i);
 			AddLine(ah.left,bh.right);
-
+			
 		}
 		for (int i = 0; i<segment; i++) {
 			Hexagon ah = GetHexagonAt(i,0);
@@ -126,6 +130,7 @@ public class Board : Core.MonoSingleton<Board> {
 			AddLine(ah.left,bh.top);
 			
 		}
+
 	}
 	public bool IsEdget(Hexagon hexagon)
 	{
@@ -165,7 +170,13 @@ public class Board : Core.MonoSingleton<Board> {
 			{
 				pieces.Add(entity.GetComponent<Piece>());
 				pieces[pieces.Count-1].SetLength(length);
+				if(!HasCorePiece()&&pieces.Count>3)
+				{
+					pieces[pieces.Count-1].SetAsCore();
+				}
+
 				hexagon.SetPiece(pieces[pieces.Count-1],true);
+
 				ScaleUp scaleUp = new ScaleUp();
 				scaleUp.Init(pieces[pieces.Count-1],.3f);
 			}
@@ -177,29 +188,35 @@ public class Board : Core.MonoSingleton<Board> {
 		Wall wall = null;
 		GameObject wallObject = Instantiate(Resources.Load ("Prefabs/Wall")) as GameObject;
 		wallObject.transform.parent = this.transform;
-		wallObject.transform.localPosition = Vector3.zero;
+		
 		wall = wallObject.GetComponent<Wall>();
 		if(wall!=null)
 		{
-			walls.Add(wall);
-			wall.SetLinkHaxegon(hexagon);
-			float gap = 0.2f;
-			float lengthRatio = 0.9f;
+
+			float gap = 0.05f;
+			//Debug.Log("hexagon "+hexagon);
 			if(direction == WallFace.Bottom)
 			{
 				wall.SetFace(WallFace.Bottom);
-				wall.AddLine(hexagon.left+Vector3.down*gap,hexagon.right+Vector3.down*gap,lengthRatio);
+				wall.transform.localPosition = hexagon.left+Vector3.right*length*.5f+Vector3.down*gap;
+				wall.transform.localEulerAngles = new Vector3(0,0,180f);
+				//wall.AddLine(hexagon.left+Vector3.down*gap,hexagon.right+Vector3.down*gap,lengthRatio);
 			}
 			if(direction == WallFace.Left)
 			{
 				wall.SetFace(WallFace.Left);
-				wall.AddLine(hexagon.left+gap*new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),hexagon.top+gap*new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),lengthRatio);
+				wall.transform.localPosition = hexagon.left+(hexagon.top-hexagon.left)*.5f+gap*new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f));
+				wall.transform.localEulerAngles = new Vector3(0,0,60f);
+				//wall.AddLine(hexagon.left+gap*new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),hexagon.top+gap*new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),lengthRatio);
 			}
 			if(direction == WallFace.Right)
 			{
 				wall.SetFace(WallFace.Right);
-				wall.AddLine(hexagon.right+gap*new Vector3(Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),hexagon.top+gap*new Vector3(Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f)),lengthRatio);
+				wall.transform.localPosition = hexagon.right+(hexagon.top-hexagon.right)*.5f+gap*new Vector3(Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f));
+				wall.transform.localEulerAngles = new Vector3(0,0,-60f);
 			}
+			wall.SetLinkHaxegon(hexagon);
+			walls.Add(wall);
 		}
 	}
 	private void AddLine(Vector3 a, Vector3 b)
@@ -214,7 +231,13 @@ public class Board : Core.MonoSingleton<Board> {
 		lineRender.SetPosition (0, a);
 		lineRender.SetPosition (1, b);
 	}
-
+	public bool HasCorePiece()
+	{
+		foreach (var i in pieces) {
+			if(i.isCore)return true;
+		}
+		return false;
+	}
 	public Hexagon GetHexagonAt(int x, int y)
 	{
 		Hexagon hexagon;
@@ -497,7 +520,7 @@ public class Board : Core.MonoSingleton<Board> {
 			wall = GetAgaistWall (GetLinkedWall(neighbour), direction);
 			
 		}
-		Debug.Log ("Reach Wall "+wall);
+		//Debug.Log ("Reach Wall "+wall);
 
 		float time;
 		if (delta != Vector3.zero) {
@@ -525,7 +548,7 @@ public class Board : Core.MonoSingleton<Board> {
 				if (wall.IsBroken ()) {
 
 					delta = GetPhysicDirection(direction);
-					Debug.Log ("Eliminate By Step 0 "+delta);
+					//Debug.Log ("Eliminate By Step 0 "+delta);
 					Piece piece = pieces[pieces.Count-1];
 					Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
 					if(hexagon!=null)
@@ -597,7 +620,9 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	private bool IsSideBroken(BoardDirection direction, Hexagon hexagon,Piece piece)
 	{
-		Hexagon neightBour = GetHexagonByStep (hexagon, direction, piece.isUpper, 1);
+		Debug.LogWarning ("IsSideBroken " + piece);
+		int step = piece.isUpper ? 2 : 1;
+		Hexagon neightBour = GetHexagonByStep (hexagon, direction, piece.isUpper, step);
 		if (neightBour != null && IsEdget (neightBour) && neightBour.IsEmpty (!piece.isUpper))return true;
 		return false;
 	}
@@ -734,7 +759,7 @@ public class Board : Core.MonoSingleton<Board> {
 		GetDirectionPieceByIndex pickFuc = GetDirectionPieceDelegate (direction);
 		int slot = 0;
 		bool isUpper = piece.isUpper;
-		Debug.Log("GetEmptyPieceSlotCount "+piece);
+		//Debug.Log("GetEmptyPieceSlotCount "+piece);
 		if (loopFuc != null) {
 
 			

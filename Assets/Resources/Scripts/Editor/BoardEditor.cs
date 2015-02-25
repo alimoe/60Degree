@@ -16,6 +16,7 @@ public class BoardEditor : Editor {
 
 		if (board.segment != this.segment || board.length!=length) {
 			board.GenerateHexagon();
+			board.GenerateLines();
 		}
 
 	}

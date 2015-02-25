@@ -12,29 +12,49 @@ public enum WallFace
 public class Wall :MonoBehaviour {
 
 	// Use this for initialization
+	[HideInInspector]
 	public Hexagon linkedHexagon;
 	private Vector3 startPosition;
 	private Vector3 endPosition;
-	private LineRenderer lineRender;
+	private SpriteRenderer render;
 	private int life;
-	private int totalLife = 3;
-	private static Color32[]colors = new Color32[4]{new Color32(0,0,0,50),new Color32(0,64,128,100),new Color32(0,96,192,150),new Color32(0,128,255,200)};
+	private int totalLife = 2;
+	private static Color32[]colors = new Color32[3]{new Color32(255,255,255,0),new Color32(255,255,255,95),new Color32(255,255,255,255)};
 	private Color32 currentColor;
 	private Color32 targetColor;
 	private Color32 lastTimeColor;
 	private Counter colorTimer;
+	[HideInInspector]
 	public WallFace face;
 	private int repearProcess = 0;
+	private bool bouncingState = false;
+	private Vector3 bouncingDirection;
+	private Counter bouncingCounter = new Counter (0.5f);
+	private Vector3 initPosition;
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
 		life = totalLife;
-		//life = 0;
+		initPosition = this.transform.localPosition;
 		colorTimer = new Counter (0.2f);
+		currentColor = colors [life];
+		render = this.gameObject.GetComponent<SpriteRenderer> ();
+		UpdateColor ();
 	}
 	public void SetFace(WallFace wallFace)
 	{
 		face = wallFace;
+		switch (face) {
+		case WallFace.Bottom:
+			bouncingDirection = Vector3.down;
+			break;
+		case WallFace.Left:
+			bouncingDirection = new Vector3(-Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f));
+			break;
+		case WallFace.Right:
+			bouncingDirection = new Vector3(Mathf.Cos(Mathf.PI/6f), Mathf.Sin(Mathf.PI/6f));
+			break;
+		}
 	}
 	public void Reset()
 	{
@@ -50,7 +70,8 @@ public class Wall :MonoBehaviour {
 		life--;
 		life = Math.Min(Math.Max (life, 0),totalLife);
 		if (IsBroken ())repearProcess = 0;
-						
+		bouncingState = true;
+		bouncingCounter.Reset ();
 		UpdateColor ();
 		Render ();
 	}
@@ -76,17 +97,8 @@ public class Wall :MonoBehaviour {
 	}
 	public void Render()
 	{
-		if (lineRender == null) {
-			lineRender = this.gameObject.GetComponent<LineRenderer>();
-
-		}
-		if (lineRender != null) {
-			lineRender.SetVertexCount (2);
-			lineRender.SetWidth (0.1f, 0.1f);
-			lineRender.SetPosition (0, startPosition);
-			lineRender.SetPosition (1, endPosition);
-			RenderColor();
-		}
+		if (render != null)render.color = currentColor;
+						
 	}
 	void Update()
 	{
@@ -100,7 +112,21 @@ public class Wall :MonoBehaviour {
 					currentColor = new Color32 (GetChannelLerp (0, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (1, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (2, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (3, lastTimeColor, targetColor, colorTimer.percent));
 					RenderColor ();
 			}
-		} 
+		}
+		if (bouncingState) {
+			bouncingCounter.Tick(Time.deltaTime);
+			if(bouncingCounter.Expired())
+			{
+				bouncingState = false;
+				this.transform.localPosition = initPosition;
+
+			}
+			else
+			{
+				this.transform.localPosition = initPosition+bouncingDirection*Mathf.Sin(Mathf.PI*bouncingCounter.percent)*.1f;
+				
+			}
+		}
 	}
 	public byte GetChannelLerp(int channel,Color32 a, Color32 b, float percent)
 	{
@@ -126,14 +152,7 @@ public class Wall :MonoBehaviour {
 	}
 	public void RenderColor()
 	{
-		lineRender.material.color = currentColor;
+		if (render != null)render.color = currentColor;
 	}
-	public void AddLine(Vector3 s, Vector3 e,float ratio)
-	{
-		Vector3 center = s + (e - s) * .5f;
-		startPosition = center-(center-s)*ratio;
-		endPosition = center+(e-center)*ratio;
-		UpdateColor ();
-		Render ();
-	}
+
 }
