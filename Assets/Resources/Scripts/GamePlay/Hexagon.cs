@@ -161,10 +161,10 @@ public class Hexagon:MonoBehaviour  {
 
 		SetPiece( piece );
 		if (!piece.isUpper) {
-			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY-halfH*.5f);
+			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY-halfH*.5f,0f);
 			
 		} else {
-			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY+halfH*.5f);
+			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY+halfH*.5f,0f);
 		}
 	}
 	public void SetPiece(Piece piece )

@@ -14,19 +14,18 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 		pool = new Dictionary<string, Object> ();
 		pool.Add("Blue0",Resources.Load("Prefabs/Blue_0"));
 		pool.Add("Blue1",Resources.Load("Prefabs/Blue_1"));
-		pool.Add("Pink0",Resources.Load("Prefabs/Pink_0"));
-		pool.Add("Pink1",Resources.Load("Prefabs/Pink_1"));
+		pool.Add("Purple0",Resources.Load("Prefabs/Purple_0"));
+		pool.Add("Purple1",Resources.Load("Prefabs/Purple_1"));
 		pool.Add("Yellow0",Resources.Load("Prefabs/Yellow_0"));
 		pool.Add("Yellow1",Resources.Load("Prefabs/Yellow_1"));
 		pool.Add("Red0",Resources.Load("Prefabs/Red_0"));
 		pool.Add("Red1",Resources.Load("Prefabs/Red_1"));
 		pool.Add("Green0",Resources.Load("Prefabs/Green_0"));
 		pool.Add("Green1",Resources.Load("Prefabs/Green_1"));
-		pool.Add("White0",Resources.Load("Prefabs/White_0"));
-		pool.Add("White1",Resources.Load("Prefabs/White_1"));
 		pool.Add("Orange0",Resources.Load("Prefabs/Orange_0"));
 		pool.Add("Orange1",Resources.Load("Prefabs/Orange_1"));
-		
+		pool.Add("Conflict",Resources.Load("Prefabs/Conflict"));
+		pool.Add("Grid",Resources.Load("Prefabs/Grid"));
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}

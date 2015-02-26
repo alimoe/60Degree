@@ -20,6 +20,7 @@ public class DropDown : TimeEffect {
 		TimerControl.Instance.effects += DropDownUpdate;
 		piece = p;
 		piece.isFadeAway = true;
+		piece.transform.localPosition = new Vector3 (piece.transform.localPosition.x, piece.transform.localPosition.y, -2f);
 		implusDirection = d;
 		
 		inDropdownState = (upTime == 0f);

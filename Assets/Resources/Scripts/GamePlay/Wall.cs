@@ -20,6 +20,7 @@ public class Wall :MonoBehaviour {
 	private int life;
 	private int totalLife = 2;
 	private static Color32[]colors = new Color32[3]{new Color32(255,255,255,0),new Color32(255,255,255,95),new Color32(255,255,255,255)};
+	private static Color32[]levels = new Color32[5]{new Color32(255,255,0,255),new Color32(255,0,255,255),new Color32(0,0,255,255),new Color32(0,255,0,255),new Color32(255,0,0,255)};
 	private Color32 currentColor;
 	private Color32 targetColor;
 	private Color32 lastTimeColor;
@@ -31,6 +32,9 @@ public class Wall :MonoBehaviour {
 	private Vector3 bouncingDirection;
 	private Counter bouncingCounter = new Counter (0.5f);
 	private Vector3 initPosition;
+	[HideInInspector]
+	public bool isInvincible = false;
+	private int level = 0;
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
@@ -58,15 +62,25 @@ public class Wall :MonoBehaviour {
 	}
 	public void Reset()
 	{
+		isInvincible = false;
 		life = totalLife;
 		UpdateColor ();
 	}
+
 	public bool IsBroken()
 	{
+		if (isInvincible)return false;
 		return life == 0;
+	}
+	public void Invincible()
+	{
+		isInvincible = true;
+		UpdateColor ();
+		level++;
 	}
 	public void Hit()
 	{
+		if (isInvincible)return;
 		life--;
 		life = Math.Min(Math.Max (life, 0),totalLife);
 		if (IsBroken ())repearProcess = 0;
@@ -84,14 +98,17 @@ public class Wall :MonoBehaviour {
 	}
 	public void UpdateColor()
 	{
-
-		targetColor = colors [life];
-		if (!currentColor.Equals(targetColor)) {
-			lastTimeColor = currentColor;
-			colorTimer.Reset ();
+		if (!isInvincible) {
+			targetColor = colors [life];
+			if (!currentColor.Equals (targetColor)) {
+					lastTimeColor = currentColor;
+					colorTimer.Reset ();
+			} else {
+					currentColor = targetColor;
+					lastTimeColor = currentColor;
+			}
 		} else {
-			currentColor = targetColor;
-			lastTimeColor = currentColor;
+			targetColor = levels[level%5];
 		}
 		Render ();
 	}
@@ -127,6 +144,10 @@ public class Wall :MonoBehaviour {
 				
 			}
 		}
+	}
+	public override string ToString ()
+	{
+		return string.Format ("[Wall] x:{0} y:{1}", linkedHexagon.x, linkedHexagon.y);
 	}
 	public byte GetChannelLerp(int channel,Color32 a, Color32 b, float percent)
 	{

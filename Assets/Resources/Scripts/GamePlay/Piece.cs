@@ -3,10 +3,8 @@ using System.Collections;
 public enum PieceColor
 {
 	Blue,
-	Pink,
 	Purple,
 	Yellow,
-	White,
 	Red,
 	Green,
 	Orange,
@@ -86,6 +84,6 @@ public class Piece : Entity {
 	}
 	public override string ToString ()
 	{
-		return string.Format ("[Piece: x={0} y={1}]", x,y);
+		return string.Format ("[Piece: x={0} y={1} isUpper={2}]", x, y, isUpper);
 	}
 }
