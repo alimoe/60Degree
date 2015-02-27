@@ -11,7 +11,10 @@ public class Hud : Core.MonoStrictSingleton<Hud> {
 	private SkillButton skillButton;
 	private Counter progressCounter;
 	private Counter threholdCounter;
+	private Counter totalScoreCounter;
 	private Camera nguiCamera;
+	private int totalScore;
+	private Vector3 initPosition;
 	void Start () {
 		tips = new List<UILabel> ();
 		nguiCamera = GameObject.Find ("UI Root/Camera").GetComponent<Camera> ();
@@ -37,8 +40,13 @@ public class Hud : Core.MonoStrictSingleton<Hud> {
 
 		progressCounter = new Counter (.5f);
 		threholdCounter = new Counter (2f);
+		totalScoreCounter = new Counter (.5f);
 		Board.Instance.onEliminatePieceCallback = AddScore;
 		Board.Instance.onDropDownPieceCallback = AddProgress;
+		initPosition = scoreLabel.transform.localPosition;
+		//Debug.LogWarning (scoreLabel.transform.localPosition);
+		totalScore = 0;
+		totalScoreCounter.percent = 1;
 	}
 
 
@@ -64,6 +72,10 @@ public class Hud : Core.MonoStrictSingleton<Hud> {
 		task.birthPosition = nguiCamera.ScreenToWorldPoint (Camera.main.WorldToScreenPoint(worldPosition));
 		//Debug.LogWarning ("NGUI Position " + task.birthPosition);
 		animateTips.Add (task);
+
+		totalScore += (score - 2) * 100;
+		scoreLabel.text = totalScore.ToString ();
+		totalScoreCounter.Reset ();
 
 		/*
 		DelayCall delayCall = new DelayCall ();
@@ -134,6 +146,11 @@ public class Hud : Core.MonoStrictSingleton<Hud> {
 			}
 		}
 		progressCounter.Tick (Time.deltaTime);
+		if (!totalScoreCounter.Expired ()) {
+			totalScoreCounter.Tick(Time.deltaTime);
+			float ratio = 1f + Mathf.Sin(totalScoreCounter.percent*Mathf.PI) *.1f;
+			scoreLabel.transform.localScale = new Vector3(ratio,ratio,ratio);
+		}
 	}
 }
 public class TipAnimateTask
