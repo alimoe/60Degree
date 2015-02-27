@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 public class Bomb : Skill {
-
+	public Bomb(OnExcute callback = null )
+	{
+		onExcuteCallback = callback;
+	}
 	public override bool OnAdd ()
 	{
 		return base.OnAdd ();
@@ -14,6 +17,7 @@ public class Bomb : Skill {
 			List<Piece> eliminate = Board.Instance.GetSurroundPiece(piece);
 			if(!eliminate.Contains(piece))eliminate.Add(piece);
 			Board.Instance.EliminatePieces(eliminate);
+			if(onExcuteCallback!=null)onExcuteCallback();
 			return true;
 		}
 		return false;

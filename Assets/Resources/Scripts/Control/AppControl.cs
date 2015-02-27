@@ -6,6 +6,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	private List<Skill> skills;
 	void Start () {
 		skills = new List<Skill> ();
+			
 	}
 
 	public void AddSkill(Skill skill)

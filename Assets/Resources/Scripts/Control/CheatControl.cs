@@ -23,6 +23,10 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				Board.Instance.GeneratePiece();
 			}
+			if(GUI.Button(new Rect(0,120,100,30),"Add Progress"))
+			{
+				Hud.Instance.AddProgress();
+			}
 		}
 
 	}

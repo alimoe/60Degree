@@ -22,10 +22,9 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 		pool.Add("Red1",Resources.Load("Prefabs/Red_1"));
 		pool.Add("Green0",Resources.Load("Prefabs/Green_0"));
 		pool.Add("Green1",Resources.Load("Prefabs/Green_1"));
-		pool.Add("Orange0",Resources.Load("Prefabs/Orange_0"));
-		pool.Add("Orange1",Resources.Load("Prefabs/Orange_1"));
 		pool.Add("Conflict",Resources.Load("Prefabs/Conflict"));
 		pool.Add("Grid",Resources.Load("Prefabs/Grid"));
+		pool.Add("Particle",Resources.Load("Prefabs/Particle"));
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}

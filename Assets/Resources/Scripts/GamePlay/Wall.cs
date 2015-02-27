@@ -66,7 +66,7 @@ public class Wall :MonoBehaviour {
 		life = totalLife;
 		UpdateColor ();
 	}
-
+	
 	public bool IsBroken()
 	{
 		if (isInvincible)return false;
@@ -112,10 +112,15 @@ public class Wall :MonoBehaviour {
 		}
 		Render ();
 	}
+
 	public void Render()
 	{
 		if (render != null)render.color = currentColor;
 						
+	}
+	public Color32 GetColor()
+	{
+		return targetColor;
 	}
 	void Update()
 	{

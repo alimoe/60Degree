@@ -5,6 +5,7 @@ public class DelayCall : TimeEffect {
 	public object data;
 	public void Init(float delay,object p, OnCompleteWithParam callback = null)
 	{
+
 		TimerControl.Instance.effects += DelayCallUpdate;
 		data = p;
 		onCompleteCallbackWithParam = callback;

@@ -12,6 +12,11 @@ public enum BoardDirection
 	None
 
 }
+public struct HitInfo
+{
+	public BoardDirection direction;
+	public Wall wall;
+}
 public class Board : Core.MonoSingleton<Board> {
 
 	public int segment = 8;
@@ -29,9 +34,18 @@ public class Board : Core.MonoSingleton<Board> {
 	private Vector3 xAxis;
 	private Vector3 yAxis;
 	private bool lastTimeIsUpper = false;
+
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
+	public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
+	public delegate void OnDropDonePiece();
+
+
+
+	public OnEliminatePiece onEliminatePieceCallback;
+	public OnDropDonePiece onDropDownPieceCallback;
+
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
@@ -368,6 +382,7 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	public void EliminatePieces(List<Piece> eliminate)
 	{
+		
 		for (int i = 0; i<eliminate.Count; i++) {
 			Piece piece = eliminate[i];
 			Hexagon hexagon = GetHexagonAt(piece.x,piece.y);
@@ -406,6 +421,11 @@ public class Board : Core.MonoSingleton<Board> {
 				}
 			}
 		}
+		if (eliminate.Count > 0) {
+			if (onEliminatePieceCallback != null)onEliminatePieceCallback (eliminate.Count, eliminate [0].type, eliminate [0].transform.position);
+		}
+
+					
 	}
 
 	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count)
@@ -472,8 +492,10 @@ public class Board : Core.MonoSingleton<Board> {
 	private void OnDropDownAnimationPlayed(object obj)
 	{
 		DropDown dropDown = obj as DropDown;
-		if (dropDown != null)EntityPool.Instance.Reclaim (dropDown.piece.gameObject, dropDown.piece.iditentyType);
-		
+		if (dropDown != null) {
+			EntityPool.Instance.Reclaim (dropDown.piece.gameObject, dropDown.piece.iditentyType);
+			if(onDropDownPieceCallback!=null)onDropDownPieceCallback();
+		}
 	}
 	public List<Piece> GetSurroundPiece(Piece piece)
 	{
@@ -641,7 +663,10 @@ public class Board : Core.MonoSingleton<Board> {
 						conflictAt.Init(last,lastPiece,direction,.8f);
 
 						DelayCall delayCall = new DelayCall ();
-						delayCall.Init (time, wall, OnHitEdget);
+						HitInfo hitInfo = new HitInfo();
+						hitInfo.wall = wall;
+						hitInfo.direction = direction;
+						delayCall.Init (time, hitInfo, OnHitEdget);
 				}
 			} else {
 					task.Init (pieces, delta, direction, time, OnPiecesMoveDone);
@@ -671,7 +696,8 @@ public class Board : Core.MonoSingleton<Board> {
 
 		}
 	}
-	private Vector3 GetPhysicDirection(BoardDirection direction)
+
+	public Vector3 GetPhysicDirection(BoardDirection direction)
 	{
 		switch (direction) {
 			case  BoardDirection.BottomLeft:
@@ -695,6 +721,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return Vector3.zero;
 	}
+
 	private void OnPiecesReachedBrokenWall(object data)
 	{
 		
@@ -760,10 +787,17 @@ public class Board : Core.MonoSingleton<Board> {
 
 	private void OnHitEdget(object data)
 	{
-		Wall wall = data as Wall;
+		HitInfo info = (HitInfo)data;
+		Wall wall = info.wall;
 		if (wall != null) {
 			wall.Hit();
+			ParticleEffect particleEffect = new ParticleEffect();
+
+			int count = (!wall.isInvincible)?Random.Range(4,8):Random.Range(1,3);
+				
+			particleEffect.Init(wall.linkedHexagon,info.direction,count,.8f,1.2f,wall.GetColor());
 		}
+
 	}
 
 
@@ -810,6 +844,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return linked;
 	}
+
 	private GetDirectionHexagon GetDirectionHexagonDelegate(BoardDirection direction)
 	{
 		GetDirectionHexagon loopFuc = null;
