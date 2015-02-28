@@ -15,7 +15,7 @@ using System.Reflection;
 
 static public class NGUITools
 {
-	static AudioListener mListener;
+	public static AudioListener mListener;
 
 	static bool mLoaded = false;
 	static float mGlobalVolume = 1f;
