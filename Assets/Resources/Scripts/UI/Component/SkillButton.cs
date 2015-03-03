@@ -51,6 +51,10 @@ public class SkillButton : MonoBehaviour {
 
 		return aIndex - bIndex;
 	}
+    public int GetRemainingProgress()
+    {
+        return 25 - progress;
+    }
 	public void UpdateIconAndProgress()
 	{
 		int valide = (progress-1) % 8;

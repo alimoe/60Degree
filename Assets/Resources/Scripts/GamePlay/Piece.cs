@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 public enum PieceColor
 {
 	Blue,
@@ -7,20 +8,29 @@ public enum PieceColor
 	Yellow,
 	Red,
 	Green,
-	Orange,
 	None
+}
+public enum PieceState
+{
+    Normal,
+    Freeze,
+    Twine,
+    Coke
 
 }
+
 public class Piece : Entity {
 
 	public bool isUpper = false;
 	public bool isCore = false;
+    public PieceState state = PieceState.Normal;
 	public int x;
 	public int y;
 	public PieceColor type;
 	public float scale = 0f;
 	public bool isDead;
 	public bool isFadeAway;
+    public PieceGroup group;
 	public string iditentyType
 	{
 		get{
@@ -36,13 +46,52 @@ public class Piece : Entity {
 		isDead = false;
 		isFadeAway = false;
 		isCore = false;
-
+        state = PieceState.Normal;
 		ResetScale ();
-
+        group = null;
 	}
+
+    public bool CanEliminate()
+    {
+        return state != PieceState.Coke;
+    }
+
+    public bool CanMove()
+    {
+        return state == PieceState.Normal || state == PieceState.Coke;
+    }
+
+    public bool OnEliminate()
+    {
+        if (state == PieceState.Freeze)
+        {
+            return false;
+        }
+        if (state == PieceState.Twine)
+        {
+            return false;
+        }
+        if (group != null)
+        {
+            group.RemoveChild(this);
+            group = null;
+        }
+        return true;
+    }
+
+    public void OnPassByPiece(BoardDirection direction)
+    {
+
+    }
+
+    public void OnPassHexagon(HexagonState hexagon, int distance)
+    {
+
+    }
+
 	public void SetAsCore()
 	{
-		GameObject dot = Instantiate (Resources.Load ("Prefabs/Dot")) as GameObject;
+        GameObject dot = EntityPool.Instance.Use("Gem");
 		if (dot != null) {
 			dot.transform.parent = this.transform;
 			dot.transform.localPosition =  isUpper?new Vector3(0,-.12f,1f):new Vector3(0,.12f,1f);
@@ -56,8 +105,7 @@ public class Piece : Entity {
 	{
 		Transform[] children = this.transform.GetComponentsInChildren<Transform> ();
 		foreach (var i in children) {
-			//Debug.LogError("i.name"+i.name);
-			if(i.name.Contains("Dot"))GameObject.Destroy(i.gameObject);
+            if (i.name.Contains("Dot")) EntityPool.Instance.Reclaim(i.gameObject, "Gem");
 		}
 	}
 	public override void Dead ()

@@ -6,7 +6,7 @@ public class BlinkGrid : TimeEffect {
 	private Counter lifeCounter;
 	private GameObject gridAsset;
 	private SpriteRenderer render;
-	public virtual void Init( Hexagon hexegon, Piece piece,  float time, float delay)
+    public virtual void Init(Hexagon hexegon, bool isUpper, float time, float delay, Transform parent)
 	{
 		lifeCounter = new Counter (time);
 		delayCounter = new Counter (delay);
@@ -18,9 +18,9 @@ public class BlinkGrid : TimeEffect {
 		float scale = length / originalLength;
 		float height = Mathf.Sin (Mathf.PI / 3f) * length;
 		gridAsset.transform.localScale = new Vector3 (scale, scale, scale);
-		gridAsset.transform.parent = piece.transform.parent;
-		gridAsset.transform.localPosition = piece.isUpper? new Vector3(hexegon.posX,hexegon.posY+height*.5f,2):new Vector3(hexegon.posX,hexegon.posY-height*.5f,2);
-		gridAsset.transform.localEulerAngles = piece.isUpper ? Vector3.zero : new Vector3 (0, 0, 180f);
+        gridAsset.transform.parent = parent;
+        gridAsset.transform.localPosition = isUpper ? new Vector3(hexegon.posX, hexegon.posY + height * .5f, 2) : new Vector3(hexegon.posX, hexegon.posY - height * .5f, 2);
+        gridAsset.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
 
 		render.color = new Color32(255,255,255,0);
 

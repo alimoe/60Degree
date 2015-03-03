@@ -224,6 +224,20 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		progressCounter.Reset ();
 	}
 
+    public void EnergyRefill()
+    {
+        int count = skillButton.GetRemainingProgress();
+        for (int i = 0; i < count; i++)
+        {
+            new DelayCall().Init(.05f * (float)i, AddProgressImediately);
+        }
+    }
+
+    public void AddProgressImediately()
+    {
+        skillButton.AddProgress(1);
+    }
+
 	private Color32 convertColor(PieceColor color)
 	{
 		switch (color) {

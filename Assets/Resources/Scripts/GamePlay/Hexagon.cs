@@ -7,6 +7,13 @@ public enum HexagonPosition
 	Lower = 1,
 	None = 2
 }
+public enum HexagonState
+{
+    Normal,
+    Fire,
+    Teleport,
+    Mire
+}
 public class Hexagon:MonoBehaviour  {
 	[HideInInspector]
 	public Piece upper;
@@ -24,12 +31,16 @@ public class Hexagon:MonoBehaviour  {
 	public float length;
 	[HideInInspector]
 	public bool isBoard;
+    [HideInInspector]
+    public HexagonState upperState;
+    public HexagonState lowerState;
 	public float halfW;
 	public float halfH;
 	public static Mesh sharedMesh;
 	public static Mesh sharedBoardMesh;
 	public static Material evenMaterial;
 	public static Material oddMaterial;
+    
 	public float posX
 	{
 		get{return _posX;}
@@ -69,8 +80,22 @@ public class Hexagon:MonoBehaviour  {
 	{
 		upper = null;
 		lower = null;
-
+        upperState = HexagonState.Normal;
+        lowerState = HexagonState.Normal;
 	}
+
+    public void SetState(bool isUpper, HexagonState state)
+    {
+        if (isUpper) upperState = state;
+        else lowerState = state;
+    }
+
+    public HexagonState GetState(bool isUpper)
+    {
+        if (isUpper) return upperState;
+        else return lowerState;
+    }
+
 	public void Init(int _x, int _y, float _length)
 	{
 		x = _x;

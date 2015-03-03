@@ -28,7 +28,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
     private AudioClip mTargetClip;
     private bool inFadeOut;
     private bool inFadeIn;
-    void Awake()
+    void Awake ()
     {
         base.Awake();
         trasitionCounter = new Counter(volume);

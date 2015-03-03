@@ -49,8 +49,12 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	}
 	public void ResumeGame()
 	{
-		state = GameState.GamePlaying;
-		UIControl.Instance.CloseMenu ();
+        if (state == GameState.GamePaused)
+        {
+            state = GameState.GamePlaying;
+            UIControl.Instance.CloseMenu();
+        }
+		
 	}
 	public void EndGame()
 	{
@@ -63,6 +67,12 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 
 
 	}
+
+    public void EnergyRefill()
+    {
+        ResumeGame();
+        HudMenu.Instance.EnergyRefill();
+    }
 
 	public void HandleTap(Vector3 position)
 	{

@@ -16,7 +16,8 @@ public class Bomb : Skill {
 		if (piece != null) {
 			List<Piece> eliminate = Board.Instance.GetSurroundPiece(piece);
 			if(!eliminate.Contains(piece))eliminate.Add(piece);
-			Board.Instance.EliminatePieces(eliminate);
+            Board.Instance.EliminatePieces(eliminate, false);
+            Board.Instance.BlinkSurroundPiece(piece);
 			if(onExcuteCallback!=null)onExcuteCallback();
 			return true;
 		}
