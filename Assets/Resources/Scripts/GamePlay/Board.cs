@@ -88,13 +88,29 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	public void StartPlay()
 	{
+
         GeneratePieceAt(0, 0, true);
         GeneratePieceAt(0, 1, false);
-        GeneratePieceAt(1, 1, true);
-
+		GeneratePieceAt(1, 0, true);
+       // GeneratePieceAt(1, 1, true);
+		
         PieceGroup group = new PieceGroup();
         group.AddChild(pieces[0]);
         group.AddChild(pieces[1]);
+		group.AddChild(pieces[2]);
+		group.MakeChain ();
+
+
+
+		GeneratePieceAt(2, 1, false);
+		GeneratePieceAt(3, 0, true);
+		group = new PieceGroup();
+		group.AddChild(pieces[3]);
+		group.AddChild(pieces[4]);
+		group.MakeChain ();
+
+		//GeneratePieceAt(1, 1, true);
+
 		//GeneratePiece ();
 		//GeneratePiece ();
 		//GeneratePiece ();
@@ -278,6 +294,7 @@ public class Board : Core.MonoSingleton<Board> {
 				pieces[pieces.Count-1].SetLength(length);
 				if(!HasCorePiece()&&pieces.Count>3&&freezeCoreCounter.Expired())
 				{
+					Debug.LogError("Has Core");
 					pieces[pieces.Count-1].SetAsCore();
 				}
 
@@ -675,7 +692,7 @@ public class Board : Core.MonoSingleton<Board> {
             List<Piece> pieces = GetDirectionPieces(piece, direction);
             if (CanRowPieceMove(pieces))
             {
-                int step = GetEmptyPieceSlotCount(pieces[pieces.Count - 1], direction);
+                int step = GetEmptyPieceSlotCount(pieces[pieces.Count - 1], direction,true);
                 List<Piece> segment = new List<Piece>();
                 List<PieceGroup> groups = new List<PieceGroup>();
                 for (int i = pieces.Count - 1; i >= 0; i--)
@@ -691,17 +708,37 @@ public class Board : Core.MonoSingleton<Board> {
                             segment.Reverse();
                             MovePieceByStep(segment, direction, step);
                             segment = new List<Piece>();
+							groups.Add(pieces[i].group);
 
-                            groups.Add(pieces[i].group);
                             foreach (var l in pieces[i].group.children)
                             {
                                 if (!pieces.Contains(l))
                                 {
-                                    step = (l.CanMove())?Mathf.Min(GetEmptyPieceSlotCount(l, direction), step):0;
+									
+									Hexagon hexagon = GetHexagonByStep(GetHexagonAt(l.x,l.y),direction,l.isUpper,1);
+									if(hexagon!=null)
+									{
+										Piece neighbour = hexagon.GetPiece(!l.isUpper);
+										if(!pieces.Contains(neighbour) && !pieces[i].group.children.Contains(neighbour))
+										{
+											step = (l.CanMove())?Mathf.Min(GetEmptyPieceSlotCount(l, direction,true), step):0;
+										}
+									}
+									else
+									{
+										step = 0;
+									}
+                                    
+									//Debug.Log("GetEmptyPieceSlotCount(l, direction) "+GetEmptyPieceSlotCount(l, direction));
+									Debug.Log("Child step "+step);
                                 }
                             }
 
-                            MovePieceByStep(pieces[i].group.children, direction, step);
+							foreach(var child in pieces[i].group.children)
+							{
+								MovePieceByStep(new List<Piece>(){child}, direction, step);
+							}
+                            
                         }
 
                     }
@@ -840,9 +877,35 @@ public class Board : Core.MonoSingleton<Board> {
 					task.Init (pieces, delta, direction, time, OnPiecesMoveDone);
 					GroupBounce bounce = new GroupBounce ();
 					bounce.Init (pieces, delta, .3f, time);
-
 					ConflictAt conflictAt = new ConflictAt();
 					conflictAt.Init(last,lastPiece,direction,.8f);
+					
+					/*
+					Hexagon sameType = GetHexagonByStep(last,direction,lastPiece.isUpper,2);
+					Hexagon differentType = GetHexagonByStep(last,direction,lastPiece.isUpper,1);
+					if((differentType!=null && differentType.IsEmpty(!lastPiece.isUpper))|| (sameType!=null && sameType.IsEmpty(lastPiece.isUpper)))
+					{
+						bool conflict = false;
+						if(lastPiece.group!=null)
+						{
+							Piece differentTypePiece = (differentType == null)? null:differentType.GetPiece(!lastPiece.isUpper);
+							Piece sameTypePiece = (sameType == null)?null:sameType.GetPiece(lastPiece.isUpper);
+							if(differentTypePiece!=null && !lastPiece.group.children.Contains(differentTypePiece))conflict = true;
+							if(!conflict&&sameTypePiece!=null && !lastPiece.group.children.Contains(sameTypePiece))conflict = true;
+						}
+						else
+						{
+							conflict = true;
+						}
+						if(conflict)
+						{
+							ConflictAt conflictAt = new ConflictAt();
+							conflictAt.Init(last,lastPiece,direction,.8f);
+						}
+						
+					}
+					*/
+					
 			}
 		} else {
 			if (wall != null) {
@@ -1080,55 +1143,53 @@ public class Board : Core.MonoSingleton<Board> {
 		return loopFuc;
 	}
 
-	private int GetEmptyPieceSlotCount(Piece piece,BoardDirection direction)
+	private int GetEmptyPieceSlotCount(Piece piece,BoardDirection direction,bool output = false)
 	{
 		Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
-		GetDirectionHexagon loopFuc = GetDirectionHexagonDelegate(direction);
-		GetDirectionPieceByIndex pickFuc = GetDirectionPieceDelegate (direction);
+		
 		int slot = 0;
 		bool isUpper = piece.isUpper;
 		//Debug.Log("GetEmptyPieceSlotCount "+piece);
-		if (loopFuc != null) {
+		
 
 			
 			while(hexagon!=null)
 			{
 
 				bool isBoard = hexagon.isBoard;
-				hexagon = loopFuc(hexagon.x,hexagon.y,isUpper);
-				if(hexagon!=null)
+				//if(output)Debug.Log("Current "+hexagon);
+
+				//if(output)Debug.Log("Direction "+direction);
+
+				
+
+				//Piece next = pickFuc(hexagon.x,hexagon.y,isUpper);
+				//if(output)Debug.Log("Next "+next + " isUpper"+isUpper);
+				Hexagon differentType = GetHexagonByStep(hexagon,direction,isUpper,1);
+				Hexagon sameType = GetHexagonByStep(hexagon,direction,isUpper,2);
+				if(output)Debug.Log("differentType "+differentType);
+				if(output)Debug.Log("sameType "+sameType);
+				if(output && differentType!=null)Debug.Log("differentType.IsEmpty(!isUpper) "+differentType.IsEmpty(!isUpper));
+				if(output && sameType!=null)Debug.Log("sameType.IsEmpty(isUpper) "+sameType.IsEmpty(isUpper));
+				if(differentType!=null&& differentType.IsEmpty(!isUpper) && sameType!=null && sameType.IsEmpty(isUpper))
 				{
-					isUpper=!isUpper;
-
-					Piece next = pickFuc(hexagon.x,hexagon.y,isUpper);
-					//Debug.Log("Piece "+next + " isUpper"+isUpper);
-					//Debug.Log(hexagon);
-					if(next == null || next == piece)
-					{
-
-						slot++;
-					}
-					else
-					{
-						slot++;
-						if( piece.isUpper != isUpper)slot--;
-						break;
-					}
-					
-
+					slot+=2;
 				}
 				else
 				{
-					if( piece.isUpper != isUpper)
-					{
-						
-						slot--;
-					}
+					break;
 				}
+				hexagon = sameType;
+
+				//isUpper=!isUpper;
+					
+
+				
+
 				//Debug.Log("Next Hexagon "+hexagon);
 			}
 
-		}
+		
 		return slot;
 	}
 

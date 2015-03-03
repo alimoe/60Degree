@@ -16,7 +16,7 @@ public class InputControl : Core.MonoSingleton<InputControl> {
 		if (Input.GetMouseButtonUp (0)) {
 			//Debug.Log("Input.mousePosition"+Input.mousePosition);
 			Vector3 delta = Camera.main.ScreenToWorldPoint(Input.mousePosition) - currentPressedPosition;
-			if(delta.magnitude<0.1f)return;
+			if(delta.magnitude<0.2f)return;
 			float angle = (Mathf.Atan2(delta.y,delta.x)/Mathf.PI)*180f;
 			if(angle<0)angle = 360f+angle;
 			float thred = 20f;

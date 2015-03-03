@@ -23,6 +23,7 @@ public class MoveByWithAccelerate :TimeEffect {
 		gravityPosition = eliminatePosition;
 		onCompleteCallback = callback;
 		headGravity = false;
+		piece.isFadeAway = true;
 	}
 	public virtual void Init(Piece p, Vector3 targetPosition, Vector3 eliminatePosition, float speed,float trackTime, OnCompleteWithParam callback = null)
 	{

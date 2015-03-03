@@ -26,10 +26,29 @@ public class Piece : Entity {
     public PieceState state = PieceState.Normal;
 	public int x;
 	public int y;
+	public float length;
+	public float height;
+	private Vector3 heightVector;
+
 	public PieceColor type;
 	public float scale = 0f;
 	public bool isDead;
-	public bool isFadeAway;
+	private Vector3 _centerPosition;
+	public Vector3 centerPosition
+	{
+		get{
+			if(isUpper)return this.transform.localPosition+heightVector*.5f;
+			else return this.transform.localPosition-heightVector*.5f;
+		}
+	}
+	private bool _isFadeAway;
+	public bool isFadeAway{
+		get{return _isFadeAway;}
+		set{
+			_isFadeAway = value;
+			if(_isFadeAway)DestoryGroup();
+		}
+	}
     public PieceGroup group;
 	public string iditentyType
 	{
@@ -71,13 +90,17 @@ public class Piece : Entity {
         {
             return false;
         }
-        if (group != null)
-        {
-            group.RemoveChild(this);
-            group = null;
-        }
+		DestoryGroup ();
         return true;
     }
+	public void DestoryGroup()
+	{
+		if (group != null)
+		{
+			group.RemoveChild(this);
+			group = null;
+		}
+	}
 
     public void OnPassByPiece(BoardDirection direction)
     {
@@ -122,8 +145,11 @@ public class Piece : Entity {
 		}
 	}
 
-	public void SetLength(float length)
+	public void SetLength(float l)
 	{
+		length = l;
+		height = Mathf.Sin (Mathf.PI / 3f) * length;
+		heightVector = Vector3.up * height;
 		SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
 		float originalLength = spriteRender.sprite.bounds.extents.x*2f;
 
