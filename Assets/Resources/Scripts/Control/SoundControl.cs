@@ -8,7 +8,19 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 {
 
 	// Use this for initialization
-   
+	public AudioClip UI_TRANSITION_IN;
+	public AudioClip UI_TRANSITION_OUT;
+	public AudioClip UI_TAP;
+	public AudioClip GAME_COLLECT;
+	public AudioClip GAME_UPGRADE;
+	public AudioClip GAME_WIN;
+	public AudioClip GAME_LOSE;
+	public AudioClip GAME_CONFLICT;
+	public AudioClip GAME_WALL;
+	public AudioClip GAME_INVINCIBLE;
+	public AudioClip GAME_ELIMINATE;
+	public AudioClip GAME_DISAPPEAR;
+	public AudioClip GAME_REPEAL;
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;

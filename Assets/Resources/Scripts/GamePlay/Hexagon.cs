@@ -65,6 +65,12 @@ public class Hexagon:MonoBehaviour  {
 			return new Vector3(_posX  ,_posY-halfH,0);
 		}
 	}
+	public void Reset()
+	{
+		upper = null;
+		lower = null;
+
+	}
 	public void Init(int _x, int _y, float _length)
 	{
 		x = _x;

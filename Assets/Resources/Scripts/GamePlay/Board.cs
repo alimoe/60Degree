@@ -40,14 +40,16 @@ public class Board : Core.MonoSingleton<Board> {
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
 	public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
 	public delegate void OnDropDonePiece();
+	public delegate void OnHitRound(int round);
 
-
-
+	public OnHitRound onHitRoundCallback;
 	public OnEliminatePiece onEliminatePieceCallback;
 	public OnDropDonePiece onDropDownPieceCallback;
 
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
+	[HideInInspector]
+	public int round = 1;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
 		BoardDirection.BottomLeft,
 		BoardDirection.BottomRight,
@@ -63,12 +65,40 @@ public class Board : Core.MonoSingleton<Board> {
 
 		ResetColorsPriority ();
 		GenerateHexagon ();
-		GenerateWall ();
-		GeneratePiece ();
-		GeneratePiece ();
-		GeneratePiece ();
+
 		InitAxis ();
 
+	}
+
+	public void ResetBoard()
+	{
+		foreach (var i in pieces) {
+			EntityPool.Instance.Reclaim(i.gameObject,i.iditentyType);
+		}
+		pieces.Clear ();
+		foreach (var i in walls) {
+			i.ResetToZero();
+		}
+		foreach (var i in hexagons.Values) {
+			i.Reset();
+		}
+		round = 1;
+		freezeWallIndex = 0;
+		ResetColorsPriority ();
+	}
+	public void StartPlay()
+	{
+
+		GeneratePiece ();
+		GeneratePiece ();
+		GeneratePiece ();
+		GenerateWall ();
+		new DelayCall ().Init (.5f, DisplayRoundInfo);
+						
+	}
+	private void DisplayRoundInfo()
+	{
+		if (onHitRoundCallback != null)onHitRoundCallback (round);
 	}
 	private void InitAxis()
 	{
@@ -83,7 +113,13 @@ public class Board : Core.MonoSingleton<Board> {
 		colors.Add (PieceColor.Green);
 		colors.Add (PieceColor.Red);
 	}
+	private void ResetWalls()
+	{
 
+		foreach (var i in walls) {
+			i.Reset();
+		}
+	}
 	public void GenerateHexagon()
 	{
 		Hexagon[] children = this.transform.GetComponentsInChildren<Hexagon> ();
@@ -165,6 +201,7 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	public void GenerateWall()
 	{
+		if (walls.Count > 0)return;
 		foreach (var i in hexagons.Values) {
 
 			if(i.isBoard)
@@ -327,7 +364,8 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 		if (!canMove) {
-			Debug.LogError("You Lose");
+			//Debug.LogError("You Lose");
+			AppControl.Instance.EndGame();
 		}
 	}
 	private void CheckBoard()
@@ -399,35 +437,40 @@ public class Board : Core.MonoSingleton<Board> {
 
 			if(piece.isCore)
 			{
-				freezeCoreCounter.Reset();
-
-				walls[freezeWallIndex % (3*segment)].Invincible();
-				freezeWallIndex++;
-				int level = freezeWallIndex/segment;
-				if(freezeWallIndex>=walls.Count)
-				{
-
-				}
-				else
-				{
-					if(level==1 && colors.Count<4)
-					{
-						colors.Add(PieceColor.Purple);
-					}
-					if(level==2 && colors.Count<5)
-					{
-						colors.Add(PieceColor.Yellow);
-					}
-				}
+				AddWallProgress();
 			}
 		}
 		if (eliminate.Count > 0) {
+			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ELIMINATE);
 			if (onEliminatePieceCallback != null)onEliminatePieceCallback (eliminate.Count, eliminate [0].type, eliminate [0].transform.position);
 		}
 
-					
 	}
+	public void AddWallProgress()
+	{
 
+		freezeCoreCounter.Reset();
+		
+		walls[freezeWallIndex % (3*segment)].Invincible();
+		freezeWallIndex++;
+		int currentRound = freezeWallIndex/(3*segment) + 1;
+		if(round!=currentRound)
+		{
+			round = currentRound;
+			if(onHitRoundCallback!=null)onHitRoundCallback(round);
+			ResetWalls();
+		}
+		
+		int level = freezeWallIndex/segment;
+		if(level==1 && colors.Count<4)
+		{
+			colors.Add(PieceColor.Purple);
+		}
+		if(level==2 && colors.Count<5)
+		{
+			colors.Add(PieceColor.Yellow);
+		}
+	}
 	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count)
 	{
 		List<Piece> existPiece = new List<Piece> ();
@@ -467,10 +510,13 @@ public class Board : Core.MonoSingleton<Board> {
 					first.SetPiece(piece);
 					existPiece.Add(piece);
 					delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY,0);
-					//Debug.LogWarning("Hole delta"+delta);
+					
 				}
 			}
 		}
+
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_DISAPPEAR);
+
 		if (existPiece.Count > 0) {
 			GroupMoveBy groupMoveBy = new GroupMoveBy();
 			groupMoveBy.Init(existPiece,delta,direction,delta.magnitude/(moveSpeed*.4f),OnPiecesMoveDone);
@@ -579,7 +625,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 			int step = GetEmptyPieceSlotCount(pieces[pieces.Count-1],direction);
 
-			Debug.Log("Step "+step);
+			//Debug.Log("Step "+step);
 			MovePieceByStep(pieces,direction,step);
 
 		}
@@ -587,10 +633,17 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	private void RepearWalls()
 	{
+		bool result = false;
 		foreach (var i in walls) {
-			i.Repear();
-		}
+			if(i.IsBroken())
+			{
+				result = true;
+				i.Repear();
+			}
 
+		}
+		//if (result)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_REPEAL);
+						
 	}
 	private Hexagon GetHexagonByStep(Hexagon start, BoardDirection direction, bool isUpper ,int step)
 	{
@@ -742,6 +795,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 
 
+
 	}
 
 	private bool IsAgainstEdget(BoardDirection direction, Hexagon hexagon,Piece piece)
@@ -777,6 +831,7 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	private void OnPiecesMoveDone()
 	{
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_CONFLICT);
 		CheckBoard();
 		new DelayCall ().Init (.2f, GeneratePiece);
 		new DelayCall ().Init (.3f, CheckBoard);

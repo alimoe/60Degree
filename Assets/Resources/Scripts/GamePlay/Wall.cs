@@ -19,7 +19,7 @@ public class Wall :MonoBehaviour {
 	private SpriteRenderer render;
 	private int life;
 	private int totalLife = 2;
-	private static Color32[]colors = new Color32[3]{new Color32(255,255,255,0),new Color32(255,255,255,95),new Color32(255,255,255,255)};
+	private static byte[]alpha = new byte[3]{0,95,255};
 	private static Color32[]levels = new Color32[5]{new Color32(255,255,0,255),new Color32(255,0,255,255),new Color32(0,0,255,255),new Color32(0,255,0,255),new Color32(255,0,0,255)};
 	private Color32 currentColor;
 	private Color32 targetColor;
@@ -34,14 +34,15 @@ public class Wall :MonoBehaviour {
 	private Vector3 initPosition;
 	[HideInInspector]
 	public bool isInvincible = false;
-	private int level = 0;
+	private int level = -1;
+	private static Color32 WHITE = new Color32 (255, 255, 255, 255);
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
 		life = totalLife;
 		initPosition = this.transform.localPosition;
 		colorTimer = new Counter (0.2f);
-		currentColor = colors [life];
+		currentColor = WHITE;
 		render = this.gameObject.GetComponent<SpriteRenderer> ();
 		UpdateColor ();
 	}
@@ -66,7 +67,13 @@ public class Wall :MonoBehaviour {
 		life = totalLife;
 		UpdateColor ();
 	}
-	
+
+	public void ResetToZero()
+	{
+		level = -1;
+		Reset ();
+	}
+
 	public bool IsBroken()
 	{
 		if (isInvincible)return false;
@@ -75,12 +82,17 @@ public class Wall :MonoBehaviour {
 	public void Invincible()
 	{
 		isInvincible = true;
-		UpdateColor ();
 		level++;
+		UpdateColor ();
+
 	}
 	public void Hit()
 	{
-		if (isInvincible)return;
+		if (isInvincible) {
+			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_INVINCIBLE);
+			return;
+		}
+		SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_WALL);
 		life--;
 		life = Math.Min(Math.Max (life, 0),totalLife);
 		if (IsBroken ())repearProcess = 0;
@@ -98,8 +110,12 @@ public class Wall :MonoBehaviour {
 	}
 	public void UpdateColor()
 	{
+
 		if (!isInvincible) {
-			targetColor = colors [life];
+			Color32 mainColor;
+			if(level == -1)mainColor = WHITE;
+			else mainColor = levels[level%5];
+			targetColor = new Color32(mainColor.r,mainColor.g,mainColor.b, alpha[life]);
 			if (!currentColor.Equals (targetColor)) {
 					lastTimeColor = currentColor;
 					colorTimer.Reset ();
@@ -131,7 +147,7 @@ public class Wall :MonoBehaviour {
 					lastTimeColor = targetColor;
 					RenderColor ();
 			} else {
-					currentColor = new Color32 (GetChannelLerp (0, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (1, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (2, lastTimeColor, targetColor, colorTimer.percent), GetChannelLerp (3, lastTimeColor, targetColor, colorTimer.percent));
+					currentColor = new Color32 (targetColor.r, targetColor.g, targetColor.b, GetChannelLerp (3, lastTimeColor, targetColor, colorTimer.percent));
 					RenderColor ();
 			}
 		}

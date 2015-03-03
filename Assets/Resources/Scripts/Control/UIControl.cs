@@ -12,6 +12,8 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 
 	private Dictionary<string,GameObject> pool;
 	private string last;
+	private string candidate;
+	private bool candidateOverlay;
 	private Transform screenLayer;
 	private Transform overlayLayer;
 	private Transform overlayBackground;
@@ -60,37 +62,81 @@ public class UIControl : Core.MonoSingleton<UIControl> {
     {
         overlayBackground.gameObject.SetActive(false);
     }
+	public void OnMenuTransitionOut()
+	{
+		GameObject menu = pool[last];
+		stack.Remove(menu);
+		menu.SetActive(false);
+
+		Menu menuDelegate = menu.GetComponent<Menu> ();
+		if(menuDelegate!=null){
+			menuDelegate.onTransitionOutCallback = null;
+		}
+
+		OpenCandidate ();
+	}
+	public void OpenCandidate()
+	{
+		GameObject menu;
+		menu = pool[candidate] as GameObject;
+		menu.SetActive(true);
+
+		if (!candidateOverlay) {
+			menu.transform.parent = screenLayer;
+			menu.SendMessage ("OnOpenScreen", SendMessageOptions.DontRequireReceiver);
+			stack.Add (menu);
+		} else {
+
+			menu.transform.parent = overlayLayer;
+			menu.SendMessage("OnOpenScreen",SendMessageOptions.DontRequireReceiver);
+			overlayBackground.transform.parent = overlayLayer;
+			overlayBackground.gameObject.SetActive(true);
+			overlays.Add(menu);
+
+		}
+
+	}
 	public void OpenMenu(string name, bool clearPrevious = false, bool overlay = false)
 	{
 		//Debug.LogError ("OpenMenu" + name + " stack.Count "+stack.Count);
 		if (pool.ContainsKey (name)) {
-			
+			candidate = name;
+			candidateOverlay = overlay;
 			GameObject menu;
+			Menu menuDelegate;
 			if(overlay == false)
 			{
 				if(overlays.Count>0)CloseAllOverlay();
 				if(stack.Count>0)
 				{
-					if(stack[stack.Count-1].name == name) return;
+					if(stack[stack.Count-1].name == candidate) return;
 					last = stack[stack.Count-1].name;
 					if(clearPrevious)
 					{
 						menu = stack[stack.Count-1];
-						menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
-						stack.Remove(menu);
-						menu.SetActive(false);
-						//GameObject.Destroy(menu);
+						menuDelegate = menu.GetComponent<Menu>();
+						if(menuDelegate!=null)
+						{
+							menuDelegate.onTransitionOutCallback = OnMenuTransitionOut;
+							menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
+							return;
+						}
+						else
+						{
+							menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
+							stack.Remove(menu);
+							menu.SetActive(false);
+						}
+
+						
 					}
 					else
 					{
 						stack[stack.Count-1].SetActive(false);
 					}
 				}
-				menu = pool[name] as GameObject;
-				menu.SetActive(true);
-				menu.transform.parent = screenLayer;
-				menu.SendMessage("OnOpenScreen",SendMessageOptions.DontRequireReceiver);
-				stack.Add(menu);
+				OpenCandidate();
+
 			}
 			else
 			{
@@ -101,23 +147,29 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 					if(clearPrevious)
 					{
 						menu = overlays[overlays.Count-1];
-						menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
-						overlays.Remove(menu);
-						menu.SetActive(false);
-						//GameObject.Destroy(menu);
+						menuDelegate = menu.GetComponent<Menu>();
+						if(menuDelegate!=null)
+						{
+
+							menuDelegate.onTransitionOutCallback = OnMenuTransitionOut;
+							menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
+							return;
+						}
+						else
+						{
+							menu.SendMessage("OnCloseScreen",SendMessageOptions.DontRequireReceiver);
+							overlays.Remove(menu);
+							menu.SetActive(false);
+						}
+
+						
 					}
 					else
 					{
 						overlays[overlays.Count-1].SetActive(false);
 					}
 				}
-				menu = pool[name] as GameObject;
-				menu.SetActive(true);
-				menu.transform.parent = overlayLayer;
-				menu.SendMessage("OnOpenScreen",SendMessageOptions.DontRequireReceiver);
-                overlayBackground.transform.parent = overlayLayer;
-				overlayBackground.gameObject.SetActive(true);
-				overlays.Add(menu);
+				OpenCandidate();
 			}
 
 

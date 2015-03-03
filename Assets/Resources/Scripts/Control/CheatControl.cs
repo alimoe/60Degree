@@ -23,9 +23,17 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				Board.Instance.GeneratePiece();
 			}
-			if(GUI.Button(new Rect(0,120,100,30),"Add Progress"))
+			if(GUI.Button(new Rect(0,120,100,30),"Add Skill Point"))
 			{
-				Hud.Instance.AddProgress();
+				HudMenu.Instance.AddProgress();
+			}
+			if(GUI.Button(new Rect(0,150,100,30),"Enhance Wall"))
+			{
+				Board.Instance.AddWallProgress();
+			}
+			if(GUI.Button(new Rect(0,180,100,30),"Game Over"))
+			{
+				AppControl.Instance.EndGame();
 			}
 		}
 

@@ -4,8 +4,7 @@ using System.Collections;
 public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
 
 	// Use this for initialization
-	public bool useTap;
-    public bool muteSE;
+	public bool muteSE;
     public bool muteBGM;
 	void Awake () {
         base.Awake();
@@ -29,27 +28,17 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
         SetSetting("MuteBGM", value);
     }
 
-	public void UseSwipe()
+	public int GetSetting(string key)
 	{
-		SetSetting ("UseTap", 0);
+		if (PlayerPrefs.HasKey (key)) {
+			return PlayerPrefs.GetInt(key);
+		}
+		return 0;
 	}
-	public void UseTap()
-	{
-		SetSetting ("UseTap", 1);
-	}
+
 	public void Refresh()
 	{
-		if (PlayerPrefs.HasKey ("UseTap")) {
-			useTap = PlayerPrefs.GetInt("UseTap") == 1;
-		} else {
-			#if !UNITY_STANDALONE 
-			if ((iPhone.generation.ToString ()).IndexOf ("iPad") > -1) {
-				useTap = false;
-			} else {
-				useTap = true;
-			}
-			#endif
-		}
+
         if (PlayerPrefs.HasKey("MuteSE"))
         {
             muteSE = PlayerPrefs.GetInt("MuteSE") == 1;
@@ -68,8 +57,5 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
         }
 	    
 	}
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }
