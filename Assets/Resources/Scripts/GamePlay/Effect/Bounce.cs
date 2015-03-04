@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Bounce : TimeEffect {
 	private Piece piece;
@@ -7,7 +8,7 @@ public class Bounce : TimeEffect {
 	private Vector3 direction;
 	private Counter delayTimer;
 	private float ratioLength;
-	public virtual void Init(Piece p, Vector3 delta,float ratio, float time, float delay, OnComplete callback = null)
+	public virtual void Init(Piece p, Vector3 delta,float ratio, float time, float delay, Action callback = null)
 	{
 		TimerControl.Instance.effects += BounceUpdate;
 		piece = p;

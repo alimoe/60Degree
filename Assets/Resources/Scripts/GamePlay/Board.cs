@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public enum BoardDirection
 {
 	TopLeft,
@@ -34,7 +35,7 @@ public class Board : Core.MonoSingleton<Board> {
 	private Vector3 xAxis;
 	private Vector3 yAxis;
 	private bool lastTimeIsUpper = false;
-
+    private BoardDirection lastTimeDirection;
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
@@ -100,8 +101,6 @@ public class Board : Core.MonoSingleton<Board> {
 		group.AddChild(pieces[2]);
 		group.MakeChain ();
 
-
-
 		GeneratePieceAt(2, 1, false);
 		GeneratePieceAt(3, 0, true);
 		group = new PieceGroup();
@@ -109,6 +108,8 @@ public class Board : Core.MonoSingleton<Board> {
 		group.AddChild(pieces[4]);
 		group.MakeChain ();
 
+        GeneratePieceAt(4, 1, true);
+        pieces[5].SetState(PieceState.Twine); 
 		//GeneratePieceAt(1, 1, true);
 
 		//GeneratePiece ();
@@ -185,9 +186,125 @@ public class Board : Core.MonoSingleton<Board> {
 		foreach (var i in hexagons.Values) {
 			i.Render();
 		}
+    }
+
+    public List<Piece> GetParallelPieces(Piece piece, BoardDirection direction, int step)
+    {
+        List<Piece> parallels = new List<Piece>();
+        BoardDirection upRowDirection = BoardDirection.None;
+        BoardDirection downRowDirection = BoardDirection.None;
+        int upStep = 1;
+        int downStep = 1;
+        switch (direction)
+        {
+            case BoardDirection.Left:
+                if (piece.isUpper)
+                {
+                    upRowDirection = BoardDirection.TopLeft;
+                    downRowDirection = BoardDirection.BottomRight;
+                    upStep = 2;
+                    downStep = 1;
+                }
+                else
+                {
+                    upRowDirection = BoardDirection.TopRight;
+                    downRowDirection = BoardDirection.BottomLeft;
+                    upStep = 1;
+                    downStep = 2;
+                }
+            break;
+            case BoardDirection.Right:
+                if (piece.isUpper)
+                {
+                    upRowDirection = BoardDirection.TopRight;
+                    downRowDirection = BoardDirection.BottomLeft;
+                    upStep = 2;
+                    downStep = 1;
+                }
+                else
+                {
+                    upRowDirection = BoardDirection.TopLeft;
+                    downRowDirection = BoardDirection.BottomRight;
+                    upStep = 1;
+                    downStep = 2;
+                }
+            break;
+            case BoardDirection.TopRight:
+                if (piece.isUpper)
+                {
+                    upRowDirection = BoardDirection.Left;
+                    downRowDirection = BoardDirection.Right;
+                    upStep = 1;
+                    downStep = 2;
+                }
+                else
+                {
+                    upRowDirection = BoardDirection.TopLeft;
+                    downRowDirection = BoardDirection.BottomRight;
+                    upStep = 2;
+                    downStep = 1;
+                }
+            break;
+            case BoardDirection.TopLeft:
+                if (piece.isUpper)
+                {
+                    upRowDirection = BoardDirection.Right;
+                    downRowDirection = BoardDirection.Left;
+                    upStep = 1;
+                    downStep = 2;
+                }
+                else
+                {
+                    upRowDirection = BoardDirection.TopRight;
+                    downRowDirection = BoardDirection.BottomLeft;
+                    upStep = 2;
+                    downStep = 1;
+                }
+            break;
+            case BoardDirection.BottomLeft:
+                if (piece.isUpper)
+                {
+                    upRowDirection = BoardDirection.Left;
+                    downRowDirection = BoardDirection.BottomRight;
+                    upStep = 1;
+                    downStep = 2;
+                }
+                else
+                {
+                    upRowDirection = BoardDirection.Right;
+                    downRowDirection = BoardDirection.Left;
+                    upStep = 1;
+                    downStep = 2;
+                }
+            break;
+            case BoardDirection.BottomRight:
+            if (piece.isUpper)
+            {
+                upRowDirection = BoardDirection.Right;
+                downRowDirection = BoardDirection.BottomLeft;
+                upStep = 1;
+                downStep = 2;
+            }
+            else
+            {
+                upRowDirection = BoardDirection.Left;
+                downRowDirection = BoardDirection.Right;
+                upStep = 1;
+                downStep = 2;
+            }
+            break;
+        }
+
+        bool isUpper = piece.isUpper;
+        Hexagon original = GetHexagonAt(piece.x, piece.y);
+        Hexagon upStart = GetHexagonByStep(original, upRowDirection, isUpper, upStep);
+        Hexagon downStart = GetHexagonByStep(original, downRowDirection, isUpper, downStep);
+        Piece upStartPiece = upStart == null ? null : upStart.GetPiece(upStep==1?!isUpper:isUpper);
+        Piece downStartPiece = downStart == null ? null : downStart.GetPiece(downStep == 1 ? !isUpper : isUpper);
+        return parallels;
+    }
 
 
-	}
 	public void GenerateLines()
 	{
 		for (int i = 0; i<segment; i++) {
@@ -294,7 +411,7 @@ public class Board : Core.MonoSingleton<Board> {
 				pieces[pieces.Count-1].SetLength(length);
 				if(!HasCorePiece()&&pieces.Count>3&&freezeCoreCounter.Expired())
 				{
-					Debug.LogError("Has Core");
+					//Debug.LogError("Has Core");
 					pieces[pieces.Count-1].SetAsCore();
 				}
 
@@ -379,27 +496,29 @@ public class Board : Core.MonoSingleton<Board> {
 
 		bool canMove = false;
 		foreach (var i in pieces) {
+            if (i.CanMove())
+            {
+                foreach (var d in allDirection)
+                {
+                    //isCheck.Add(candidate);
 
-			foreach(var d in allDirection)
-			{
-				//isCheck.Add(candidate);
-
-				bool isUpper = i.isUpper;
-				Hexagon hexagon = GetHexagonAt(i.x,i.y);
-				hexagon = GetHexagonByStep(hexagon,d,isUpper,1);
-				if(hexagon!=null && hexagon.IsEmpty(!isUpper))
-				{
-					hexagon = GetHexagonByStep(hexagon,d,!isUpper,1);
-					if(hexagon!=null && hexagon.IsEmpty(isUpper))
-					{
-						canMove = true;
-						break;
-					}
-				}
-			}
+                    bool isUpper = i.isUpper;
+                    Hexagon hexagon = GetHexagonAt(i.x, i.y);
+                    hexagon = GetHexagonByStep(hexagon, d, isUpper, 1);
+                    if (hexagon != null && hexagon.IsEmpty(!isUpper))
+                    {
+                        hexagon = GetHexagonByStep(hexagon, d, !isUpper, 1);
+                        if (hexagon != null && hexagon.IsEmpty(isUpper))
+                        {
+                            canMove = true;
+                            break;
+                        }
+                    }
+                }
+            }
+			
 		}
 		if (!canMove) {
-			//Debug.LogError("You Lose");
 			AppControl.Instance.EndGame();
 		}
 	}
@@ -511,7 +630,7 @@ public class Board : Core.MonoSingleton<Board> {
 			colors.Add(PieceColor.Yellow);
 		}
 	}
-	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count)
+	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count, Action callback = null)
 	{
 		List<Piece> existPiece = new List<Piece> ();
 		Vector3 delta = Vector3.zero;
@@ -559,7 +678,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 		if (existPiece.Count > 0) {
 			GroupMoveBy groupMoveBy = new GroupMoveBy();
-			groupMoveBy.Init(existPiece,delta,direction,delta.magnitude/(moveSpeed*.4f),OnPiecesMoveDone);
+            groupMoveBy.Init(existPiece, delta, direction, delta.magnitude / (moveSpeed * .4f), callback);
 		}
 		
 	}
@@ -685,74 +804,127 @@ public class Board : Core.MonoSingleton<Board> {
 		return vector;
 	}
 
-    public void MovePiece(Piece piece, BoardDirection direction)
+    public float MovePiece(Piece piece, BoardDirection direction)
     {
+        float time = 0;
+
         if (piece != null && piece.CanMove())
         {
+            //Debug.Log("Try Move Piece");
             List<Piece> pieces = GetDirectionPieces(piece, direction);
+
+            Debug.Log("Try Move");
+
             if (CanRowPieceMove(pieces))
             {
                 int step = GetEmptyPieceSlotCount(pieces[pieces.Count - 1], direction,true);
                 List<Piece> segment = new List<Piece>();
-                List<PieceGroup> groups = new List<PieceGroup>();
-                for (int i = pieces.Count - 1; i >= 0; i--)
-                {
-                    if (pieces[i].group == null)
-                    {
-                        segment.Add(pieces[i]);
-                    }
-                    else
-                    {
-                        if (!groups.Contains(pieces[i].group))
-                        {
-                            segment.Reverse();
-                            MovePieceByStep(segment, direction, step);
-                            segment = new List<Piece>();
-							groups.Add(pieces[i].group);
+                PieceGroup lastGroup = null;
+                
+                Debug.Log("Before Caculate Group step" + step);
 
-                            foreach (var l in pieces[i].group.children)
+                for (int i = 0; i < pieces.Count; i++)
+                {
+                    Piece currentPiece = pieces[i];
+                    if (currentPiece.group != null)
+                    {
+                        if (lastGroup != currentPiece.group)
+                        {
+                            lastGroup = currentPiece.group;
+
+                            if (segment.Count > 0)
+                            {
+                                time = Mathf.Max(time, MovePieceByStep(segment, direction, step));
+                                segment = new List<Piece>();// segment for group item;
+                            }
+
+                            
+                            foreach (var l in currentPiece.group.children)
                             {
                                 if (!pieces.Contains(l))
                                 {
-									
-									Hexagon hexagon = GetHexagonByStep(GetHexagonAt(l.x,l.y),direction,l.isUpper,1);
-									if(hexagon!=null)
-									{
-										Piece neighbour = hexagon.GetPiece(!l.isUpper);
-										if(!pieces.Contains(neighbour) && !pieces[i].group.children.Contains(neighbour))
-										{
-											step = (l.CanMove())?Mathf.Min(GetEmptyPieceSlotCount(l, direction,true), step):0;
-										}
-									}
-									else
-									{
-										step = 0;
-									}
-                                    
-									//Debug.Log("GetEmptyPieceSlotCount(l, direction) "+GetEmptyPieceSlotCount(l, direction));
-									Debug.Log("Child step "+step);
+                                    Hexagon hexagon = GetHexagonAt(l.x,l.y);
+                                    hexagon = GetHexagonByStep(hexagon,direction,l.isUpper,1);
+                                    Piece neighbour = hexagon == null?null:hexagon.GetPiece(!l.isUpper);
+                                    if (neighbour == null || (neighbour != null && !currentPiece.group.children.Contains(neighbour)))
+                                    {
+                                        step = (l.CanMove()) ? Mathf.Min(GetEmptyPieceSlotCount(l, direction, true), step) : 0;
+                                    }
+                                    //Debug.Log("IsTwoPieceInSameRow(l,currentPiece,direction) " + IsTwoPieceInSameRow(l, currentPiece, direction));
+                                    if(IsTwoPieceInSameRow(l,currentPiece,direction))
+                                    {
+
+                                        segment.Add(l);
+                                    }
+
                                 }
                             }
+                            Debug.Log("After Caculate Group step" + step);
+                            
+                            Piece individul = null;
 
-							foreach(var child in pieces[i].group.children)
-							{
-								MovePieceByStep(new List<Piece>(){child}, direction, step);
-							}
+                            for (int j = 0; j < currentPiece.group.children.Count;j++)
+                            {
+                                Piece child = currentPiece.group.children[j];
+                                if (!segment.Contains(child)&& !pieces.Contains(child))
+                                {
+                                    if (individul == null)
+                                    {
+                                        individul = child;
+                                    }
+                                    else
+                                    {
+                                        if (IsTwoPieceInSameRow(individul, child,direction))
+                                        {
+                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child, individul }, direction, step));
+                                        }
+                                        else
+                                        {
+                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child }, direction, step));
+                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
+                                        }
+                                        individul = null;
+                                    }
+                                } 
+                            }
+                            if (individul!=null) time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
                             
                         }
 
                     }
-                }
+                    else
+                    {
+                        lastGroup = null;
+                    }
 
-                segment.Reverse();
-                MovePieceByStep(segment, direction, step);
+                    segment.Add(pieces[i]);
+                }
+                
+                time = Mathf.Max(time,MovePieceByStep(segment, direction, step));
             }
         }
+        return time;
     }
+
+    private bool IsTwoPieceInSameRow(Piece a, Piece b, BoardDirection direction)
+    {
+        Hexagon hexagon = GetHexagonAt(a.x, a.y);
+        bool isUpper = a.isUpper;
+        bool result = false;
+        while (hexagon != null && !result)
+        {
+            hexagon = GetHexagonByStep(hexagon, direction, isUpper, 1);
+            isUpper = !isUpper;
+            if (hexagon != null && hexagon.GetPiece(isUpper) == b) result = true;
+        }
+        return result;
+    }
+
 	public void MoveFrom(Vector3 position,BoardDirection direction)
 	{
 		Piece piece = GetPieceFromPosition (position);
-        MovePiece(piece, direction);
+        float time = MovePiece(piece, direction);
+        new DelayCall().Init(time, OnPiecesMoveDone);
     }
    
 	private void RepearWalls()
@@ -791,10 +963,49 @@ public class Board : Core.MonoSingleton<Board> {
         }
         return true;
     }
+    private int ComparePiece(Piece a, Piece b)
+    {
+        switch (lastTimeDirection)
+        {
+            case BoardDirection.Left:
+            case BoardDirection.Right:
+                if (a.x == b.x && a.isUpper!=b.isUpper)
+                {
+                    return a.isUpper ? -1 : 1;
+                }
+                else
+                {
+                    return a.x - b.x;
+                }
+            
+            break;
+            case BoardDirection.TopLeft:
+            case BoardDirection.BottomRight:
+            case BoardDirection.TopRight:
+            case BoardDirection.BottomLeft:
+            if (a.y == b.y && a.isUpper != b.isUpper)
+            {
+                return a.isUpper ? 1 : -1;
+            }
+            else
+            {
+                return a.y - b.y;
+            }
 
-	private void MovePieceByStep(List<Piece> pieces,BoardDirection direction, int step)
+            break;
+        }
+
+        return 0;
+    }
+    //Only Allowed move by row.
+	private float MovePieceByStep(List<Piece> pieces,BoardDirection direction, int step, Action callback = null )
 	{
-        if (pieces.Count == 0) return;
+        if (pieces.Count == 0) return 0;
+
+        Debug.Log("MovePieceByStep Called pieces member " + pieces.Count);
+
+        lastTimeDirection = direction;
+        pieces.Sort(ComparePiece);
 
 		GetDirectionHexagon loopFuc = GetDirectionHexagonDelegate (direction);
 		Vector3 delta = Vector3.zero;
@@ -834,7 +1045,7 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 
-        Debug.LogWarning("Last "+ last);
+        //Debug.LogWarning("Last "+ last);
 
 
 		Wall wall = null;
@@ -850,7 +1061,7 @@ public class Board : Core.MonoSingleton<Board> {
 			
 		}
 
-		float time;
+		float time = 0;
 		if (delta != Vector3.zero) {
 			GroupMoveBy task = new GroupMoveBy();
 			time = delta.magnitude / moveSpeed;
@@ -860,10 +1071,12 @@ public class Board : Core.MonoSingleton<Board> {
 						DelayCall delayCall = new DelayCall();
 						delayCall.Init(1f,wall,OnResetWall);
 				} else {
-						task.Init (pieces, delta, direction, time, OnPiecesMoveDone);
+                        task.Init(pieces, delta, direction, time, callback);
 						GroupBounce bounce = new GroupBounce ();
 						bounce.Init (pieces, delta, .3f, time);
-
+                        //Debug.Log("HIT WALL");
+                        //Debug.Log("lastPiece" + lastPiece);
+                        //Debug.Log("lastHexagon" + last);
 						ConflictAt conflictAt = new ConflictAt();
 						conflictAt.Init(last,lastPiece,direction,.8f);
 
@@ -874,37 +1087,14 @@ public class Board : Core.MonoSingleton<Board> {
 						delayCall.Init (time, hitInfo, OnHitEdget);
 				}
 			} else {
-					task.Init (pieces, delta, direction, time, OnPiecesMoveDone);
+                    task.Init(pieces, delta, direction, time, callback);
 					GroupBounce bounce = new GroupBounce ();
 					bounce.Init (pieces, delta, .3f, time);
+                    Debug.Log("HIT OBJECT");
+                    new DelayCall().Init(time, OnHitPiece);
+                    
 					ConflictAt conflictAt = new ConflictAt();
 					conflictAt.Init(last,lastPiece,direction,.8f);
-					
-					/*
-					Hexagon sameType = GetHexagonByStep(last,direction,lastPiece.isUpper,2);
-					Hexagon differentType = GetHexagonByStep(last,direction,lastPiece.isUpper,1);
-					if((differentType!=null && differentType.IsEmpty(!lastPiece.isUpper))|| (sameType!=null && sameType.IsEmpty(lastPiece.isUpper)))
-					{
-						bool conflict = false;
-						if(lastPiece.group!=null)
-						{
-							Piece differentTypePiece = (differentType == null)? null:differentType.GetPiece(!lastPiece.isUpper);
-							Piece sameTypePiece = (sameType == null)?null:sameType.GetPiece(lastPiece.isUpper);
-							if(differentTypePiece!=null && !lastPiece.group.children.Contains(differentTypePiece))conflict = true;
-							if(!conflict&&sameTypePiece!=null && !lastPiece.group.children.Contains(sameTypePiece))conflict = true;
-						}
-						else
-						{
-							conflict = true;
-						}
-						if(conflict)
-						{
-							ConflictAt conflictAt = new ConflictAt();
-							conflictAt.Init(last,lastPiece,direction,.8f);
-						}
-						
-					}
-					*/
 					
 			}
 		} else {
@@ -926,6 +1116,7 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 
 		}
+        return time;
 	}
 
 	public Vector3 GetPhysicDirection(BoardDirection direction)
@@ -988,7 +1179,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 	private bool IsSideBroken(BoardDirection direction, Hexagon hexagon,Piece piece)
 	{
-		Debug.LogWarning ("IsSideBroken " + piece);
+		//Debug.LogWarning ("IsSideBroken " + piece);
 		int step = piece.isUpper ? 2 : 1;
 		int count = 1;
 		bool isUpper = piece.isUpper;
@@ -1009,15 +1200,18 @@ public class Board : Core.MonoSingleton<Board> {
 	}
 	private void OnPiecesMoveDone()
 	{
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_CONFLICT);
+
 		CheckBoard();
 		new DelayCall ().Init (.2f, GeneratePiece);
-		new DelayCall ().Init (.3f, CheckBoard);
-		new DelayCall ().Init (.4f, CheckMovement);
-		//GeneratePiece ();
+		new DelayCall ().Init (.4f, CheckBoard);
+		new DelayCall ().Init (.45f, CheckMovement);
+        
 		RepearWalls ();
 	}
-
+    private void OnHitPiece()
+    {
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_CONFLICT);
+    }
 	private void OnHitEdget(object data)
 	{
 		HitInfo info = (HitInfo)data;
@@ -1026,7 +1220,7 @@ public class Board : Core.MonoSingleton<Board> {
 			wall.Hit();
 			ParticleEffect particleEffect = new ParticleEffect();
 
-			int count = (!wall.isInvincible)?Random.Range(4,8):Random.Range(1,3);
+            int count = (!wall.isInvincible) ? UnityEngine.Random.Range(4, 8) : UnityEngine.Random.Range(1, 3);
 				
 			particleEffect.Init(wall.linkedHexagon,info.direction,count,.8f,1.2f,wall.GetColor());
 		}
@@ -1111,37 +1305,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 		return loopFuc;
 	}
-	private GetDirectionPieceByIndex GetDirectionPieceDelegate(BoardDirection direction)
-	{
-		GetDirectionPieceByIndex loopFuc = null;
-		switch (direction) {
-		case BoardDirection.BottomLeft:
-			loopFuc = GetBottomLeftSidePiece;
-				
-			break;
-		case BoardDirection.BottomRight:
-			loopFuc = GetBottomRightSidePiece;
-		
-			break;
-		case BoardDirection.Left:
-			loopFuc = GetLeftSidePiece;
-		
-			break;
-		case BoardDirection.Right:
-			loopFuc = GetRightSidePiece;
-			
-			break;
-		case BoardDirection.TopLeft:
-			loopFuc = GetTopLeftSidePiece;
-			
-			break;
-		case BoardDirection.TopRight:
-			loopFuc = GetTopRightSidePiece;
-			
-			break;
-		}
-		return loopFuc;
-	}
+	
 
 	private int GetEmptyPieceSlotCount(Piece piece,BoardDirection direction,bool output = false)
 	{
@@ -1150,44 +1314,41 @@ public class Board : Core.MonoSingleton<Board> {
 		int slot = 0;
 		bool isUpper = piece.isUpper;
 		//Debug.Log("GetEmptyPieceSlotCount "+piece);
-		
-
 			
-			while(hexagon!=null)
+		while(hexagon!=null)
+		{
+
+			bool isBoard = hexagon.isBoard;
+			//if(output)Debug.Log("Current "+hexagon);
+
+			//if(output)Debug.Log("Direction "+direction);
+
+			//Piece next = pickFuc(hexagon.x,hexagon.y,isUpper);
+			//if(output)Debug.Log("Next "+next + " isUpper"+isUpper);
+			Hexagon differentType = GetHexagonByStep(hexagon,direction,isUpper,1);
+			Hexagon sameType = GetHexagonByStep(hexagon,direction,isUpper,2);
+			//if(output)Debug.Log("differentType "+differentType);
+			//if(output)Debug.Log("sameType "+sameType);
+			//if(output && differentType!=null)Debug.Log("differentType.IsEmpty(!isUpper) "+differentType.IsEmpty(!isUpper));
+			//if(output && sameType!=null)Debug.Log("sameType.IsEmpty(isUpper) "+sameType.IsEmpty(isUpper));
+
+			if(differentType!=null&& differentType.IsEmpty(!isUpper) && sameType!=null && sameType.IsEmpty(isUpper))
 			{
+				slot+=2;
+			}
+			else
+			{
+				break;
+			}
+			hexagon = sameType;
 
-				bool isBoard = hexagon.isBoard;
-				//if(output)Debug.Log("Current "+hexagon);
-
-				//if(output)Debug.Log("Direction "+direction);
-
-				
-
-				//Piece next = pickFuc(hexagon.x,hexagon.y,isUpper);
-				//if(output)Debug.Log("Next "+next + " isUpper"+isUpper);
-				Hexagon differentType = GetHexagonByStep(hexagon,direction,isUpper,1);
-				Hexagon sameType = GetHexagonByStep(hexagon,direction,isUpper,2);
-				if(output)Debug.Log("differentType "+differentType);
-				if(output)Debug.Log("sameType "+sameType);
-				if(output && differentType!=null)Debug.Log("differentType.IsEmpty(!isUpper) "+differentType.IsEmpty(!isUpper));
-				if(output && sameType!=null)Debug.Log("sameType.IsEmpty(isUpper) "+sameType.IsEmpty(isUpper));
-				if(differentType!=null&& differentType.IsEmpty(!isUpper) && sameType!=null && sameType.IsEmpty(isUpper))
-				{
-					slot+=2;
-				}
-				else
-				{
-					break;
-				}
-				hexagon = sameType;
-
-				//isUpper=!isUpper;
+			//isUpper=!isUpper;
 					
 
 				
 
-				//Debug.Log("Next Hexagon "+hexagon);
-			}
+			//Debug.Log("Next Hexagon "+hexagon);
+		}
 
 		
 		return slot;

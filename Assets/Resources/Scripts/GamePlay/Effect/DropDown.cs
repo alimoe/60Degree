@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class DropDown : TimeEffect {
 
@@ -15,7 +16,7 @@ public class DropDown : TimeEffect {
 	private float duration;
 	private Counter upTimer;
 	private Counter delayTimer;
-	public virtual void Init(Piece p, Vector3 targetPosition, Vector3 d,float delay,float upTime = .4f, OnCompleteWithParam callback = null)
+    public virtual void Init(Piece p, Vector3 targetPosition, Vector3 d, float delay, float upTime = .4f, Action<object> callback = null)
 	{
 		TimerControl.Instance.effects += DropDownUpdate;
 		piece = p;

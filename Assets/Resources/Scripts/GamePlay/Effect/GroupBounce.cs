@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class GroupBounce : TimeEffect {
 
 	private int taskCount;
 	private int currentTask;
-	public virtual void Init(List<Piece> pieces, Vector3 deltaTargetPosition, float time,float delay, OnComplete callback = null)
+    public virtual void Init(List<Piece> pieces, Vector3 deltaTargetPosition, float time, float delay, Action callback = null)
 	{
 		currentTask = 0;
 		taskCount = pieces.Count;

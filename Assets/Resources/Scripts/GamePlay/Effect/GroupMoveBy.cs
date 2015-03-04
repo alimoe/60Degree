@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class GroupMoveBy : TimeEffect {
 	private int taskCount;
 	private int currentTask;
 	public List<Piece> pieces;
 	public Vector3 directionPosition;
 	public BoardDirection direction;
-	public virtual void Init(List<Piece> p, Vector3 deltaTargetPosition, BoardDirection boardDirection, float time, OnComplete callback = null)
+	public virtual void Init(List<Piece> p, Vector3 deltaTargetPosition, BoardDirection boardDirection, float time, Action callback = null)
 	{
 		pieces = p;
 		currentTask = 0;
@@ -26,7 +27,7 @@ public class GroupMoveBy : TimeEffect {
 		}
 
 	}
-	public virtual void Init(List<Piece> p, Vector3 deltaTargetPosition, BoardDirection boardDirection, float time, OnCompleteWithParam callback = null)
+    public virtual void Init(List<Piece> p, Vector3 deltaTargetPosition, BoardDirection boardDirection, float time, Action<object> callback = null)
 	{
 		Init (p, deltaTargetPosition, boardDirection,time, onCompleteCallback);
 		onCompleteCallbackWithParam = callback;

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class MoveByWithAccelerate :TimeEffect {
 	public Piece piece;
 	public Vector3 direction;
@@ -11,7 +12,7 @@ public class MoveByWithAccelerate :TimeEffect {
 	private bool inTrack;
 	private float currentSpeed;
 	private bool headGravity;
-	public virtual void Init(Piece p, Vector3 targetPosition,Vector3 eliminatePosition, float speed,float trackTime, OnComplete callback = null)
+	public virtual void Init(Piece p, Vector3 targetPosition,Vector3 eliminatePosition, float speed,float trackTime, Action callback = null)
 	{
 		TimerControl.Instance.effects += MoveByWithAccelerateUpdate;
 		piece = p;
@@ -25,7 +26,7 @@ public class MoveByWithAccelerate :TimeEffect {
 		headGravity = false;
 		piece.isFadeAway = true;
 	}
-	public virtual void Init(Piece p, Vector3 targetPosition, Vector3 eliminatePosition, float speed,float trackTime, OnCompleteWithParam callback = null)
+    public virtual void Init(Piece p, Vector3 targetPosition, Vector3 eliminatePosition, float speed, float trackTime, Action<object> callback = null)
 	{
 		Init (p, targetPosition, eliminatePosition,speed,trackTime, this.onCompleteCallback);
 		onCompleteCallbackWithParam = callback;

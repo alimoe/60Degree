@@ -27,6 +27,8 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 		pool.Add("Particle",Resources.Load("Prefabs/Particle"));
         pool.Add("Gem", Resources.Load("Prefabs/Dot"));
 		pool.Add("Chain", Resources.Load("Prefabs/Chain"));
+        pool.Add("Twine", Resources.Load("Prefabs/Twine"));
+        
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}

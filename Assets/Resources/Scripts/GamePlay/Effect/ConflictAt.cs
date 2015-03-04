@@ -30,7 +30,7 @@ public class ConflictAt : TimeEffect {
 			conflictPoint = piece.isUpper?hexegon.top:hexegon.left;
 			break;
 		case BoardDirection.TopRight:
-			conflictPoint = piece.isUpper?hexegon.top:hexegon.right;
+            conflictPoint = piece.isUpper?hexegon.top:hexegon.right;
 			break;
 		}
 		TimerControl.Instance.effects += ConflictAtUpdate;

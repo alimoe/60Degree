@@ -33,6 +33,10 @@ public class Piece : Entity {
 	public PieceColor type;
 	public float scale = 0f;
 	public bool isDead;
+
+    public Twine twine;
+    public Ice ice;
+
 	private Vector3 _centerPosition;
 	public Vector3 centerPosition
 	{
@@ -80,6 +84,28 @@ public class Piece : Entity {
         return state == PieceState.Normal || state == PieceState.Coke;
     }
 
+    public void SetState(PieceState s)
+    {
+        if (s == PieceState.Normal)
+        {
+            if (twine != null)
+            {
+                twine.ShutDown();
+                twine = null;
+            }
+        }
+        if (s == PieceState.Twine)
+        {
+            if (twine == null)
+            {
+                GameObject twineObj = EntityPool.Instance.Use("Twine") as GameObject;
+                twine = twineObj.GetComponent<Twine>();
+                twine.SetUp(this);
+            }
+        }
+        state = s;
+    }
+
     public bool OnEliminate()
     {
         if (state == PieceState.Freeze)
@@ -104,7 +130,14 @@ public class Piece : Entity {
 
     public void OnPassByPiece(BoardDirection direction)
     {
-
+        if (twine != null)
+        {
+            twine.OnPass(direction);
+            if (twine.life == 0)
+            {
+                SetState(PieceState.Normal);
+            }
+        }
     }
 
     public void OnPassHexagon(HexagonState hexagon, int distance)
@@ -129,6 +162,7 @@ public class Piece : Entity {
 		Transform[] children = this.transform.GetComponentsInChildren<Transform> ();
 		foreach (var i in children) {
             if (i.name.Contains("Dot")) EntityPool.Instance.Reclaim(i.gameObject, "Gem");
+           
 		}
 	}
 	public override void Dead ()

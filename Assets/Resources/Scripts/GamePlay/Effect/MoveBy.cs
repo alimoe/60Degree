@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class MoveBy :TimeEffect {
 	public Piece piece;
 	private Vector3 initPosition;
 	private Vector3 finalPosition;
 	public Vector2 delta;
-	public virtual void Init(Piece p, Vector3 targetPosition, float time, OnComplete callback = null)
+	public virtual void Init(Piece p, Vector3 targetPosition, float time, Action callback = null)
 	{
 		TimerControl.Instance.effects += MoveByUpdate;
 		piece = p;
@@ -18,7 +19,7 @@ public class MoveBy :TimeEffect {
 		progress.Reset ();
 		onCompleteCallback = callback;
 	}
-	public virtual void Init(Piece p, Vector3 targetPosition, float time, OnCompleteWithParam callback = null)
+    public virtual void Init(Piece p, Vector3 targetPosition, float time, Action<object> callback = null)
 	{
 		Init (p, targetPosition, time, this.onCompleteCallback);
 		onCompleteCallbackWithParam = callback;

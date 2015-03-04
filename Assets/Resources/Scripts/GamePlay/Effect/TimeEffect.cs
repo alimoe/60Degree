@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class TimeEffect  {
 
-	public delegate void OnComplete();
-	public OnComplete onCompleteCallback;
-	public delegate void OnCompleteWithParam(object target);
-	public OnCompleteWithParam onCompleteCallbackWithParam;
+    
+    public Action onCompleteCallback;
+    public Action<object> onCompleteCallbackWithParam;
+
 	protected Counter progress;
 	public TimeEffect()
 	{

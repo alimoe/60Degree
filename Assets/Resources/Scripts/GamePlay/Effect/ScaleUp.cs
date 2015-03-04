@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ScaleUp : TimeEffect {
 
 	private Piece piece;
 		
 
-	public virtual void Init(Piece p, float time, OnComplete callback = null)
+	public virtual void Init(Piece p, float time, Action callback = null)
 	{
 		TimerControl.Instance.effects += ScaleUpUpdate;
 		piece = p;
