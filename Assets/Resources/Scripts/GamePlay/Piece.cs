@@ -37,6 +37,8 @@ public class Piece : Entity {
     public Twine twine;
     public Ice ice;
 
+	public bool moving = false;
+	private BoardDirection passSession;
 	private Vector3 _centerPosition;
 	public Vector3 centerPosition
 	{
@@ -72,6 +74,8 @@ public class Piece : Entity {
         state = PieceState.Normal;
 		ResetScale ();
         group = null;
+		moving = false;
+		passSession = BoardDirection.None;
 	}
 
     public bool CanEliminate()
@@ -130,15 +134,32 @@ public class Piece : Entity {
 
     public void OnPassByPiece(BoardDirection direction)
     {
-        if (twine != null)
-        {
-            twine.OnPass(direction);
-            if (twine.life == 0)
-            {
-                SetState(PieceState.Normal);
-            }
-        }
+		Debug.LogWarning ("OnPassBy " + this);
+		passSession = direction;
+        
     }
+	public void CommitChanges()
+	{
+		if (moving) {
+				moving = false;
+				passSession = BoardDirection.None;
+		} else {
+			//Debug.LogWarning ("CommitChanges " + passSession);
+			if(passSession != BoardDirection.None)
+			{
+				if (twine != null)
+				{
+					twine.OnPass(passSession);
+					if (twine.life == 0)
+					{
+						SetState(PieceState.Normal);
+					}
+				}
+				passSession = BoardDirection.None;
+			}
+
+		}
+	}
 
     public void OnPassHexagon(HexagonState hexagon, int distance)
     {

@@ -16,12 +16,13 @@ public class Chain : Entity {
 		Vector3 direction = (end.centerPosition - start.centerPosition).normalized;
 		float radian = Mathf.Atan2 (direction.y, direction.x);
 		float angle = (radian / Mathf.PI) * 180f;
-		Debug.Log (angle);
+		//Debug.Log (angle);
 		float d = angle/Mathf.Abs(angle);
 		Vector3 rotation = new Vector3 (0, 0, angle ); // + 10f * d
 
 		this.transform.localEulerAngles = rotation;
-
+		new FadeIn ().Init (this.gameObject, .3f, null);
+		
 	}
 
 	public void ShutDown()
