@@ -116,13 +116,16 @@ public class Piece : Entity {
         {
             return false;
         }
-        if (state == PieceState.Twine)
-        {
-            return false;
-        }
+		if(state == PieceState.Twine)DestoryTwine ();
 		DestoryGroup ();
         return true;
     }
+
+	public void DestoryTwine ()
+	{
+		SetState (PieceState.Normal);
+	}
+
 	public void DestoryGroup()
 	{
 		if (group != null)
