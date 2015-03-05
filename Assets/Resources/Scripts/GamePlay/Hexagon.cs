@@ -12,7 +12,7 @@ public enum HexagonState
     Normal,
     Fire,
     Teleport,
-    Mire
+    Rock
 }
 public class Hexagon:MonoBehaviour  {
 	[HideInInspector]
@@ -36,11 +36,17 @@ public class Hexagon:MonoBehaviour  {
     public HexagonState lowerState;
 	public float halfW;
 	public float halfH;
+    public Vector3 upPosition;
+    public Vector3 lowPosition;
+    public Maze mazeU;
+    public Maze mazeD;
 	public static Mesh sharedMesh;
 	public static Mesh sharedBoardMesh;
 	public static Material evenMaterial;
 	public static Material oddMaterial;
-    
+
+    public static float Scale = 1f;
+
 	public float posX
 	{
 		get{return _posX;}
@@ -80,14 +86,34 @@ public class Hexagon:MonoBehaviour  {
 	{
 		upper = null;
 		lower = null;
-        upperState = HexagonState.Normal;
-        lowerState = HexagonState.Normal;
+        SetState(true, HexagonState.Normal);
+        SetState(false, HexagonState.Normal);
+        
 	}
 
     public void SetState(bool isUpper, HexagonState state)
     {
         if (isUpper) upperState = state;
         else lowerState = state;
+
+        if (upperState == HexagonState.Fire && mazeU == null)
+        {
+            mazeU = EntityPool.Instance.Use("Maze").GetComponent<Maze>().SetUp(this, true);
+        }
+        if (lowerState == HexagonState.Fire && mazeD == null)
+        {
+            mazeD = EntityPool.Instance.Use("Maze").GetComponent<Maze>().SetUp(this, false);
+        }
+        if (upperState == HexagonState.Normal && mazeU != null)
+        {
+            mazeU.ShutDown();
+            mazeU = null;
+        }
+        if (lowerState == HexagonState.Normal && mazeD != null)
+        {
+            mazeD.ShutDown();
+            mazeD = null;
+        }
     }
 
     public HexagonState GetState(bool isUpper)
@@ -103,6 +129,8 @@ public class Hexagon:MonoBehaviour  {
 		length = _length;
 		halfW = Mathf.Cos (Mathf.PI / 3f) * (float)length;
 		halfH = Mathf.Sin (Mathf.PI / 3f) * (float)length;
+
+        
 		if (evenMaterial == null) {
 			evenMaterial = Resources.Load("Materials/Grid_Even") as Material;
 		}
@@ -113,6 +141,10 @@ public class Hexagon:MonoBehaviour  {
 	public void UpdatePosition()
 	{
 		this.transform.localPosition = new Vector3 (_posX, _posY, 0);
+
+        upPosition = new Vector3(this.posX, this.posY + halfH * .5f, 0f);
+        lowPosition = new Vector3(this.posX, this.posY - halfH * .5f, 0f);
+
 	}
 	public bool IsEmpty(bool up)
 	{
@@ -192,10 +224,9 @@ public class Hexagon:MonoBehaviour  {
 
 		SetPiece( piece );
 		if (!piece.isUpper) {
-			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY-halfH*.5f,0f);
-			
+            if (piece != null) piece.transform.localPosition = lowPosition;
 		} else {
-			if(piece!=null)piece.transform.localPosition = new Vector3(this.posX,this.posY+halfH*.5f,0f);
+            if (piece != null) piece.transform.localPosition = upPosition;
 		}
 	}
 	public void SetPiece(Piece piece )

@@ -109,8 +109,14 @@ public class Board : Core.MonoSingleton<Board> {
 		group.MakeChain ();
 
         GeneratePieceAt(4, 1, false);
-        pieces[5].SetState(PieceState.Twine); 
+        pieces[5].SetState(PieceState.Twine);
+
+        GeneratePieceAt(2, 3, false);
+        pieces[6].SetState(PieceState.Freeze); 
+
 		//GeneratePieceAt(1, 1, true);
+         
+        GetHexagonAt(0, 4).SetState(false, HexagonState.Fire);
 
 		//GeneratePiece ();
 		//GeneratePiece ();
@@ -296,11 +302,13 @@ public class Board : Core.MonoSingleton<Board> {
         int up = upper ? 0 : 1;
         GameObject entity = EntityPool.Instance.Use(GetRandomColor().ToString() + (up));
         entity.transform.parent = gemContainer;
-        pieces.Add(entity.GetComponent<Piece>());
-        pieces[pieces.Count - 1].SetLength(length);
-        hexagon.SetPiece(pieces[pieces.Count - 1], true);
+        Piece newOne = entity.GetComponent<Piece>();
+        pieces.Add(newOne);
+        newOne.SetLength(length);
+        Hexagon.Scale = newOne.scale;
+        hexagon.SetPiece(newOne, true);
         ScaleUp scaleUp = new ScaleUp();
-        scaleUp.Init(pieces[pieces.Count - 1], .3f);
+        scaleUp.Init(newOne, .3f);
     }
 	public void GeneratePiece()
 	{
@@ -717,7 +725,7 @@ public class Board : Core.MonoSingleton<Board> {
             //Debug.Log("Try Move Piece");
             List<Piece> pieces = GetDirectionPieces(piece, direction);
 
-            Debug.Log("Try Move");
+            //Debug.Log("Try Move");
 
             if (CanRowPieceMove(pieces))
             {
@@ -725,7 +733,7 @@ public class Board : Core.MonoSingleton<Board> {
                 List<Piece> segment = new List<Piece>();
                 PieceGroup lastGroup = null;
                 
-                Debug.Log("Before Caculate Group step" + step);
+                //Debug.Log("Before Caculate Group step" + step);
 
                 for (int i = 0; i < pieces.Count; i++)
                 {
@@ -763,7 +771,7 @@ public class Board : Core.MonoSingleton<Board> {
 
                                 }
                             }
-                            Debug.Log("After Caculate Group step" + step);
+                            //Debug.Log("After Caculate Group step" + step);
                             
                             Piece individul = null;
 
@@ -945,7 +953,7 @@ public class Board : Core.MonoSingleton<Board> {
 					if (hexagon != null)
 					{
 						Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
-						Debug.LogWarning(neighbour+" isUpper"+isUpper);
+						//Debug.LogWarning(neighbour+" isUpper"+isUpper);
 
 						Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
 						if(crossPiece!=null)crossPiece.OnPassByPiece(direction);
@@ -954,9 +962,9 @@ public class Board : Core.MonoSingleton<Board> {
 
                     hexagon = GetHexagonByStep(hexagon,direction,isUpper,1);
                     
-                    if (hexagon != null && hexagon.GetState(isUpper)!=HexagonState.Normal)
+                    if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
-						currentPiece.OnPassHexagon(hexagon.GetState(isUpper), count);
+						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), count);
                     }
 
                     count++;
@@ -970,7 +978,10 @@ public class Board : Core.MonoSingleton<Board> {
 					Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
 					if(crossPiece!=null)crossPiece.OnPassByPiece(direction);
 				}
-
+                if (hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
+                {
+                    currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), count);
+                }
 				if(hexagon!=null)
 				{
 					hexagon.SetPiece(currentPiece);
@@ -1025,7 +1036,7 @@ public class Board : Core.MonoSingleton<Board> {
                     task.Init(pieces, delta, direction, time, callback);
 					GroupBounce bounce = new GroupBounce ();
 					bounce.Init (pieces, delta, .3f, time);
-                    Debug.Log("HIT OBJECT");
+                    //Debug.Log("HIT OBJECT");
                     new DelayCall().Init(time, OnHitPiece);
                     
 					ConflictAt conflictAt = new ConflictAt();

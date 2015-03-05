@@ -97,6 +97,11 @@ public class Piece : Entity {
                 twine.ShutDown();
                 twine = null;
             }
+            if (ice != null)
+            {
+                ice.ShutDown();
+                ice = null;
+            }
         }
         if (s == PieceState.Twine)
         {
@@ -107,6 +112,15 @@ public class Piece : Entity {
                 twine.SetUp(this);
             }
         }
+        if (s == PieceState.Freeze)
+        {
+            if (ice == null)
+            {
+                GameObject iceObj = EntityPool.Instance.Use("Ice") as GameObject;
+                ice = iceObj.GetComponent<Ice>();
+                ice.SetUp(this);
+            }
+        }
         state = s;
     }
 
@@ -114,6 +128,15 @@ public class Piece : Entity {
     {
         if (state == PieceState.Freeze)
         {
+            if (ice != null)
+            {
+                ice.OnHit();
+                if (ice.life == 0)
+                {
+                    SetState(PieceState.Normal);
+                }
+            }
+           
             return false;
         }
 		if(state == PieceState.Twine)DestoryTwine ();
@@ -137,7 +160,7 @@ public class Piece : Entity {
 
     public void OnPassByPiece(BoardDirection direction)
     {
-		Debug.LogWarning ("OnPassBy " + this);
+		//Debug.LogWarning ("OnPassBy " + this);
 		passSession = direction;
         
     }
@@ -164,9 +187,9 @@ public class Piece : Entity {
 		}
 	}
 
-    public void OnPassHexagon(HexagonState hexagon, int distance)
+    public void OnPassHexagon(HexagonState hexagonState, int distance)
     {
-
+        Debug.LogWarning("Pass by Hexagon " + hexagonState);
     }
 
 	public void SetAsCore()

@@ -142,7 +142,7 @@ public class Twine : Entity {
 		ResetRope ();
         this.transform.parent = piece.transform.parent;
         this.transform.localPosition = piece.transform.localPosition;
-        this.transform.localScale = new Vector3(1, 1, 1);
+        this.transform.localScale = new Vector3(piece.scale, piece.scale, piece.scale);
         if (!piece.isUpper)
         {
 			left = down_left;
