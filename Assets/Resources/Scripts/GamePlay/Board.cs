@@ -18,11 +18,21 @@ public struct HitInfo
 	public BoardDirection direction;
 	public Wall wall;
 }
+public enum GenerateType
+{
+	None,
+	Chain,
+	Rope,
+	Ice,
+	Fire,
+	Any
+}
 public class Board : Core.MonoSingleton<Board> {
 
 	public int segment = 8;
 	public float length = 1f;
-	private float moveSpeed = 30f;
+	[HideInInspector]
+	public float moveSpeed = 30f;
 	[HideInInspector]
 	public float halfWidth;
 	[HideInInspector]
@@ -49,6 +59,9 @@ public class Board : Core.MonoSingleton<Board> {
 
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
+	private Counter generateCounter = new Counter (20f);
+	private List<GenerateType> generateType ;
+	private bool inProcess = false;
 	[HideInInspector]
 	public int round = 1;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
@@ -63,7 +76,7 @@ public class Board : Core.MonoSingleton<Board> {
 		gemContainer = GameObject.Find ("Board/Gems").transform;
 
 		freezeCoreCounter.percent = 1f;
-
+		generateType = new List<GenerateType>();
 		ResetColorsPriority ();
 		GenerateHexagon ();
 
@@ -84,46 +97,164 @@ public class Board : Core.MonoSingleton<Board> {
 			i.Reset();
 		}
 		round = 1;
+			
+		generateCounter.Reset ();
 		freezeWallIndex = 0;
+		inProcess = false;
+		generateType = new List<GenerateType>();
 		ResetColorsPriority ();
 	}
+
 	public void StartPlay()
 	{
-
-        GeneratePieceAt(0, 0, true);
-        GeneratePieceAt(0, 1, false);
-		GeneratePieceAt(1, 0, true);
-       // GeneratePieceAt(1, 1, true);
-		
-        PieceGroup group = new PieceGroup();
-        group.AddChild(pieces[0]);
-        group.AddChild(pieces[1]);
-		group.AddChild(pieces[2]);
+		//GeneratePiece ();
+		//GeneratePiece ();
+		//GeneratePiece ();
+		GeneratePieceAt (1, 1, true);
+		GeneratePieceAt (0, 2, false);
+		PieceGroup group = new PieceGroup ();
+		group.AddChild (pieces [0]);
+		group.AddChild (pieces [1]);
 		group.MakeChain ();
-
-		GeneratePieceAt(2, 1, false);
-		GeneratePieceAt(3, 0, true);
-		group = new PieceGroup();
-		group.AddChild(pieces[3]);
-		group.AddChild(pieces[4]);
-		group.MakeChain ();
-
-        GeneratePieceAt(4, 1, false);
-        pieces[5].SetState(PieceState.Twine);
-
-        GeneratePieceAt(2, 3, false);
-        pieces[6].SetState(PieceState.Freeze); 
-
-		//GeneratePieceAt(1, 1, true);
-         
-        GetHexagonAt(0, 4).SetState(false, HexagonState.Fire);
-
-		//GeneratePiece ();
-		//GeneratePiece ();
-		//GeneratePiece ();
 		GenerateWall ();
 		new DelayCall ().Init (.5f, DisplayRoundInfo);
 						
+	}
+	private void GenerateSpecialItem()
+	{
+		generateCounter.Tick(1f);
+		if(generateCounter.Expired())
+		{
+			generateCounter.Reset();
+			if(generateType.Count>0)
+			{
+				GenerateType type = generateType[UnityEngine.Random.Range(0,generateType.Count)];
+				switch(type)
+				{
+					case GenerateType.Chain:
+					GenerateGroup();
+					break;
+					case GenerateType.Fire:
+					GenerateFire();
+					break;
+					case GenerateType.Rope:
+					GenerateRope();
+					break;
+					case GenerateType.Ice:
+					GenerateIce();
+					break;
+				}
+			}
+		}
+	}
+	private void GenerateGroup()
+	{
+		int step = 5;
+		Piece piece = RandomlyPickPiece ();
+		while (step>0&& piece!=null && piece.group!=null&&piece.group.childCount>2) {
+			piece = RandomlyPickPiece ();
+			step --;
+		}
+
+		if (piece == null)return;
+						
+		PieceGroup group;
+		List<Piece> pieces;
+		if (piece.group == null) {
+			pieces = GetSurroundPiece(piece);
+			if(pieces.Count>0)
+			{
+				group = new PieceGroup();
+				int index = UnityEngine.Random.Range(0,pieces.Count);
+				group.AddChild(piece);
+				group.AddChild(pieces[index]);
+				group.MakeChain ();
+			}
+		}
+		else if(piece.group.childCount == 2)
+		{
+			pieces = GetSurroundPiece(piece);
+			List<Piece> valide = new List<Piece>();
+			foreach(var i in pieces)
+			{
+				if(!piece.group.children.Contains(i))
+				{
+					valide.Add(i);
+				}
+			}
+			if(valide.Count>0)
+			{
+				group = new PieceGroup();
+				int index = UnityEngine.Random.Range(0,valide.Count);
+				group.AddChild(piece);
+				group.AddChild(valide[index]);
+				group.MakeChain ();
+			}
+		}
+	}
+	private void GenerateRope()
+	{
+		int step = 5;
+		Piece piece = RandomlyPickPiece ();
+		while (step>0 && piece!=null && piece.twine !=null || piece.ice!=null || piece.coke) {
+			piece = RandomlyPickPiece ();
+			step --;
+		}
+		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke) {
+			piece.SetState(PieceState.Twine);
+		}
+	}
+	private void GenerateIce()
+	{
+		int step = 5;
+		Piece piece = RandomlyPickPiece ();
+		while (step>0 && piece!=null && piece.twine !=null || piece.ice!=null || piece.coke) {
+			piece = RandomlyPickPiece ();
+			step --;
+		}
+		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke) {
+			piece.SetState(PieceState.Freeze);
+		}
+	}
+	private void GenerateFire()
+	{
+		Hexagon hexagon = RandomlyPickEmptyHexagon ();
+		if (hexagon != null) {
+			if(hexagon.IsEmpty(true))
+			{
+				hexagon.SetState(true,HexagonState.Fire);
+			}
+			else if(hexagon.IsEmpty(false))
+			{
+				hexagon.SetState(false,HexagonState.Fire);
+			}
+		}
+	}
+	private Piece RandomlyPickPiece()
+	{
+		int index = UnityEngine.Random.Range (0, pieces.Count);
+		if (index < pieces.Count) {
+			return pieces[index];
+		}
+		return null;
+	}
+	private Hexagon RandomlyPickEmptyHexagon()
+	{
+			
+		List<Hexagon> emptyList = new List<Hexagon> ();
+
+		foreach (var i in hexagons.Values) {
+			if(i.HasEmptySlot())
+			{
+				emptyList.Add(i);
+			}
+		}
+		int index = UnityEngine.Random.Range (0, emptyList.Count);
+		if (index < emptyList.Count) {
+			return emptyList[index];
+		}
+		return null;
+
 	}
 	private void DisplayRoundInfo()
 	{
@@ -315,8 +446,7 @@ public class Board : Core.MonoSingleton<Board> {
 		Hexagon hexagon = GetEmptyHexagon ();
 		freezeCoreCounter.Tick (1f);
 		if (hexagon != null) {
-			HexagonPosition position = hexagon.GetRandomPosition(lastTimeIsUpper);
-			lastTimeIsUpper=!lastTimeIsUpper;
+			HexagonPosition position = hexagon.GetRandomPosition(ref lastTimeIsUpper);
 			GameObject entity = EntityPool.Instance.Use(GetRandomColor().ToString()+((int)position));
 			entity.transform.parent = gemContainer;
 			if(entity!=null)
@@ -453,13 +583,13 @@ public class Board : Core.MonoSingleton<Board> {
 				//Debug.Log("candidate surround count "+neighbour.Count);
 				List<Piece> eliminateCandidate = new List<Piece> (neighbour.ToArray());
 				eliminate.Clear();
-				eliminate.Add(candidate);
+				if(candidate.CanEliminate())eliminate.Add(candidate);
 				while(eliminateCandidate.Count>0)
 				{
 					Piece friend = eliminateCandidate[0];
 					//Debug.Log("friend"+friend);
 					eliminateCandidate.RemoveAt(0);
-					if(!eliminate.Contains(friend))
+					if(!eliminate.Contains(friend)&&friend.CanEliminate())
 					{
 						eliminate.Add(friend);
 
@@ -534,6 +664,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		
 		int level = freezeWallIndex/segment;
+		Debug.LogWarning ("Level" + level);
 		if(level==1 && colors.Count<4)
 		{
 			colors.Add(PieceColor.Purple);
@@ -542,6 +673,39 @@ public class Board : Core.MonoSingleton<Board> {
 		{
 			colors.Add(PieceColor.Yellow);
 		}
+		if (level == 3) {
+			if(generateType.Count == 0)
+			{
+				generateType.Add(GenerateType.Chain);
+				generateCounter.Reset();
+				GenerateGroup();
+			}
+		}
+		if (level == 6) {
+			if(generateType.Count == 1)
+			{
+				generateType.Add(GenerateType.Ice);
+				generateCounter.Reset();
+				GenerateIce();
+			}
+		}
+		if (level == 9) {
+			if(generateType.Count == 2)
+			{
+				generateType.Add(GenerateType.Rope);
+				generateCounter.Reset();
+				GenerateRope();
+			}
+		}
+		if (level == 12) {
+			if(generateType.Count == 3)
+			{
+				generateType.Add(GenerateType.Fire);
+				generateCounter.Reset();
+				GenerateFire();
+			}
+		}
+
 	}
 	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count, Action callback = null)
 	{
@@ -834,12 +998,17 @@ public class Board : Core.MonoSingleton<Board> {
 
 	public void MoveFrom(Vector3 position,BoardDirection direction)
 	{
+		if (inProcess)return;
+		
 		Piece piece = GetPieceFromPosition (position);
 		float time = 0;
 		int step = 0;
 		MovePiece(piece, direction, ref time, ref step);
 		CommitPieceStateChange ();
+		CommitHexagonStateChange ();
 		if (step > 0) {
+			inProcess = true;
+			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_MOVE);
 			new DelayCall().Init(time, OnPiecesMoveDone);
 		}
       
@@ -848,6 +1017,13 @@ public class Board : Core.MonoSingleton<Board> {
 	{
 		foreach (var piece in pieces) {
 			piece.CommitChanges();
+			piece.Tick();
+		}
+	}
+	private void CommitHexagonStateChange()
+	{
+		foreach (var hexagon in hexagons.Values) {
+			hexagon.Tick();
 		}
 	}
 	private void RepearWalls()
@@ -964,7 +1140,7 @@ public class Board : Core.MonoSingleton<Board> {
                     
                     if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
-						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), count);
+						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), (float)count*length/moveSpeed);
                     }
 
                     count++;
@@ -980,7 +1156,7 @@ public class Board : Core.MonoSingleton<Board> {
 				}
                 if (hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
                 {
-                    currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), count);
+					currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), (float)count*length/moveSpeed);
                 }
 				if(hexagon!=null)
 				{
@@ -1048,7 +1224,6 @@ public class Board : Core.MonoSingleton<Board> {
 				if (wall.IsBroken ()) {
 
 					delta = GetPhysicDirection(direction);
-					//Debug.Log ("Eliminate By Step 0 "+delta);
 					Piece piece = pieces[pieces.Count-1];
 					Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
 					if(hexagon!=null)
@@ -1057,6 +1232,10 @@ public class Board : Core.MonoSingleton<Board> {
 					}
 					DelayCall delayCall = new DelayCall();
 					delayCall.Init(1f,wall,OnResetWall);
+
+					SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_MOVE);
+					OnPiecesMoveDone();
+
 				}
 
 			}
@@ -1151,8 +1330,13 @@ public class Board : Core.MonoSingleton<Board> {
 		new DelayCall ().Init (.2f, GeneratePiece);
 		new DelayCall ().Init (.4f, CheckBoard);
 		new DelayCall ().Init (.45f, CheckMovement);
-        
+		new DelayCall ().Init (.45f, EndProcess);
 		RepearWalls ();
+		GenerateSpecialItem ();
+	}
+	private void EndProcess()
+	{
+		inProcess = false;
 	}
     private void OnHitPiece()
     {

@@ -54,9 +54,11 @@ public class Ice : Entity {
         if (life == 1)
         {
             if (crack != null) crack.gameObject.SetActive(true);
+			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ICE);
         }
         else if(life == 0)
         {
+			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ICE);
             ShutDown();
         }
     }

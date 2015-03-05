@@ -5,6 +5,7 @@ public class Maze : Entity {
 
     private Transform upper;
     private Transform lower;
+	private Counter life = new Counter(10f);
 	void Awake () {
         Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
         foreach (var child in children)
@@ -22,6 +23,8 @@ public class Maze : Entity {
         this.transform.localPosition += Vector3.back * 3f;
         upper.gameObject.SetActive(isUpper);
         lower.gameObject.SetActive(!isUpper);
+		life.Reset ();
+		new FadeIn ().Init (this.gameObject, .3f, null);
         return this;
     }
     public void ShutDown()
@@ -29,8 +32,12 @@ public class Maze : Entity {
         upper.gameObject.SetActive(false);
         lower.gameObject.SetActive(false);
     }
-	// Update is called once per frame
-	void Update () {
-	
+	public void Tick()
+	{
+		life.Tick (1f);
+	}
+	public bool Expired()
+	{
+		return life.Expired ();
 	}
 }

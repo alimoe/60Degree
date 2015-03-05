@@ -80,7 +80,8 @@ public class Twine : Entity {
 	}
     public void OnPass(BoardDirection direction)
     {
-		Debug.LogWarning ("OnPass " + direction);
+		//Debug.LogWarning ("OnPass " + direction);
+		int last = life;
         switch (direction)
         {
             case BoardDirection.BottomLeft:
@@ -133,6 +134,8 @@ public class Twine : Entity {
                 break;
 
         }
+		if (last != life)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ROPE);
+						
         
     }
     public void SetUp(Piece p)

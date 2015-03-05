@@ -15,9 +15,9 @@ public enum HexagonState
     Rock
 }
 public class Hexagon:MonoBehaviour  {
-	[HideInInspector]
+		
 	public Piece upper;
-	[HideInInspector]
+	
 	public Piece lower;
 	[HideInInspector]
 	public int x;
@@ -90,7 +90,17 @@ public class Hexagon:MonoBehaviour  {
         SetState(false, HexagonState.Normal);
         
 	}
-
+	public void Tick()
+	{
+		if (mazeU != null) {
+			mazeU.Tick ();
+			if(mazeU.Expired())SetState(true,HexagonState.Normal);
+		}
+		if (mazeD != null) {
+			mazeD.Tick ();
+			if(mazeD.Expired())SetState(false,HexagonState.Normal);
+		}
+	}
     public void SetState(bool isUpper, HexagonState state)
     {
         if (isUpper) upperState = state;
@@ -201,11 +211,12 @@ public class Hexagon:MonoBehaviour  {
 		}
 		return position;
 	}
-	public HexagonPosition GetRandomPosition(bool needUp)
+	public HexagonPosition GetRandomPosition(ref bool needUp)
 	{
 		HexagonPosition position = HexagonPosition.None;
 		if (!isBoard && lower == null && upper == null) {
 			position = (!needUp) ? HexagonPosition.Lower : HexagonPosition.Upper;
+			needUp = !needUp;
 		} 
 		else if (lower == null && !isBoard) {
 			position = HexagonPosition.Lower;

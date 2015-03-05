@@ -16,7 +16,10 @@ public class Chain : Entity {
 		Vector3 direction = (end.centerPosition - start.centerPosition).normalized;
 		float radian = Mathf.Atan2 (direction.y, direction.x);
 		float angle = (radian / Mathf.PI) * 180f;
-		//Debug.Log (angle);
+		Debug.Log (angle);
+		if(angle == 0)angle = !s.isUpper? angle + 60:angle - 60;
+		else if(Mathf.Abs(angle) == 90)angle -= 90;
+		else if(Mathf.Abs(angle) == 180)angle = !s.isUpper? angle - 60:angle + 60;
 		float d = angle/Mathf.Abs(angle);
 		Vector3 rotation = new Vector3 (0, 0, angle ); // + 10f * d
 
@@ -30,6 +33,7 @@ public class Chain : Entity {
 		start = null;
 		end = null;
 		EntityPool.Instance.Reclaim(this.gameObject,"Chain");
+
 	}
 
 	void Update () {

@@ -12,4 +12,9 @@ public class Utility  {
         builder.Append(c);
         return builder.ToString();
     }
+	public static byte LerpColorChannel(byte start, byte end, float percent)
+	{
+		int delta = (int)end - (int)start;
+		return (byte)((int)start + (delta * percent));
+	}
 }

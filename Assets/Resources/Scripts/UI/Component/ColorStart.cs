@@ -25,7 +25,7 @@ public class ColorStart : MonoBehaviour {
 			transitionCounter.Tick (Time.deltaTime);
 			Color32 start = colors [index];
 			Color32 end = colors [(index + 1) % colors.Length];
-			sprite.color = new Color32 (GetChannel (start.r, end.r, transitionCounter.percent), GetChannel (start.g, end.g, transitionCounter.percent), GetChannel (start.b, end.b, transitionCounter.percent), 255);
+			sprite.color = new Color32 (Utility.LerpColorChannel (start.r, end.r, transitionCounter.percent), Utility.LerpColorChannel (start.g, end.g, transitionCounter.percent), Utility.LerpColorChannel (start.b, end.b, transitionCounter.percent), 255);
 			if (transitionCounter.Expired ()) {
 				index++;
 				index %= colors.Length;
@@ -41,8 +41,5 @@ public class ColorStart : MonoBehaviour {
 		float scalar = 1f+(Mathf.Sin (Mathf.PI * 2f * scaleCounter.percent))*.2f;
 		sprite.transform.localScale = new Vector3 (scalar, scalar, scalar);
 	}
-	private byte GetChannel(byte start, byte end, float percent)
-	{
-		return (byte)(start + (byte)((float)(end - start) * percent));
-	}
+
 }

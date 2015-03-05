@@ -33,18 +33,19 @@ public class Piece : Entity {
 	public PieceColor type;
 	public float scale = 0f;
 	public bool isDead;
-
-    public Twine twine;
+	public Twine twine;
     public Ice ice;
-
+	public bool coke;
+	private Counter cokeCounter = new Counter(3f);
 	public bool moving = false;
 	private BoardDirection passSession;
 	private Vector3 _centerPosition;
+	private static Color32 BLACK = new Color32(60,60,60,0);
+	private static Color32 WHITE = new Color32(255,255,255,255);
 	public Vector3 centerPosition
 	{
 		get{
-			if(isUpper)return this.transform.localPosition+heightVector*.5f;
-			else return this.transform.localPosition-heightVector*.5f;
+			return this.transform.localPosition;
 		}
 	}
 	private bool _isFadeAway;
@@ -75,7 +76,12 @@ public class Piece : Entity {
 		ResetScale ();
         group = null;
 		moving = false;
+		twine = null;
+		ice = null;
+		coke = false;
+		this.GetComponent<SpriteRenderer> ().color = WHITE;
 		passSession = BoardDirection.None;
+		cokeCounter.Reset ();
 	}
 
     public bool CanEliminate()
@@ -102,6 +108,11 @@ public class Piece : Entity {
                 ice.ShutDown();
                 ice = null;
             }
+			if(coke)
+			{
+				coke = false;
+				new TurnColor().Init(this.gameObject,.2f,WHITE,null);
+			}
         }
         if (s == PieceState.Twine)
         {
@@ -121,6 +132,14 @@ public class Piece : Entity {
                 ice.SetUp(this);
             }
         }
+		if (s == PieceState.Coke)
+		{
+			if(!coke)
+			{
+				coke = true;
+				new TurnColor().Init(this.gameObject,.2f,BLACK,null);
+			}
+		}
         state = s;
     }
 
@@ -187,11 +206,25 @@ public class Piece : Entity {
 		}
 	}
 
-    public void OnPassHexagon(HexagonState hexagonState, int distance)
+    public void OnPassHexagon(HexagonState hexagonState, float time)
     {
-        Debug.LogWarning("Pass by Hexagon " + hexagonState);
-    }
+        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
+		if (hexagonState == HexagonState.Fire) {
+			if(this.state!=PieceState.Coke)
+			{
+				state = PieceState.Coke;
+				new DelayCall().Init(time,OnFire);
 
+			}
+
+		}
+    }
+	private void OnFire()
+	{
+		SetState (PieceState.Coke);
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_FIRE);
+		cokeCounter.Reset ();
+	}
 	public void SetAsCore()
 	{
         GameObject dot = EntityPool.Instance.Use("Gem");
@@ -200,7 +233,9 @@ public class Piece : Entity {
 			dot.transform.localPosition =  isUpper?new Vector3(0,-.12f,1f):new Vector3(0,.12f,1f);
 			float scalar = .6f;
 			dot.transform.localScale = new Vector3(scalar,scalar,scalar);
+			dot.GetComponent<SpriteRenderer>().color = Wall.GetLevelColor(Board.Instance.round);
 			if(isUpper == false)dot.transform.localEulerAngles = new Vector3(0,0,180);
+			else dot.transform.localEulerAngles = Vector3.zero;
 		}
 		isCore = true;
 	}
@@ -208,14 +243,27 @@ public class Piece : Entity {
 	{
 		Transform[] children = this.transform.GetComponentsInChildren<Transform> ();
 		foreach (var i in children) {
-            if (i.name.Contains("Dot")) EntityPool.Instance.Reclaim(i.gameObject, "Gem");
-           
+           if (i.name.Contains("Dot")) EntityPool.Instance.Reclaim(i.gameObject, "Gem");
+        }
+
+	}
+
+	public void Tick()
+	{
+		if (coke) {
+			cokeCounter.Tick(1f);
+			if(cokeCounter.Expired())
+			{
+				SetState(PieceState.Normal);
+			}
 		}
 	}
+
 	public override void Dead ()
 	{
 		base.Dead ();
 		isDead = true;
+		SetState (PieceState.Normal);
 		ClearChildren ();
 	}
 

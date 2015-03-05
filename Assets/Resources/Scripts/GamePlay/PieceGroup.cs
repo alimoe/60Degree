@@ -49,11 +49,12 @@ public class PieceGroup  {
 		foreach (var chain in temp) {
 			if(chain.start == piece || chain.end == piece)
 			{
-				Debug.Log("RemoveChain "+chain);
+				SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_CHAIN);
 				chains.Remove(chain);
 				chain.ShutDown();
 			}
 		}
+
 		if (chains.Count == 0)Destory ();
 						
 	}

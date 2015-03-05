@@ -46,6 +46,10 @@ public class Wall :MonoBehaviour {
 		render = this.gameObject.GetComponent<SpriteRenderer> ();
 		UpdateColor ();
 	}
+	public static Color32 GetLevelColor(int round)
+	{
+		return levels [(round - 1) % 5];
+	}
 	public void SetFace(WallFace wallFace)
 	{
 		face = wallFace;

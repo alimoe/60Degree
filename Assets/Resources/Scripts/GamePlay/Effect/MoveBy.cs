@@ -37,6 +37,12 @@ public class MoveBy :TimeEffect {
 			if(piece!=null)
 			{
 				piece.transform.localPosition = initPosition+(finalPosition - initPosition)*progress.percent;
+				if(piece.isDead||piece.isFadeAway)
+				{
+					TimerControl.Instance.effects -= MoveByUpdate;
+					if(onCompleteCallback!=null)onCompleteCallback();
+					if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (this);
+				}
 			}
 			else
 			{

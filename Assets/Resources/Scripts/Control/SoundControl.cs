@@ -21,6 +21,12 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 	public AudioClip GAME_ELIMINATE;
 	public AudioClip GAME_DISAPPEAR;
 	public AudioClip GAME_REPEAL;
+
+	public AudioClip GAME_MOVE;
+	public AudioClip GAME_ICE;
+	public AudioClip GAME_FIRE;
+	public AudioClip GAME_ROPE;
+	public AudioClip GAME_CHAIN;
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;
