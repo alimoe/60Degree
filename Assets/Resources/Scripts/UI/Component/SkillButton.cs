@@ -93,7 +93,7 @@ public class SkillButton : MonoBehaviour {
 						
 		progress += p;
 		if ((progress - 1) / 8 > lastIcon) {
-			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_UPGRADE);
+			
 		} else {
 			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_COLLECT);
 		}

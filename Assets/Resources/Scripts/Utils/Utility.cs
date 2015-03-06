@@ -15,6 +15,7 @@ public class Utility  {
 	public static byte LerpColorChannel(byte start, byte end, float percent)
 	{
 		int delta = (int)end - (int)start;
+        percent = Mathf.Max(Mathf.Min(percent, 1f), 0f);
 		return (byte)((int)start + (delta * percent));
 	}
 }

@@ -36,12 +36,12 @@ public class Piece : Entity {
 	public Twine twine;
     public Ice ice;
 	public bool coke;
-	private Counter cokeCounter = new Counter(3f);
+	private Counter cokeCounter = new Counter(4f);
 	public bool moving = false;
 	private BoardDirection passSession;
 	private Vector3 _centerPosition;
 	private static Color32 BLACK = new Color32(60,60,60,0);
-	private static Color32 WHITE = new Color32(255,255,255,255);
+	private Color32 defaultColor;
 	public Vector3 centerPosition
 	{
 		get{
@@ -64,6 +64,10 @@ public class Piece : Entity {
 			return type.ToString()+ id;
 		}
 	}
+    void Awake()
+    {
+        defaultColor = this.GetComponent<SpriteRenderer>().color;
+    }
 	public override void Reset ()
 	{
 		base.Reset ();
@@ -79,7 +83,7 @@ public class Piece : Entity {
 		twine = null;
 		ice = null;
 		coke = false;
-		this.GetComponent<SpriteRenderer> ().color = WHITE;
+        this.GetComponent<SpriteRenderer>().color = defaultColor;
 		passSession = BoardDirection.None;
 		cokeCounter.Reset ();
 	}
@@ -111,7 +115,7 @@ public class Piece : Entity {
 			if(coke)
 			{
 				coke = false;
-				new TurnColor().Init(this.gameObject,.2f,WHITE,null);
+                new TurnColor().Init(this.gameObject, .2f, defaultColor, null);
 			}
         }
         if (s == PieceState.Twine)
@@ -208,14 +212,18 @@ public class Piece : Entity {
 
     public void OnPassHexagon(HexagonState hexagonState, float time)
     {
-        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
+        Debug.LogWarning("Pass by Hexagon " + hexagonState);
 		if (hexagonState == HexagonState.Fire) {
-			if(this.state!=PieceState.Coke)
-			{
-				state = PieceState.Coke;
-				new DelayCall().Init(time,OnFire);
+            if (this.state != PieceState.Coke)
+            {
+                state = PieceState.Coke;
+                new DelayCall().Init(time, OnFire);
 
-			}
+            }
+            else
+            {
+                cokeCounter.Reset();
+            }
 
 		}
     }
@@ -230,12 +238,11 @@ public class Piece : Entity {
         GameObject dot = EntityPool.Instance.Use("Gem");
 		if (dot != null) {
 			dot.transform.parent = this.transform;
-			dot.transform.localPosition =  isUpper?new Vector3(0,-.12f,1f):new Vector3(0,.12f,1f);
+            dot.transform.localPosition = new Vector3(0, -.12f, 1f);
 			float scalar = .6f;
 			dot.transform.localScale = new Vector3(scalar,scalar,scalar);
 			dot.GetComponent<SpriteRenderer>().color = Wall.GetLevelColor(Board.Instance.round);
-			if(isUpper == false)dot.transform.localEulerAngles = new Vector3(0,0,180);
-			else dot.transform.localEulerAngles = Vector3.zero;
+            dot.transform.localEulerAngles = Vector3.zero;
 		}
 		isCore = true;
 	}
@@ -256,6 +263,7 @@ public class Piece : Entity {
 			{
 				SetState(PieceState.Normal);
 			}
+            
 		}
 	}
 

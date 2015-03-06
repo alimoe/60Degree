@@ -32,6 +32,7 @@ public class TurnColor : TimeEffect {
 	{
 		progress.Tick (Time.deltaTime);
 		if (progress.Expired ()) {
+            render.color = new Color32(r, g, b, 255);
 			TimerControl.Instance.effects -= TurnColorUpdate;
 			if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (render.gameObject);
 		} else {

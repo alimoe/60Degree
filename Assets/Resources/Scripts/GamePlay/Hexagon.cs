@@ -142,18 +142,18 @@ public class Hexagon:MonoBehaviour  {
 
         
 		if (evenMaterial == null) {
-			evenMaterial = Resources.Load("Materials/Grid_Even") as Material;
+			//evenMaterial = Resources.Load("Materials/Grid_Even") as Material;
 		}
 		if (oddMaterial == null) {
-			oddMaterial = Resources.Load("Materials/Grid_Odd") as Material;
+			//oddMaterial = Resources.Load("Materials/Grid_Odd") as Material;
 		}
 	}
 	public void UpdatePosition()
 	{
 		this.transform.localPosition = new Vector3 (_posX, _posY, 0);
 
-        upPosition = new Vector3(this.posX, this.posY + halfH * .5f, 0f);
-        lowPosition = new Vector3(this.posX, this.posY - halfH * .5f, 0f);
+        upPosition = new Vector3(this.posX, this.posY + halfH * .5f, -1f);
+        lowPosition = new Vector3(this.posX, this.posY - halfH * .5f, -1f);
 
 	}
 	public bool IsEmpty(bool up)

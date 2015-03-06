@@ -22,9 +22,9 @@ public class Particle : MonoBehaviour {
 
 
 	void Update () {
-		if (actived) {
-
-			lifeCounter.Tick(Time.deltaTime);
+        if (actived && lifeCounter!=null)
+        {
+            lifeCounter.Tick(Time.deltaTime);
 			if(lifeCounter.Expired())
 			{
 				EntityPool.Instance.Reclaim(this.gameObject,"Particle");

@@ -30,6 +30,16 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	{
 		state = GameState.GamePlaying;
 		UIControl.Instance.OpenMenu("HudMenu",true);
+        Camera3DControl.Instance.direction = Vector3.zero;
+        if (TutorialControl.Instance.isActive)
+        {
+
+        }
+        else
+        {
+            Board.Instance.StartPlay();
+        }
+        //SkyBoxControl.Instance.ChangeColor(SkyColor.Green);
 	}
 
 	public void PauseGame()
@@ -41,8 +51,10 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	public void ResetGame()
 	{
 		state = GameState.GamePlaying;
+        SkyBoxControl.Instance.Reset();
 		UIControl.Instance.CloseMenu ();
 		Board.Instance.ResetBoard ();
+        Camera3DControl.Instance.direction = Vector3.zero;
 		HudMenu.Instance.Reset ();
 		Board.Instance.StartPlay ();
 
@@ -78,11 +90,20 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	{
 		if (state == GameState.GamePlaying) 
 		{
-			if (skills.Count > 0) {
-				Skill skill = skills[0];
-				bool result = skill.Excute(position);
-				if(result)skills.RemoveAt(0);
-			}
+            if (TutorialControl.Instance.isActive)
+            {
+                TutorialControl.Instance.HandleTap(position);
+            }
+            else
+            {
+                if (skills.Count > 0)
+                {
+                    Skill skill = skills[0];
+                    bool result = skill.Excute(position);
+                    if (result) skills.RemoveAt(0);
+                }
+            }
+			
 		}
 
 	}
@@ -91,9 +112,20 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	{
 		if (state == GameState.GamePlaying) 
 		{
-			if (skills.Count == 0) {
-				Board.Instance.MoveFrom (position, direction);
-			}
+            if (TutorialControl.Instance.isActive)
+            {
+                TutorialControl.Instance.HandleSwipe(position, direction);
+            }
+            else
+            {
+                
+                Camera3DControl.Instance.direction = Vector3.Cross(Board.Instance.GetPhysicDirection(direction).normalized, Vector3.back);
+                if (skills.Count == 0)
+                {
+                    Board.Instance.MoveFrom(position, direction);
+                }
+            }
+			
 
 		}
  		

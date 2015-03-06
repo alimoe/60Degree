@@ -31,10 +31,27 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				Board.Instance.AddWallProgress();
 			}
-			if(GUI.Button(new Rect(0,180,100,30),"Game Over"))
+            if (GUI.Button(new Rect(0, 180, 100, 30), "Add Rope"))
+            {
+                Board.Instance.GenerateRope();
+            }
+            if (GUI.Button(new Rect(0, 210, 100, 30), "Add Ice"))
+            {
+                Board.Instance.GenerateIce();
+            }
+            if (GUI.Button(new Rect(0, 240, 100, 30), "Add Chain"))
+            {
+                Board.Instance.GenerateGroup();
+            }
+            if (GUI.Button(new Rect(0, 270, 100, 30), "Add Fire"))
+            {
+                Board.Instance.GenerateFire();
+            }
+			if(GUI.Button(new Rect(0,300,100,30),"Game Over"))
 			{
 				AppControl.Instance.EndGame();
 			}
+
 		}
 
 	}
