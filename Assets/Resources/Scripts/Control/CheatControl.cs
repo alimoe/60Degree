@@ -47,11 +47,23 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
             {
                 Board.Instance.GenerateFire();
             }
-			if(GUI.Button(new Rect(0,300,100,30),"Game Over"))
+			if (GUI.Button(new Rect(0, 300, 100, 30), "Add Block"))
+			{
+				Board.Instance.GenerateBlock();
+			}
+			if(GUI.Button(new Rect(0,330,100,30),"Game Over"))
 			{
 				AppControl.Instance.EndGame();
 			}
-
+			if(GUI.Button(new Rect(0,360,100,30),"Clear Record"))
+			{
+				PlayerSetting.Instance.SetSetting("Score",0);
+				PlayerSetting.Instance.SetSetting("Round",0);
+			}
+			if(GUI.Button(new Rect(0,390,100,30),"Clear Tutorial"))
+			{
+				PlayerSetting.Instance.TutorialComplete(0);
+			}
 		}
 
 	}

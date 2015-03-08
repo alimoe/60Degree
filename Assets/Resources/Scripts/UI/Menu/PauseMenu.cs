@@ -10,6 +10,7 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 	private Counter transitionInCounter;
 	private UILabel scoreValue;
 	private UILabel maxRoundValue;
+	private ToggleButton soundBtn;
 	private float line1YPosition;
 	private float line2YPosition;
 	void Awake () {
@@ -38,6 +39,10 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 			{
 				maxRoundValue = child.GetComponent<UILabel>();
 			}
+			if(child.name.Contains("MusicButton"))
+			{
+				soundBtn = child.GetComponent<ToggleButton>();
+			}
 		}
 		transitionInCounter = new Counter (.3f);
 	}
@@ -62,12 +67,15 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 		if (userRound > historyRound) {
 			PlayerSetting.Instance.SetSetting("Round",userRound);
 		}
+		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);
+		SoundControl.Instance.ToggleMusic ();
 	}
 	public override void OnCloseScreen ()
 	{
 		base.OnCloseScreen ();
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_OUT);
+		SoundControl.Instance.ToggleMusic ();
 	}
 	// Update is called once per frame
 	void Update () {

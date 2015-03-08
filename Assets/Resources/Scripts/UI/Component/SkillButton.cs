@@ -9,6 +9,7 @@ public class SkillButton : MonoBehaviour {
 	private Transform cutEdgetIcon;
 	private UIButton button;
 	private int lastIcon;
+	private int grade = 9;
 	private int progress;
 
 	void Start () {
@@ -53,17 +54,19 @@ public class SkillButton : MonoBehaviour {
 	}
     public int GetRemainingProgress()
     {
-        return 25 - progress;
+        return 28 - progress;
     }
 	public void UpdateIconAndProgress()
 	{
-		int valide = (progress-1) % 8;
-		
+		int icon = progress / grade;
+
+		int valide = (progress - icon*9 -1) % 8;
+
 		for (int i = 0; i<progresses.Count; i++) {
-			if(i == valide)progresses[i].gameObject.SetActive(true);
+			if(i <= valide)progresses[i].gameObject.SetActive(true);
 			else progresses[i].gameObject.SetActive(false);
 		}
-		int icon = (progress - 1) / 8;
+
 		lastIcon = icon;
 		//Debug.LogWarning ("icon " + icon);
 		if (icon > 0) {
@@ -82,6 +85,7 @@ public class SkillButton : MonoBehaviour {
 			lightningIcon.gameObject.SetActive (true);
 			cutEdgetIcon.gameObject.SetActive (false);
 		} else if (icon == 3) {
+			progresses[0].gameObject.SetActive(false);
 			bombIcon.gameObject.SetActive (false);
 			lightningIcon.gameObject.SetActive (false);
 			cutEdgetIcon.gameObject.SetActive (true);
@@ -89,13 +93,13 @@ public class SkillButton : MonoBehaviour {
 	}
 	public void AddProgress(int p)
 	{
-		if (progress > 24)return;
-						
+		if (progress > 27)return;
+		
 		progress += p;
-		if ((progress - 1) / 8 > lastIcon) {
-			
+		if (progress / grade > lastIcon) {
+			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_SKILLUP);
 		} else {
-			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_COLLECT);
+
 		}
 
 
@@ -111,17 +115,17 @@ public class SkillButton : MonoBehaviour {
 
 	public void ExcuteSkill()
 	{
-		int icon = (progress - 1) / 8;
+		int icon = progress / grade;
 		if (icon == 1) {
 			AppControl.Instance.AddSkill(new Bomb(CostProgress));
 		}else if (icon == 2) {
 			AppControl.Instance.AddSkill(new Lightening(CostProgress));
 		}else if (icon == 3) {
 			AppControl.Instance.AddSkill(new CutEdget());
-			CostProgress();
+
 		}
 
-
+		CostProgress();
 
 	}
 }

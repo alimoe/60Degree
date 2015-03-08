@@ -14,16 +14,22 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	private List<Skill> skills;
 	private GameState state;
 	void Start () {
-
+		Application.targetFrameRate = 60;
 		UIControl.Instance.Initialize ();
 		skills = new List<Skill> ();
 		state = GameState.GameNotStart;
 		UIControl.Instance.OpenMenu("StartMenu");
+		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);
 	}
 
 	public void AddSkill(Skill skill)
 	{
-		if(!skills.Contains(skill) && skill.OnAdd() == false )skills.Add (skill);
+		if (skills.Count == 0 && skill.OnAdd () == false) {
+				skills.Add (skill);
+				HudMenu.Instance.ShowHint (ref skill.hint);
+		} else {
+			Board.Instance.GeneratePiece();
+		}
 	}
 
 	public void StartGame()
@@ -31,17 +37,30 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		state = GameState.GamePlaying;
 		UIControl.Instance.OpenMenu("HudMenu",true);
         Camera3DControl.Instance.direction = Vector3.zero;
-        if (TutorialControl.Instance.isActive)
-        {
 
+        if (!PlayerSetting.Instance.tutorialPlayed)
+        {
+			TutorialControl.Instance.InitTutorial ();
         }
         else
         {
-            Board.Instance.StartPlay();
+			new DelayCall().Init(.3f, Board.Instance.StartPlay);
         }
         //SkyBoxControl.Instance.ChangeColor(SkyColor.Green);
 	}
+	public void PlayTutorial()
+	{
+		state = GameState.GamePlaying;
+		UIControl.Instance.OpenMenu("HudMenu",true);
+		Camera3DControl.Instance.direction = Vector3.zero;
+		new DelayCall ().Init (.3f, TutorialControl.Instance.InitTutorial);
+		
+	}
+	public void ShowCrediet()
+	{
+		StartMenu.Instance.ShowCredit();
 
+	}
 	public void PauseGame()
 	{
 		state = GameState.GamePaused;
@@ -77,9 +96,11 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	public void ReportScore(int score)
 	{
 
-
 	}
-
+	public void PurchaseEnergy()
+	{
+		IOSControl.Instance.Purchase (EnergyRefill);
+	}
     public void EnergyRefill()
     {
         ResumeGame();
@@ -101,13 +122,30 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                     Skill skill = skills[0];
                     bool result = skill.Excute(position);
                     if (result) skills.RemoveAt(0);
+
+					Board.Instance.GeneratePiece();
+					HudMenu.Instance.HideHint();
+
                 }
+				else
+				{
+					Board.Instance.SelectFrom(position);
+				}
             }
 			
 		}
 
 	}
+	public void ToggleSound()
+	{
+			
+		SoundControl.Instance.MuteSoundEffect (!PlayerSetting.Instance.muteSE);
+	}
 
+	public void ToggleMusic()
+	{
+		SoundControl.Instance.MuteMusic (!PlayerSetting.Instance.muteBGM);
+	}
 	public void HandleSwipe(Vector3 position, BoardDirection direction)
 	{
 		if (state == GameState.GamePlaying) 
@@ -118,8 +156,8 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             }
             else
             {
-                
-                Camera3DControl.Instance.direction = Vector3.Cross(Board.Instance.GetPhysicDirection(direction).normalized, Vector3.back);
+				Vector3 d = Board.Instance.GetPhysicDirection(direction).normalized;
+				Camera3DControl.Instance.direction = new Vector3(d.y,d.x,0);
                 if (skills.Count == 0)
                 {
                     Board.Instance.MoveFrom(position, direction);

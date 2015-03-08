@@ -27,7 +27,7 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
     public int direction = 1;
     public Counter counter = new Counter(3f);
     private bool inTransition;
-	// Use this for initialization
+	private SkyColor currentColor;
 	void Awake () {
         base.Awake();
         skyBox = RenderSettings.skybox;
@@ -48,6 +48,8 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
         skyBox.SetTexture("_LeftTex2", null);
         skyBox.SetTexture("_RightTex2", null);
 
+
+		currentColor = SkyColor.Red;
         inTransition = false;
 	}
 
@@ -58,7 +60,7 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
     }
     public void Reset()
     {
-        ChangeColor(SkyColor.Yellow);
+        ChangeColor(SkyColor.Red);
     }
     public void OnChangeRound(int round)
     {
@@ -69,12 +71,16 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
     public void ChangeColor(SkyColor color)
     {
         if (inTransition) return;
+		if (currentColor == color)return;
+						
+
+		currentColor = color;
 
         string folderName = "Textures/Skybox/"+color.ToString()+"/";
 
         if (direction > 0)
         {
-            //Debug.LogWarning(Resources.Load(folderName + SkyFace.Up.ToString()));
+        	
             skyBox.SetTexture("_UpTex2", Resources.Load(folderName + SkyFace.Up.ToString()) as Texture);
             skyBox.SetTexture("_DownTex2", Resources.Load(folderName + SkyFace.Down.ToString()) as Texture);
             skyBox.SetTexture("_BackTex2", Resources.Load(folderName + SkyFace.Back.ToString()) as Texture);

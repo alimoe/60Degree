@@ -160,6 +160,7 @@ public class Twine : Entity {
 			verticle = up_verticle;
             //this.transform.localEulerAngles = Vector3.zero;
         }
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_TWINE);
 		SetupRope ();
         this.transform.localPosition -= Vector3.forward;
     }

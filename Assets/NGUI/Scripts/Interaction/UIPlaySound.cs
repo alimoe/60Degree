@@ -40,6 +40,7 @@ public class UIPlaySound : MonoBehaviour
 		get
 		{
 			if (!enabled) return false;
+			if (PlayerSetting.Instance.muteSE) return false;
 			UIButton btn = GetComponent<UIButton>();
 			return (btn == null || btn.isEnabled);
 		}
@@ -71,6 +72,7 @@ public class UIPlaySound : MonoBehaviour
 
 	void OnClick ()
 	{
+
 		if (canPlay && trigger == Trigger.OnClick)
 			NGUITools.PlaySound(audioClip, volume, pitch);
 	}

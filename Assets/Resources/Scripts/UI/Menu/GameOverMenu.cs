@@ -38,7 +38,7 @@ public class GameOverMenu : MenuSingleton<GameOverMenu> {
 			{
 				maxRoundValue = child.GetComponent<UILabel>();
 			}
-			if(child.name.Contains("YourScoreValue"))
+			if(child.name.Contains("PlayerValue"))
 			{
 				playerValue = child.GetComponent<UILabel>();
 			}
@@ -71,11 +71,13 @@ public class GameOverMenu : MenuSingleton<GameOverMenu> {
 			PlayerSetting.Instance.SetSetting("Round",userRound);
 		}
 		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_LOSE);
+		SoundControl.Instance.ToggleMusic ();
 	}
 	public override void OnCloseScreen ()
 	{
 		base.OnCloseScreen ();
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_OUT);
+		SoundControl.Instance.ToggleMusic ();
 	}
 	// Update is called once per frame
 	void Update () {

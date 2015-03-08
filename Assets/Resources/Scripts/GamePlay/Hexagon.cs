@@ -11,8 +11,18 @@ public enum HexagonState
 {
     Normal,
     Fire,
-    Teleport,
+    Block,
     Rock
+}
+public enum HexagonEdget
+{
+	UpperLeft = 1,
+	UpperRight = 2,
+	UpperDown = 4,
+	DownLeft = 8,
+	DownRight = 16,
+	DownUp = 32,
+	None = 0
 }
 public class Hexagon:MonoBehaviour  {
 		
@@ -44,6 +54,9 @@ public class Hexagon:MonoBehaviour  {
 	public static Mesh sharedBoardMesh;
 	public static Material evenMaterial;
 	public static Material oddMaterial;
+	public static int totalSegment;
+	public int blockState = 0 ;
+	public Block block;
 
     public static float Scale = 1f;
 
@@ -88,10 +101,13 @@ public class Hexagon:MonoBehaviour  {
 		lower = null;
         SetState(true, HexagonState.Normal);
         SetState(false, HexagonState.Normal);
-        
+		blockState = 0;
+		if (block)block.ShutDown ();
+		block = null;			
 	}
 	public void Tick()
 	{
+
 		if (mazeU != null) {
 			mazeU.Tick ();
 			if(mazeU.Expired())SetState(true,HexagonState.Normal);
@@ -99,6 +115,15 @@ public class Hexagon:MonoBehaviour  {
 		if (mazeD != null) {
 			mazeD.Tick ();
 			if(mazeD.Expired())SetState(false,HexagonState.Normal);
+		}
+		if (block != null) {
+			block.Tick();
+			if(block.Expired())
+			{
+				this.blockState = 0;
+				block.ShutDown();
+				block = null;
+			}
 		}
 	}
     public void SetState(bool isUpper, HexagonState state)
@@ -125,6 +150,26 @@ public class Hexagon:MonoBehaviour  {
             mazeD = null;
         }
     }
+
+	public void SetBlock(HexagonEdget side)
+	{
+		if (block == null) {
+			GameObject blockObj = EntityPool.Instance.Use("Block") as GameObject;
+			block = blockObj.GetComponent<Block>();
+
+		}
+		this.blockState |= (int)side;
+		block.SetUp (this);
+
+	}
+
+
+
+	public void RemoveBlock(HexagonEdget side)
+	{
+		this.blockState ^= (int)side;
+		block.SetUp(this);
+	}
 
     public HexagonState GetState(bool isUpper)
     {
@@ -168,7 +213,52 @@ public class Hexagon:MonoBehaviour  {
 		else return lower;			
 
 	}
-	
+
+	public bool CanEnter(bool isUpper, BoardDirection direction)
+	{
+		if (isUpper) {
+				if (direction == BoardDirection.Right || direction == BoardDirection.BottomRight)
+						return ((blockState & (int)HexagonEdget.UpperLeft) == 0);
+				if (direction == BoardDirection.Left || direction == BoardDirection.BottomLeft)
+						return ((blockState & (int)HexagonEdget.UpperRight) == 0);
+				if (direction == BoardDirection.TopLeft || direction == BoardDirection.TopRight)
+						return ((blockState & (int)HexagonEdget.UpperDown) == 0 && (blockState & (int)HexagonEdget.DownUp) == 0);
+		} else {
+			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight)
+				return ((blockState & (int)HexagonEdget.DownLeft) == 0);
+			if (direction == BoardDirection.Left || direction == BoardDirection.TopLeft)
+				return ((blockState & (int)HexagonEdget.DownRight) == 0);
+			if (direction == BoardDirection.BottomLeft || direction == BoardDirection.BottomRight)
+				return ((blockState & (int)HexagonEdget.UpperDown) == 0 && (blockState & (int)HexagonEdget.DownUp) == 0);
+		}
+		return true;
+	}
+
+	public bool CanLeave(bool isUpper, BoardDirection direction)
+	{
+		if (isUpper) {
+			if (direction == BoardDirection.Right || direction == BoardDirection.BottomRight|| direction == BoardDirection.TopRight)
+				return ((blockState & (int)HexagonEdget.UpperRight) == 0);
+			if (direction == BoardDirection.Left || direction == BoardDirection.BottomLeft || direction == BoardDirection.TopLeft)
+				return ((blockState & (int)HexagonEdget.UpperLeft) == 0);
+			
+		} else {
+			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight || direction == BoardDirection.BottomRight)
+				return ((blockState & (int)HexagonEdget.DownRight) == 0);
+			if (direction == BoardDirection.Left || direction == BoardDirection.TopLeft || direction == BoardDirection.BottomLeft)
+				return ((blockState & (int)HexagonEdget.DownLeft) == 0);
+
+		}
+		return true;
+
+	}
+
+	public bool HasBeBlocked(bool isUpper)
+	{
+		if (isUpper)return (blockState & (int)HexagonEdget.UpperDown) != 0 || (blockState & (int)HexagonEdget.UpperLeft) != 0 || (blockState & (int)HexagonEdget.UpperRight) != 0 || (blockState & (int)HexagonEdget.DownUp) != 0;
+		else return (blockState & (int)HexagonEdget.UpperDown) != 0 || (blockState & (int)HexagonEdget.DownLeft) != 0 || (blockState & (int)HexagonEdget.DownRight) != 0 || (blockState & (int)HexagonEdget.DownUp) != 0;
+
+	}
 	public bool HasEmptySlot()
 	{
 		if (isBoard) {
@@ -211,12 +301,12 @@ public class Hexagon:MonoBehaviour  {
 		}
 		return position;
 	}
-	public HexagonPosition GetRandomPosition(ref bool needUp)
+	public HexagonPosition GetRandomPosition( bool needUp)
 	{
 		HexagonPosition position = HexagonPosition.None;
 		if (!isBoard && lower == null && upper == null) {
 			position = (!needUp) ? HexagonPosition.Lower : HexagonPosition.Upper;
-			needUp = !needUp;
+			//needUp = !needUp;
 		} 
 		else if (lower == null && !isBoard) {
 			position = HexagonPosition.Lower;
@@ -225,6 +315,26 @@ public class Hexagon:MonoBehaviour  {
 			position = HexagonPosition.Upper;
 		}
 		return position;
+	}
+	public HexagonEdget GetRandomSide(bool isUpper)
+	{
+		int seed = UnityEngine.Random.Range (0, 3);
+		
+		if (isUpper) {
+			if (seed < 1 && !isBoard)
+				return  HexagonEdget.UpperDown;
+			if (seed < 2 && x!=0)
+				return  HexagonEdget.UpperLeft;		
+			if (seed < 3 && x!=totalSegment-this.y -1)
+				return  HexagonEdget.UpperRight;	
+		} else {
+			if (seed < 1)return  HexagonEdget.DownLeft;
+			if (seed < 2)return  HexagonEdget.DownRight;		
+			if (seed < 3)return  HexagonEdget.DownUp;	
+		}
+		
+		
+		return HexagonEdget.None;
 	}
 	public override string ToString ()
 	{
@@ -235,9 +345,10 @@ public class Hexagon:MonoBehaviour  {
 
 		SetPiece( piece );
 		if (!piece.isUpper) {
-            if (piece != null) piece.transform.localPosition = lowPosition;
+			if (piece != null)piece.centerPosition = lowPosition;
+
 		} else {
-            if (piece != null) piece.transform.localPosition = upPosition;
+			if (piece != null) piece.centerPosition = upPosition;
 		}
 	}
 	public void SetPiece(Piece piece )

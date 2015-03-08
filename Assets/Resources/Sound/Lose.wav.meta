@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 7ae32c3b7e559b7419572ebfda9443b5
+guid: 3b7f9bde5f15c564b8c4dc14ffdf7b15
 labels:
-- USFX
-- stereo
 - musiceffect
+- stereo
+- USFX
 - negative
 AudioImporter:
   serializedVersion: 4

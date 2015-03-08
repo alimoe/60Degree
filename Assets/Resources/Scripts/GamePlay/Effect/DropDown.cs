@@ -79,8 +79,7 @@ public class DropDown : TimeEffect {
 				else
 				{
 					float time = progress.percent*duration;
-					//Debug.LogWarning (" DropDownUpdate direction" + direction);
-					//Debug.LogWarning (" DropDownUpdate time" + time);
+					
 					piece.transform.localPosition = initPosition+direction.normalized*G*time*time;
 				}
 			}

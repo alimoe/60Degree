@@ -10,12 +10,17 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private List<UILabel> inusedTips;
     private UILabel wallTip;
 	private UISprite pauseButton;
+	private ToggleButton bgmButton;
 	private UILabel roundTipLabel;
 	private UILabel roundLabel;
 	private UILabel roundValue;
+	private UILabel recordLabel;
+	private UILabel hintLabel;
+
 	private SkillButton skillButton;
 	private Counter progressCounter;
 	private Counter threholdCounter;
+	private Counter threholdMaxCounter;
 	private Counter totalScoreCounter;
 	private Camera nguiCamera;
 	private int totalScore;
@@ -33,6 +38,9 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private float headYPosition;
 	private float footYPosition;
 	private float roundXRange = 200f;
+	private int level = 1;
+	private int historyRound;
+	private int historyScore;
 	void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();
@@ -61,7 +69,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			if(child.name.Contains("PauseButton"))
 			{
 				pauseButton = child.GetComponent<UISprite>();
-				//pauseButton.gameObject.SetActive(false);
+
 			}
 			if(child.name.Contains("RoundTip"))
 			{
@@ -72,30 +80,40 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			if(child.name.Contains("RoundValue"))
 			{
 				roundValue = child.GetComponent<UILabel>();
-					
-					
+			}
+			if(child.name.Contains("Hint"))
+			{
+				hintLabel = child.GetComponent<UILabel>();
+				hintLabel.gameObject.SetActive(false);
 			}
 			if(child.name.Contains("RoundLabel"))
 			{
 				roundLabel = child.GetComponent<UILabel>();
 			}
-
+			if(child.name.Contains("Record"))
+			{
+				recordLabel = child.GetComponent<UILabel>();
+				recordLabel.gameObject.SetActive(false);
+			}
             if (child.name.Contains("WallTip"))
             {
                 wallTip = child.GetComponent<UILabel>();
                 wallTip.gameObject.SetActive(false);
             }
+			if (child.name.Contains("BGMButton"))
+			{
+				bgmButton = child.GetComponent<ToggleButton>();
+				
+			}
+
 		}
 		inusedTips = new List<UILabel> ();
 		unusedTips = new List<UILabel> (tips.ToArray());
 
 		progressCounter = new Counter (.5f);
 		threholdCounter = new Counter (2f);
+		threholdMaxCounter = new Counter (10f);
 		totalScoreCounter = new Counter (.5f);
-		Board.Instance.onEliminatePieceCallback += AddScore;
-		Board.Instance.onDropDownPieceCallback += AddProgress;
-		Board.Instance.onHitRoundCallback += AddRound;
-        Board.Instance.onWallProgressCallback += ReinforceWall;
 
         initPosition = scoreLabel.transform.localPosition;
 		//Debug.LogWarning (scoreLabel.transform.localPosition);
@@ -105,7 +123,8 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		transitionInCounter = new Counter (.3f);
 		roundFadeInCounter = new Counter (.2f);
 		roundIdleCounter = new Counter (1.3f);
-		//InitLayout ();
+
+		this.gameObject.SetActive (false);
 	}
 	public int GetScore()
 	{
@@ -120,13 +139,17 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		totalScore = 0;
 		totalRound = 1;
 		roundStep = 0;
+		level = 1;
+		historyScore = PlayerSetting.Instance.GetSetting ("Score");
+		recordLabel.gameObject.SetActive (false);
 		skillButton.CostProgress ();
 		scoreLabel.text = totalScore.ToString ();
+		roundValue.text = level.ToString ();
 	}
 	public void InitLayout()
 	{
 		
-		
+		SkillControl.Instance.SetSkillPosition (nguiCamera.WorldToScreenPoint (skillButton.transform.position));
 
 		/*
 		scoreLabel.gameObject.SetActive(true);
@@ -145,8 +168,8 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		skillButton.transform.localPosition = new Vector3(skillButton.transform.localPosition.x, footYPosition - 50f,skillButton.transform.localPosition.z);
 		pauseButton.transform.localPosition = new Vector3(pauseButton.transform.localPosition.x, footYPosition - 50f,pauseButton.transform.localPosition.z);
          */
-        Debug.LogWarning("Screen.w" + Screen.width);
-        Debug.LogWarning("Screen.h" + Screen.height);
+        //Debug.LogWarning("Screen.w" + Screen.width);
+        //Debug.LogWarning("Screen.h" + Screen.height);
 	}
 	public override void OnOpenScreen ()
 	{
@@ -154,7 +177,16 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		//inTransitionIn = true;
 		transitionInCounter.Reset ();
 		InitLayout ();
-
+		bgmButton.isOn = !PlayerSetting.Instance.muteBGM;
+		pauseButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
+		bgmButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
+		Board.Instance.onEliminatePieceCallback += AddScore;
+		Board.Instance.onDropDownPieceCallback += AddProgress;
+		Board.Instance.onHitRoundCallback += AddRound;
+		Board.Instance.onWallProgressCallback += ReinforceWall;
+		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
+		historyScore = PlayerSetting.Instance.GetSetting ("Score");
+		historyRound = PlayerSetting.Instance.GetSetting ("Round");
 	}
     private UILabel GetAvailableLabel()
     {
@@ -174,12 +206,20 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
         return label;
     }
+
+	void EnablePauseMenu ()
+	{
+		pauseButton.gameObject.SetActive (true);
+		bgmButton.gameObject.SetActive(true);
+	}
+
 	public void AddScore(int score, PieceColor color, Vector3 worldPosition)
 	{
         UILabel label = GetAvailableLabel();
+
+		int add = (score - 2) * 100 * totalRound;
 		
-		
-		label.text = "+" + ((score-2)*100);
+		label.text = "+" + add;
 		label.color = convertColor(color);
 		TipAnimateTask task = new TipAnimateTask ();
 		task.label = label;
@@ -188,10 +228,19 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	    
 		animateTips.Add (task);
 
-		totalScore += (score - 2) * 100;
+
+
+		totalScore += add;
 		scoreLabel.text = totalScore.ToString ();
 		totalScoreCounter.Reset ();
 
+		if (historyScore>0 && totalScore > historyScore && !recordLabel.gameObject.activeInHierarchy) {
+			recordLabel.gameObject.SetActive(true);
+			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
+		}
+		if (totalScore > historyScore) {
+			PlayerSetting.Instance.SetSetting("Score",totalScore);
+		}
 		/*
 		DelayCall delayCall = new DelayCall ();
 		delayCall.Init ();
@@ -214,7 +263,11 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 		roundTipLabel.gameObject.SetActive (true);
 
-		roundValue.text = round.ToString ();
+		if (totalRound > historyRound) {
+			PlayerSetting.Instance.SetSetting("Round",totalRound);
+		}
+
+		//roundValue.text = round.ToString ();
 
 		inNewRound = true;
 	}
@@ -233,6 +286,8 @@ public class HudMenu : MenuSingleton<HudMenu>{
         task.label = label;
         task.speed = .1f;
         task.birthPosition = nguiCamera.ScreenToWorldPoint(Camera.main.WorldToScreenPoint(worldPosition));
+		level += 1;
+		roundValue.text = level.ToString ();
 
         animateTips.Add(task);
     }
@@ -245,10 +300,17 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			if(threholdCounter.Expired())
 			{
 
-				skillButton.AddProgress(1);
+				threholdMaxCounter.Tick(1);
+				if(!threholdMaxCounter.Expired())
+				{
+					skillButton.AddProgress(1);
+				}
+				SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_COLLECT);
+
 			}
 		} else {
 			threholdCounter.Reset();
+			threholdMaxCounter.Reset();
 		}
 		progressCounter.Reset ();
 	}
@@ -298,7 +360,16 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		}
 
 	}
+	public void ShowHint(ref string message)
+	{
+		hintLabel.gameObject.SetActive (true);
+		hintLabel.text = message;
 
+	}
+	public void HideHint()
+	{
+		hintLabel.gameObject.SetActive (false);
+	}
 	void Update () {
 		if (animateTips.Count > 0) {
 			List<TipAnimateTask> temp = new List<TipAnimateTask>(animateTips.ToArray());
@@ -318,6 +389,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			totalScoreCounter.Tick(Time.deltaTime);
 			float ratio = 1f + Mathf.Sin(totalScoreCounter.percent*Mathf.PI) *.1f;
 			scoreLabel.transform.localScale = new Vector3(ratio,ratio,ratio);
+			if(recordLabel.gameObject.activeInHierarchy)recordLabel.transform.localScale = scoreLabel.transform.localScale;
 		}
 		if (inTransitionIn) {
 			transitionInCounter.Tick(Time.deltaTime);

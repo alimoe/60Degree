@@ -14,24 +14,21 @@ public class PieceGroup  {
     public void AddChild(Piece piece)
     {
         if (!children.Contains(piece)) children.Add(piece);
-        if (piece.group != null && piece.group != this)
-        {
-            this.CombineGroup(piece.group);
-		}
-        else
-        {
-            piece.group = this;
-        }
+		piece.group = this;
     }
 
-    public void CombineGroup(PieceGroup pieces)
-    {
-        foreach (var i in pieces.children)
-        {
-         	AddChild(i);
-        }
-		pieces.Destory ();
-    }
+	public void AppendChild(Piece piece,Piece beside)
+	{
+		if (children.IndexOf (beside) == 0) {
+			children.Insert(0,piece);
+			piece.group = this;
+		}
+		else if(children.IndexOf (beside) == 1)
+		{
+			children.Add(piece);
+			piece.group = this;
+		}
+	}
 
     public void RemoveChild(Piece piece)
     {
@@ -49,7 +46,6 @@ public class PieceGroup  {
 		foreach (var chain in temp) {
 			if(chain.start == piece || chain.end == piece)
 			{
-				SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_CHAIN);
 				chains.Remove(chain);
 				chain.ShutDown();
 			}
@@ -58,36 +54,40 @@ public class PieceGroup  {
 		if (chains.Count == 0)Destory ();
 						
 	}
-
+	public void CutChain()
+	{
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_CHAIN);
+	}
     public void MakeChain()
     {
+
 		for (int i = 1; i<children.Count; i++) {
 			Piece start = children[i-1];
 			Piece end = children[i];
 			int chainIndex = i-1;
-			bool makeNewChain = true;
-			if(chainIndex<chains.Count)
-			{
-				makeNewChain = !(chains[chainIndex].start == start && chains[chainIndex].end == end);
-			}
-			if(makeNewChain)
+			if(!HasChained(start,end))
 			{
 				GameObject chainObj = EntityPool.Instance.Use("Chain") as GameObject;
 				Chain chain = chainObj.GetComponent<Chain>();
 				chain.SetUp(start,end);
-
-				if(chainIndex<chains.Count)
-				{
-					chains[chainIndex] = chain;
-				}
-				else
-				{
-					chains.Add(chain);
-				}
+				chains.Add(chain);
 			}
 		}
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_LOCK);
     }
+	private bool HasChained(Piece a, Piece b)
+	{
+		bool result = false;
 
+		foreach (var chain in chains) {
+			if((chain.start == a && chain.end == b) || chain.start == b && chain.end == a)
+			{
+				return true;
+			}
+		}
+
+		return result;
+	}
     public void Destory()
     {
         foreach (var i in children)

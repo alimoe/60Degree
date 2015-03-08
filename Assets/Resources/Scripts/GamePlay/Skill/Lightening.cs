@@ -5,6 +5,7 @@ public class Lightening : Skill {
 	public Lightening(OnExcute callback = null )
 	{
 		onExcuteCallback = callback;
+		this.hint = "Pick a puzzle";
 	}
 	public override bool OnAdd ()
 	{

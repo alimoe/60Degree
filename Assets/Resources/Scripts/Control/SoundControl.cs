@@ -27,21 +27,40 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 	public AudioClip GAME_FIRE;
 	public AudioClip GAME_ROPE;
 	public AudioClip GAME_CHAIN;
+
+	public AudioClip GAME_SKILLUP;
+
+	public AudioClip GAME_LOCK;
+	public AudioClip GAME_TWINE;
+	public AudioClip GAME_FREEZE;
+	public AudioClip GAME_MAZE;
+
+	public AudioClip GAME_DENY;
+	public AudioClip GAME_HIGHSCORE;
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;
     private Counter trasitionCounter ;
     private AudioClip mTargetClip;
+	private Counter trackingTimer;
     private bool inFadeOut;
     private bool inFadeIn;
+
+	public string Track1 = "01_The Initiation";
+	public string Track2 = "03_Falling Through the Sun";
+	public string Track3 = "07_Beautiful Desolate Spaces";
+	public List<string> Tracks;
+	public int currentTrack;
     void Awake ()
     {
         base.Awake();
         trasitionCounter = new Counter(volume);
+		Tracks = new List<string>{Track1,Track2,Track3};
 
     }
     public void PlaySound(AudioClip clip)
     {
+		//Debug.LogWarning ("PlaySound" + PlayerSetting.Instance.muteSE);
         if (PlayerSetting.Instance.muteSE == false)
         {
             NGUITools.PlaySound(clip);
@@ -62,10 +81,29 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
         if (toggle) PlayerSetting.Instance.MuteBGM(1);
         else PlayerSetting.Instance.MuteBGM(0);
         mLastTrack.mute = PlayerSetting.Instance.muteBGM;
+		if (mLastTrack.mute)mLastTrack.Pause ();
+		else mLastTrack.Play();
     }
+
+	public void ToggleMusic()
+	{
+		if (mLastTrack.isPlaying)mLastTrack.Pause ();
+		else if(!mLastTrack.mute)mLastTrack.Play ();
+	}
+
 
     void Update()
     {
+		if (mLastTrack != null && !mLastTrack.mute && mLastTrack.clip == mTargetClip) {
+			trackingTimer.Tick(Time.deltaTime);
+			if(trackingTimer.Expired())
+			{
+				currentTrack+=1;
+				currentTrack = currentTrack%Tracks.Count;
+				trackingTimer.Reset();
+				PlayTrack(Tracks[currentTrack]);
+			}
+		}
         if (inFadeIn)
         {
             trasitionCounter.Tick(0.1f);
@@ -99,8 +137,9 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
                         mLastTrack.loop = true;
                         mLastTrack.volume = 0f;
                         mLastTrack.clip = mTargetClip;
+						trackingTimer = new Counter(mTargetClip.length);
                         mLastTrack.Play();
-                        mTargetClip = null;
+                   		
                     }
 
                 }
@@ -108,7 +147,13 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
         }
        
     }
+	public void PlayTrack(string trackName)
+	{
+		currentTrack = Tracks.IndexOf(trackName);
+		AudioClip audio = Resources.Load ("Sound/Albums/"+trackName) as AudioClip;
+		this.PlayTrack (audio);
 
+	}
     public void PlayTrack(AudioClip clip)
     {
        
@@ -141,10 +186,11 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
                // Debug.LogError("PlayerSetting.Instance.muteBGM" + PlayerSetting.Instance.muteBGM);
                 mLastTrack.mute = PlayerSetting.Instance.muteBGM;
 
-                mLastTrack.loop = true;
-                mLastTrack.clip = clip;
+				mLastTrack.loop = true;
+				mLastTrack.clip = clip;
+				trackingTimer = new Counter(clip.length);
                 trasitionCounter.Reset();
-                
+
                 mLastTrack.volume = 0;
                 mLastTrack.Play();
                 inFadeOut = false;

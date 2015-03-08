@@ -12,6 +12,7 @@ public class MoveByWithAccelerate :TimeEffect {
 	private bool inTrack;
 	private float currentSpeed;
 	private bool headGravity;
+	private float G = 40f;
 	public virtual void Init(Piece p, Vector3 targetPosition,Vector3 eliminatePosition, float speed,float trackTime, Action callback = null)
 	{
 		TimerControl.Instance.effects += MoveByWithAccelerateUpdate;
@@ -25,6 +26,9 @@ public class MoveByWithAccelerate :TimeEffect {
 		onCompleteCallback = callback;
 		headGravity = false;
 		piece.isFadeAway = true;
+
+		//Debug.LogWarning("eliminatePosition"+eliminatePosition);
+
 	}
     public virtual void Init(Piece p, Vector3 targetPosition, Vector3 eliminatePosition, float speed, float trackTime, Action<object> callback = null)
 	{
@@ -35,12 +39,14 @@ public class MoveByWithAccelerate :TimeEffect {
 	{
 		trackTimer.Tick (Time.deltaTime);
 		if (trackTimer.Expired ()) {
-			Vector3 gravityDirection = (gravityPosition-piece.transform.position).normalized;
-			float angle = (Mathf.Acos(Vector3.Dot(gravityDirection,direction))/Mathf.PI)*180f;
-			//Debug.LogWarning("angle"+angle);
+			Vector3 cheesePosition = new Vector3(piece.transform.position.x,piece.transform.position.y,gravityPosition.z);
+			Vector3 gravityDirection = (gravityPosition-cheesePosition).normalized;
+			float angle = (Mathf.Acos(Vector3.Dot(gravityDirection,direction.normalized))/Mathf.PI)*180f;
+
 			if(angle>90f)
 			{
-				currentSpeed*=0.9f;
+				float targetSpeed = (1f-(angle - 90f)/90f)*moveSpeed;
+				currentSpeed += (targetSpeed - currentSpeed)*Time.deltaTime;
 				if(headGravity)
 				{
 					TimerControl.Instance.effects -= MoveByWithAccelerateUpdate;
@@ -50,10 +56,10 @@ public class MoveByWithAccelerate :TimeEffect {
 			else
 			{
 				headGravity = true;
-				currentSpeed*=1.05f;
-				//currentSpeed = Mathf.Min(moveSpeed*6f,currentSpeed);
+				currentSpeed += G*Time.deltaTime;
+
 			}
-			direction=(direction+gravityDirection*.1f).normalized;
+			direction=(direction+gravityDirection*.2f).normalized;
 			piece.transform.localPosition += direction*currentSpeed*Time.deltaTime;
 			
 

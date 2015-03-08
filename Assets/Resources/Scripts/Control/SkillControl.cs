@@ -2,10 +2,16 @@
 using System.Collections;
 
 public class SkillControl : Core.MonoSingleton<SkillControl> {
-
-	public Vector3 GetSkillIconWorldPosition(PieceColor color)
+	public Vector3 skillPosition;
+	public Vector3 GetSkillIconWorldPosition()
 	{
 
-		return Camera.main.ScreenToWorldPoint (new Vector3 (55, 55, 0));
+		return Camera.main.ScreenToWorldPoint (skillPosition);
+	}
+	public void SetSkillPosition(Vector3 screenPosition)
+	{
+		skillPosition = screenPosition;
+
+		//Debug.LogWarning (screenPosition);
 	}
 }

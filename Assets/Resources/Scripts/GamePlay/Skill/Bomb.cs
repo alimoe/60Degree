@@ -5,6 +5,7 @@ public class Bomb : Skill {
 	public Bomb(OnExcute callback = null )
 	{
 		onExcuteCallback = callback;
+		this.hint = "Tap on grid";
 	}
 	public override bool OnAdd ()
 	{

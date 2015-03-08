@@ -36,16 +36,23 @@ public class Piece : Entity {
 	public Twine twine;
     public Ice ice;
 	public bool coke;
+
 	private Counter cokeCounter = new Counter(4f);
 	public bool moving = false;
 	private BoardDirection passSession;
+	
 	private Vector3 _centerPosition;
 	private static Color32 BLACK = new Color32(60,60,60,0);
 	private Color32 defaultColor;
+	private Shake shaker;
 	public Vector3 centerPosition
 	{
 		get{
-			return this.transform.localPosition;
+			return _centerPosition;
+		}
+		set{
+			 _centerPosition = value;
+			this.transform.localPosition = value;
 		}
 	}
 	private bool _isFadeAway;
@@ -68,6 +75,20 @@ public class Piece : Entity {
     {
         defaultColor = this.GetComponent<SpriteRenderer>().color;
     }
+
+	public void Shake()
+	{
+		if (shaker == null)shaker = new Shake ();
+		if (shaker.isRunning)shaker.Stop ();
+		shaker.Init (this, .25f, 3);					
+
+	}
+
+	public void StopShake()
+	{
+		if (shaker!=null && shaker.isRunning)shaker.Stop ();
+		shaker = null;
+	}
 	public override void Reset ()
 	{
 		base.Reset ();
@@ -83,6 +104,7 @@ public class Piece : Entity {
 		twine = null;
 		ice = null;
 		coke = false;
+		shaker = null;
         this.GetComponent<SpriteRenderer>().color = defaultColor;
 		passSession = BoardDirection.None;
 		cokeCounter.Reset ();
@@ -172,10 +194,11 @@ public class Piece : Entity {
 		SetState (PieceState.Normal);
 	}
 
-	public void DestoryGroup()
+	public void DestoryGroup(bool withSound = true)
 	{
 		if (group != null)
 		{
+			if(withSound)group.CutChain();
 			group.RemoveChild(this);
 			group = null;
 		}
@@ -212,7 +235,7 @@ public class Piece : Entity {
 
     public void OnPassHexagon(HexagonState hexagonState, float time)
     {
-        Debug.LogWarning("Pass by Hexagon " + hexagonState);
+        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
 		if (hexagonState == HexagonState.Fire) {
             if (this.state != PieceState.Coke)
             {
@@ -241,7 +264,7 @@ public class Piece : Entity {
             dot.transform.localPosition = new Vector3(0, -.12f, 1f);
 			float scalar = .6f;
 			dot.transform.localScale = new Vector3(scalar,scalar,scalar);
-			dot.GetComponent<SpriteRenderer>().color = Wall.GetLevelColor(Board.Instance.round);
+			dot.GetComponent<SpriteRenderer>().color = Wall.GetRevertColor(this.type);
             dot.transform.localEulerAngles = Vector3.zero;
 		}
 		isCore = true;
@@ -271,6 +294,8 @@ public class Piece : Entity {
 	{
 		base.Dead ();
 		isDead = true;
+		DestoryGroup (false);
+		StopShake ();
 		SetState (PieceState.Normal);
 		ClearChildren ();
 	}

@@ -50,6 +50,27 @@ public class Wall :MonoBehaviour {
 	{
 		return levels [(round - 1) % 5];
 	}
+	public static Color32 GetRevertColor(PieceColor c)
+	{
+		switch (c) {
+			case PieceColor.Red:
+				return levels[0];
+			break;
+			case PieceColor.Blue:
+				return levels[4];
+			break;
+			case PieceColor.Green:
+				return levels[1];
+			break;
+			case PieceColor.Purple:
+				return levels[3];
+			break;
+			case PieceColor.Yellow:
+				return levels[2];
+			break;
+		}
+		return levels[0];
+	}
 	public void SetFace(WallFace wallFace)
 	{
 		face = wallFace;

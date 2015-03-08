@@ -5,10 +5,13 @@ public class StartMenu : MenuSingleton<StartMenu> {
 
 	private List<UILabel> letters;
 	private UISprite startButton;
+	private UISprite helpButton;
+	private UISprite staffButton;
 	private Counter transitionCounter;
 	private bool transitionOutState;
 	private float labelYPosition;
 	private float buttonYPosition;
+	private Transform credit;
 	void Awake () {
 		base.Awake ();
 		Transform[] children = this.GetComponentsInChildren<Transform> (true);
@@ -16,7 +19,13 @@ public class StartMenu : MenuSingleton<StartMenu> {
 		foreach (var i in children) {
 			if(i.name.Contains("Label"))letters.Add(i.GetComponent<UILabel>());
 			if(i.name.Contains("PlayButton"))startButton = i.GetComponent<UISprite>();
+			if(i.name.Contains("HelpButton"))helpButton = i.GetComponent<UISprite>();
+			if(i.name.Contains("StaffButton"))staffButton = i.GetComponent<UISprite>();
+			if(i.name.Contains("Credit"))credit = i;
 		}
+		helpButton.gameObject.SetActive (false);
+		staffButton.gameObject.SetActive (false);
+		credit.gameObject.SetActive (false);
 		labelYPosition = letters [0].transform.localPosition.y;
 		buttonYPosition = startButton.transform.localPosition.y;
 		transitionCounter = new Counter (0.4f);
@@ -24,11 +33,20 @@ public class StartMenu : MenuSingleton<StartMenu> {
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
+
+		staffButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
+		helpButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
+
 		transitionOutState = false;
+		
 		foreach (var i in letters) {
 			i.transform.localPosition = new Vector3(i.transform.localPosition.x,labelYPosition,i.transform.localPosition.z);
 		}
 		startButton.transform.localPosition = new Vector3 (startButton.transform.localPosition.x, buttonYPosition, startButton.transform.localPosition.z);
+	}
+	public void ShowCredit()
+	{
+		credit.gameObject.SetActive (!credit.gameObject.activeInHierarchy);
 	}
 	public override void OnCloseScreen ()
 	{
@@ -52,6 +70,9 @@ public class StartMenu : MenuSingleton<StartMenu> {
 					i.transform.localPosition += Vector3.up*Time.deltaTime*1200f;
 				}
 				startButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
+				staffButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
+				helpButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
+				credit.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
 			}
 
 		}

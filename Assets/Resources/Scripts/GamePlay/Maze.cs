@@ -4,7 +4,7 @@ using System.Collections;
 public class Maze : Entity {
 
    
-	private Counter life = new Counter(10f);
+	private Counter life = new Counter(5f);
 	void Awake () {
         //Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
        
@@ -19,6 +19,7 @@ public class Maze : Entity {
         this.transform.localEulerAngles = Vector3.zero;
 		life.Reset ();
 		new FadeIn ().Init (this.gameObject, .3f, null);
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_MAZE);
         return this;
     }
     void Update()

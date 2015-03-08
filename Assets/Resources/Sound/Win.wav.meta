@@ -1,10 +1,11 @@
 fileFormatVersion: 2
-guid: be257939451a73e49b0753f9183bcc49
+guid: aba8cc15e8c7429429bb589a6b663b92
 labels:
-- musiceffect
-- positive
-- stereo
 - USFX
+- success
+- puzzle
+- accomplishment
+- stereo
 AudioImporter:
   serializedVersion: 4
   format: -1

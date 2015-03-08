@@ -13,19 +13,23 @@ public class Chain : Entity {
 		start = s;
 		end = e;
 		this.transform.parent = start.transform.parent;
-		Vector3 direction = (end.centerPosition - start.centerPosition).normalized;
-		float radian = Mathf.Atan2 (direction.y, direction.x);
-		float angle = (radian / Mathf.PI) * 180f;
-		Debug.Log (angle);
-		if(angle == 0)angle = !s.isUpper? angle + 60:angle - 60;
-		else if(Mathf.Abs(angle) == 90)angle -= 90;
-		else if(Mathf.Abs(angle) == 180)angle = !s.isUpper? angle - 60:angle + 60;
-		float d = angle/Mathf.Abs(angle);
+		float angle = 0;
+		if (start.isUpper) {
+			if (end.x < start.x)angle = 60;
+			else if (end.y > start.y)angle = 120;
+			else angle = 0;
+		} else {
+			if (end.x > start.x)angle = 60;
+			else if (end.y < start.y)angle = 120;
+			else angle = 0;
+		}
+
+
 		Vector3 rotation = new Vector3 (0, 0, angle ); // + 10f * d
 
 		this.transform.localEulerAngles = rotation;
 		new FadeIn ().Init (this.gameObject, .3f, null);
-		
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_LOCK);
 	}
 
 	public void ShutDown()

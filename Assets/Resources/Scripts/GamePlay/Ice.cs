@@ -39,7 +39,7 @@ public class Ice : Entity {
         {
             this.transform.localEulerAngles = Vector3.zero;
         }
-
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_FREEZE);
     }
 
     public override void Reset()

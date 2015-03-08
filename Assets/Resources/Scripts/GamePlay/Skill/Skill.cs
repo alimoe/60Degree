@@ -5,6 +5,7 @@ public class Skill  {
 
 	public delegate void OnExcute();
 	public OnExcute onExcuteCallback;
+	public string hint;
 	public virtual bool OnAdd()
 	{
 		return false;

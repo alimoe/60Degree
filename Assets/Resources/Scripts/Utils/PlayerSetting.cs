@@ -6,6 +6,7 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
 	// Use this for initialization
 	public bool muteSE;
     public bool muteBGM;
+	public bool tutorialPlayed;
 	void Awake () {
         base.Awake();
 		Refresh ();
@@ -27,7 +28,10 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
     {
         SetSetting("MuteBGM", value);
     }
-
+	public void TutorialComplete(int value)
+	{
+		SetSetting("Tutorial", value);
+	}
 	public int GetSetting(string key)
 	{
 		if (PlayerPrefs.HasKey (key)) {
@@ -47,6 +51,7 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
         {
             muteSE = false;
         }
+
         if (PlayerPrefs.HasKey("MuteBGM"))
         {
             muteBGM = PlayerPrefs.GetInt("MuteBGM") == 1;
@@ -55,7 +60,16 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
         {
             muteBGM = false;
         }
-	    
+
+		if (PlayerPrefs.HasKey("Tutorial"))
+		{
+			tutorialPlayed = PlayerPrefs.GetInt("Tutorial") == 1;
+		}
+		else
+		{
+			tutorialPlayed = false;
+		}
+		//Debug.LogWarning ("Mute " + muteSE);
 	}
 
 }

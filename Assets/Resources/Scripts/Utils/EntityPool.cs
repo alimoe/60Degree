@@ -30,6 +30,8 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
         pool.Add("Twine", Resources.Load("Prefabs/Twine"));
         pool.Add("Ice", Resources.Load("Prefabs/Ice"));
         pool.Add("Maze", Resources.Load("Prefabs/Maze"));
+		pool.Add("Block", Resources.Load("Prefabs/Block"));
+		pool.Add("Arrow", Resources.Load("Prefabs/Arrow"));
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}
@@ -48,12 +50,15 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 			{
 				entity = Instantiate(pool[type]) as GameObject;
 				entity.SendMessage("Init",SendMessageOptions.DontRequireReceiver);
-				if(!inuse.ContainsKey(type))
-				{
-					inuse[type]= new List<GameObject>();
-				}
-				inuse[type].Add(entity);
+
 			}
+
+			if(!inuse.ContainsKey(type))
+			{
+				inuse[type]= new List<GameObject>();
+			}
+			if(!inuse[type].Contains(entity))inuse[type].Add(entity);
+
 			entity.SetActive(true);
 			entity.SendMessage("Reset",SendMessageOptions.DontRequireReceiver);
 			return  entity;
@@ -69,7 +74,7 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 			{
 				unuse[type]= new List<GameObject>();
 			}
-			unuse[type].Add(obj);
+			if(!unuse[type].Contains(obj))unuse[type].Add(obj);
 			obj.SendMessage("Dead",SendMessageOptions.DontRequireReceiver);
 			obj.SetActive(false);
 		}
