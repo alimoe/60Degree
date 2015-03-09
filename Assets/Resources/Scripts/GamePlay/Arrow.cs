@@ -10,13 +10,17 @@ public class Arrow : MonoBehaviour {
 	private Wave wave;
 	private float offsetX;
 	private float offsetY;
+    private Transform target;
 	void Awake () {
 		wave = new Wave ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
+        if (target != null)
+        {
+            center = target.transform.position;
+        }
 	}
 	public void UpdatePosition()
 	{
@@ -28,10 +32,12 @@ public class Arrow : MonoBehaviour {
 	public void Stop()
 	{
 		wave.Stop ();
+        target = null;
 		this.gameObject.SetActive (false);
 	}
-	public Arrow FocusOn(Transform target)
+	public Arrow FocusOn(Transform t)
 	{
+        target = t;
 		this.gameObject.SetActive (true);
 		distance = 1f;
 		offsetX = 0;

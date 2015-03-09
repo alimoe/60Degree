@@ -12,16 +12,27 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	private List<TutorialStep> steps;
 	private Arrow arrow;
 	private string step1Hint = "Tap on the puzzle and move [00ff00]right[-]";
-	private string step2Hint = "[00ff00]3[-] puzzles [00ff00]side by side[-] will be eliminate";
-	private string step3Hint = "You can move puzzles  [00ff00]in stack[-]";
-	private string step4Hint = "Eliminate [00ff00]the Puzzle with core color[-] will upgrade [00ff00]Wall[-]";
-	private string step5Hint = "You can break a Wall by hit it [00ff00]Twice[-]";
-	private string step6Hint = "Once the Wall [00ff00]broken[-], You can send puzzles out";
-	private string step7Hint = "These puzzles won't collect any points \r\n [00ff00]Tap to finish tutorial[-]";
+	private string step2Hint = "[00ff00]3[-] puzzles [00ff00]side by side[-] will be eliminated";
+    private string step3Hint = "You can move stack puzzles from the [00ff00]bottom[-]";
+    private string step4Hint = "Eliminate the puzzle with [00ff00]core color[-] will upgrade [00ff00]wall[-]";
+	private string step5Hint = "You can break a wall by hit it [00ff00]twice[-]";
+	private string step6Hint = "Once the wall [00ff00]broken[-], You can send puzzles out";
+    private string step7Hint = "Puzzles be [00ff00]chained[-] can be [00ff00]moved together[-]";
+    private string step8Hint = "You can [00ff00]break the chain [-]by eliminate one of these puzzles";
+    private string step9Hint = "Path could be [00ff00]blocked[-] for a while";
+    private string step10Hint = "But you always have [00ff00]other ways[-] to go";
+    private string step11Hint = "[00ff00]Freezed[-] puzzle can't be move";
+    private string step12Hint = "You can [00ff00]break[-] the ice by eliminate the puzzle [00ff00]twice[-]";
+    private string step13Hint = "[00ff00]Cluster[-] will [00ff00]disable[-] the puzzle for a while";
+    private string step14Hint = "[00ff00]Disabled[-] puzzle can't be eliminate";
+    private string step15Hint = "Puzzle might be [00ff00]tied[-] in a grid";
+    private string step16Hint = "You can free a puzzle by [00ff00]cut[-] its edgets";
+    private string step17Hint = "[00ff00]Cut[-] the final edget to free the puzzle";
+    private string step18Hint = "[00ff00]Tap to Start[-]";
 	private string[] hints;
 	void Awake () {
         base.Awake();
-		hints = new string[7]{step1Hint,step2Hint,step3Hint,step4Hint,step5Hint,step6Hint,step7Hint};
+        hints = new string[18] { step1Hint, step2Hint, step3Hint, step4Hint, step5Hint, step6Hint, step7Hint, step8Hint, step9Hint, step10Hint, step11Hint, step12Hint, step13Hint, step14Hint, step15Hint, step16Hint, step17Hint, step18Hint };
 	}
 	
 	// Update is called once per frame
@@ -45,17 +56,70 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		
 		step = new TutorialStep(6,BoardDirection.TopLeft,3,0.5f,new Vector2(-.3f,0),StopArrow,StepThreeComplete);
 		steps.Add(step);
-		
+        //show wall break
 		step = new TutorialStep(7,BoardDirection.Right,4,0.5f,Vector2.zero,StopArrow,StepFourComplete);
 		steps.Add(step);
-		
+        //show wall out
 		step = new TutorialStep(7,BoardDirection.Right,5,0.5f,Vector2.zero,StopArrow,StepFiveComplete);
 		steps.Add(step);
-		
-		step = new TutorialStep(7,BoardDirection.None,6,0.5f,new Vector2(-.3f,0),StopArrow,StepSixComplete);
+        //show chain
+		step = new TutorialStep(9,BoardDirection.BottomRight,6,0.5f,new Vector2(.3f,0),StopArrow,StepSixComplete);
 		steps.Add(step);
 
+        step = new TutorialStep(5, BoardDirection.BottomRight, 7, 0.5f, new Vector2(-.3f, 0), StopArrow, StepSevenComplete);
+        steps.Add(step);
+        //show block
+        step = new TutorialStep(11, BoardDirection.TopRight, 8, 0.5f, new Vector2(.3f, 0), StopArrow, StepEightComplete);
+        steps.Add(step);
+        
+        step = new TutorialStep(11, BoardDirection.Right, 9, 0.5f, new Vector2(0,0.2f), StopArrow, StepNightComplete);
+        steps.Add(step);
+        //show ice 1
+        step = new TutorialStep(12, BoardDirection.Right, 10, 0.5f, Vector2.zero, StopArrow, StepTenComplete);
+        steps.Add(step);
+        //break ice 2
+        step = new TutorialStep(14, BoardDirection.BottomRight, 11, 0.5f, Vector2.zero, StopArrow, StepElevenComplete);
+        steps.Add(step);
+
+        step = new TutorialStep(11, BoardDirection.Left, 12, 0.5f, Vector2.zero, StopArrow, StepTwelveComplete);
+        steps.Add(step);
+
+        step = new TutorialStep(11, BoardDirection.TopRight, 13, 0.5f, new Vector2(-0.3f, 0), StopArrow, StepThirtweenComplete);
+        steps.Add(step);
+
+        step = new TutorialStep(19, BoardDirection.Right, 14, 0.5f, Vector2.zero, StopArrow, StepFourtweenComplete);
+        steps.Add(step);
+
+        step = new TutorialStep(19, BoardDirection.TopLeft, 15, 0.5f, new Vector2(-.3f, 0), StopArrow, StepFifthtweenComplete);
+        steps.Add(step);
+
+        step = new TutorialStep(20, BoardDirection.TopRight, 16, 0.5f, new Vector2(.3f, 0), StopArrow, null);
+        steps.Add(step);
+
+        step = new TutorialStep(20, BoardDirection.None, 17, 0.5f, Vector2.zero, StopArrow, null);
+        steps.Add(step);
 	}
+
+    private void StepFifthtweenComplete()
+    {
+        //23 pieces
+        pieces.Add(Board.Instance.GeneratePieceAt(2, 0, true, PieceColor.Green, false));
+        pieces[11].SetState(PieceState.Normal);
+
+    }
+
+    private void StepFourtweenComplete()
+    {
+        //22 pieces
+        pieces.Add(Board.Instance.GeneratePieceAt(3, 2, true, PieceColor.Red, false));
+        pieces[pieces.Count-1].SetState(PieceState.Twine);
+
+        pieces.Add(Board.Instance.GeneratePieceAt(0, 1, true, PieceColor.Blue, false));
+
+        
+    }
+
+    
     public void InitTutorial()
     {
 			isActive = true;
@@ -94,9 +158,65 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	{
 
 	}
+    public void StepSevenComplete()
+    {
+        //12
+        pieces.Add(Board.Instance.GeneratePieceAt(1, 0, true, PieceColor.Green, false));
+
+    }
+    public void StepEightComplete()
+    {
+        Hexagon hexagon = Board.Instance.GetHexagonAt(1, 3);
+        hexagon.SetBlock(HexagonEdget.UpperDown);
+    }
+    public void StepNightComplete()
+    {
+        
+    }
+    public void StepTenComplete()
+    {
+        Hexagon hexagon = Board.Instance.GetHexagonAt(1, 3);
+        hexagon.RemoveBlock(HexagonEdget.UpperDown);
+
+        if (pieces.Count > 11)
+        {
+            Piece piece = pieces[11];
+            piece.SetState(PieceState.Freeze);
+        }
+        //14 piece
+        pieces.Add(Board.Instance.GeneratePieceAt(1, 2, true, PieceColor.Green, false));
+        pieces.Add(Board.Instance.GeneratePieceAt(1, 3, false, PieceColor.Green, false));
+    }
+    public void StepElevenComplete()
+    {
+        //16 piece
+        pieces.Add(Board.Instance.GeneratePieceAt(0, 6, true, PieceColor.Green, false));
+        pieces.Add(Board.Instance.GeneratePieceAt(0, 6, false, PieceColor.Green, false));
+    }
+    private void StepTwelveComplete()
+    {
+        Hexagon hexagon = Board.Instance.GetHexagonAt(1, 3);
+        hexagon.SetState(false, HexagonState.Fire);
+        //18 pieces
+       
+    }
+    private void StepThirtweenComplete()
+    {
+        pieces.Add(Board.Instance.GeneratePieceAt(0, 6, true, PieceColor.Green, false));
+        pieces.Add(Board.Instance.GeneratePieceAt(0, 6, false, PieceColor.Green, false));
+        Hexagon hexagon = Board.Instance.GetHexagonAt(1, 3);
+        hexagon.SetState(false, HexagonState.Normal);
+    }
 	public void StepSixComplete()
 	{
-		
+        //11 piece
+        pieces.Add(Board.Instance.GeneratePieceAt(1, 4, true, PieceColor.Blue, false));
+        pieces.Add(Board.Instance.GeneratePieceAt(1, 5, false, PieceColor.Green, false));
+        PieceGroup group = new PieceGroup();
+        group.AddChild(pieces[pieces.Count - 1]);
+        group.AddChild(pieces[pieces.Count - 2]);
+        group.MakeChain();
+        pieces.Add(Board.Instance.GeneratePieceAt(6, 0, true, PieceColor.Green, false));
 	}
 	public void StepTwoComplete()
 	{
