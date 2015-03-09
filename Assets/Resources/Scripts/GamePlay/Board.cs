@@ -308,7 +308,7 @@ public class Board : Core.MonoSingleton<Board> {
 				edget = hexagon.GetRandomSide(isUpper);
 
 			}
-			Debug.Log(edget);
+			
 			if (edget != HexagonEdget.None) {
 				hexagon.SetBlock(edget);
 				if(UnityEngine.Random.Range(0f,1f)<.3f)

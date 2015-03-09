@@ -7,6 +7,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 	private UISprite startButton;
 	private UISprite helpButton;
 	private UISprite staffButton;
+	private UISprite leaderboardButton;
 	private Counter transitionCounter;
 	private bool transitionOutState;
 	private float labelYPosition;
@@ -22,9 +23,11 @@ public class StartMenu : MenuSingleton<StartMenu> {
 			if(i.name.Contains("HelpButton"))helpButton = i.GetComponent<UISprite>();
 			if(i.name.Contains("StaffButton"))staffButton = i.GetComponent<UISprite>();
 			if(i.name.Contains("Credit"))credit = i;
+			if(i.name.Contains("LeadBoard"))leaderboardButton = i.GetComponent<UISprite>();
 		}
 		helpButton.gameObject.SetActive (false);
 		staffButton.gameObject.SetActive (false);
+		leaderboardButton.gameObject.SetActive (false);
 		credit.gameObject.SetActive (false);
 		labelYPosition = letters [0].transform.localPosition.y;
 		buttonYPosition = startButton.transform.localPosition.y;
@@ -36,7 +39,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 
 		staffButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
 		helpButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
-
+		leaderboardButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
 		transitionOutState = false;
 		
 		foreach (var i in letters) {
@@ -69,10 +72,12 @@ public class StartMenu : MenuSingleton<StartMenu> {
 				foreach (var i in letters) {
 					i.transform.localPosition += Vector3.up*Time.deltaTime*1200f;
 				}
-				startButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
-				staffButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
-				helpButton.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
-				credit.transform.localPosition += Vector3.down*Time.deltaTime*1200f;
+				Vector3 down = Vector3.down*Time.deltaTime*1200f;
+				startButton.transform.localPosition += down;
+				staffButton.transform.localPosition += down;
+				helpButton.transform.localPosition += down;
+				credit.transform.localPosition += down;
+				leaderboardButton.transform.localPosition += down;
 			}
 
 		}

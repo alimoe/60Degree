@@ -58,7 +58,7 @@ public class Ice : Entity {
         }
         else if(life == 0)
         {
-			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ICE);
+			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_BROKEN);
             ShutDown();
         }
     }

@@ -9,6 +9,7 @@ public class SkillButton : MonoBehaviour {
 	private Transform cutEdgetIcon;
 	private UIButton button;
 	private int lastIcon;
+	private Transform maxIcon;
 	private int grade = 9;
 	private int progress;
 
@@ -34,6 +35,11 @@ public class SkillButton : MonoBehaviour {
 			if(i.name.Contains("CutEdget"))
 			{
 				cutEdgetIcon = i;
+				i.gameObject.SetActive(false);
+			}
+			if(i.name.Contains("Max"))
+			{
+				maxIcon = i;
 				i.gameObject.SetActive(false);
 			}
 		}
@@ -76,6 +82,7 @@ public class SkillButton : MonoBehaviour {
 			button.isEnabled = false;
 			//sprite.color = new Color32 (255, 255, 255, 109);
 		}
+		maxIcon.gameObject.SetActive(false);
 		if (icon < 2) {
 			bombIcon.gameObject.SetActive (true);
 			lightningIcon.gameObject.SetActive (false);
@@ -89,6 +96,7 @@ public class SkillButton : MonoBehaviour {
 			bombIcon.gameObject.SetActive (false);
 			lightningIcon.gameObject.SetActive (false);
 			cutEdgetIcon.gameObject.SetActive (true);
+			maxIcon.gameObject.SetActive(true);
 		}
 	}
 	public void AddProgress(int p)

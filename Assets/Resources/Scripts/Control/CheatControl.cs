@@ -64,6 +64,10 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				PlayerSetting.Instance.TutorialComplete(0);
 			}
+			if(GUI.Button(new Rect(0,420,100,30),"Purchase energy"))
+			{
+				AppControl.Instance.EnergyRefill();
+			}
 		}
 
 	}

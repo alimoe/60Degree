@@ -37,6 +37,8 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 
 	public AudioClip GAME_DENY;
 	public AudioClip GAME_HIGHSCORE;
+	public AudioClip GAME_BROKEN;
+
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;

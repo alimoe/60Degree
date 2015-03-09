@@ -52,6 +52,7 @@ public class Block : Entity {
 
 		life.Reset ();
 
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_DENY);
 	}
 	public void OnFadeAway(object child)
 	{

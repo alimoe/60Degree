@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public enum GameState
 {
 	GameNotStart,
@@ -38,6 +39,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.OpenMenu("HudMenu",true);
         Camera3DControl.Instance.direction = Vector3.zero;
 
+		//IOSControl.Instance.Login();
         if (!PlayerSetting.Instance.tutorialPlayed)
         {
 			TutorialControl.Instance.InitTutorial ();
@@ -80,7 +82,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	}
 	public void ResumeGame()
 	{
-        if (state == GameState.GamePaused)
+		if (state == GameState.GamePaused || state == GameState.GameOver)
         {
             state = GameState.GamePlaying;
             UIControl.Instance.CloseMenu();
@@ -95,11 +97,15 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 
 	public void ReportScore(int score)
 	{
-
+		IOSControl.Instance.ReportGameScore (score);
 	}
 	public void PurchaseEnergy()
 	{
 		IOSControl.Instance.Purchase (EnergyRefill);
+	}
+	public void ShowLeadboard()
+	{
+		IOSControl.Instance.ShowGameCenterLeaderBoard ();
 	}
     public void EnergyRefill()
     {

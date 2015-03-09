@@ -235,8 +235,12 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		totalScoreCounter.Reset ();
 
 		if (historyScore>0 && totalScore > historyScore && !recordLabel.gameObject.activeInHierarchy) {
-			recordLabel.gameObject.SetActive(true);
-			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
+			if(TutorialControl.Instance.isActive == false)
+			{
+				recordLabel.gameObject.SetActive(true);
+				SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
+			}
+
 		}
 		if (totalScore > historyScore) {
 			PlayerSetting.Instance.SetSetting("Score",totalScore);
