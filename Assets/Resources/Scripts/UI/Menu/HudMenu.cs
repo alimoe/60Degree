@@ -257,7 +257,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		totalRound = round;
 		roundStep = 0;
 
-		roundTipLabel.text = "Round"+round.ToString ();
+		roundTipLabel.text = "ROUND"+round.ToString ();
 
 		roundTipLabel.transform.localPosition = new Vector3 (roundXPosition + roundXRange, roundTipLabel.transform.localPosition.y, roundTipLabel.transform.localPosition.z);
 
