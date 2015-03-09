@@ -43,6 +43,7 @@ public class Shake : TimeEffect {
 	{
 		TimerControl.Instance.effects -= OnShakeUpdate;
 		isRunning = false;
-		target.transform.localEulerAngles = new Vector3 (0, 0, defaultRotation);
+        if (target!=null) target.transform.localEulerAngles = new Vector3(0, 0, defaultRotation);
+        target = null;
 	}
 }

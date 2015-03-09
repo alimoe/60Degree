@@ -32,6 +32,7 @@ public class MoveBy :TimeEffect {
 			TimerControl.Instance.effects -= MoveByUpdate;
 			if (onCompleteCallback != null)onCompleteCallback ();
 			if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (this);
+            piece = null;
 		} else {
 			
 			if(piece!=null)
@@ -42,6 +43,7 @@ public class MoveBy :TimeEffect {
 					TimerControl.Instance.effects -= MoveByUpdate;
 					if(onCompleteCallback!=null)onCompleteCallback();
 					if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (this);
+                    piece = null;
 				}
 			}
 			else

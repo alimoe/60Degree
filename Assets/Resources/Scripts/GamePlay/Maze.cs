@@ -14,7 +14,7 @@ public class Maze : Entity {
     {
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition-0.1f*Vector3.up : hexagon.lowPosition+0.1f*Vector3.up;
-        this.transform.localScale = new Vector3(Hexagon.Scale , Hexagon.Scale , Hexagon.Scale );
+        this.transform.localScale = new Vector3(Hexagon.Scale * .8f, Hexagon.Scale * .8f, Hexagon.Scale * .8f);
         this.transform.localPosition += Vector3.forward;
         this.transform.localEulerAngles = Vector3.zero;
 		life.Reset ();
@@ -24,7 +24,7 @@ public class Maze : Entity {
     }
     void Update()
     {
-        this.transform.localEulerAngles += Vector3.forward * 0.2f;
+        this.transform.localEulerAngles += Vector3.forward * .5f;
     }
     public void ShutDown()
     {

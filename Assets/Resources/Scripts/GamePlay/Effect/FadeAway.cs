@@ -26,6 +26,7 @@ public class FadeAway : TimeEffect {
 		if (progress.Expired ()) {
 				TimerControl.Instance.effects -= FadeAwayUpdate;
 				if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (render.gameObject);
+                render = null;
 		} else {
 			render.color = new Color32(r,g,b, (byte)((1f-progress.percent)*255));
 		}

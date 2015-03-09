@@ -25,6 +25,7 @@ public class ScaleUp : TimeEffect {
 			if(piece!=null)piece.transform.localScale = new Vector3(piece.scale,piece.scale,1f);
 			TimerControl.Instance.effects -= ScaleUpUpdate;
 			if (onCompleteCallback != null)onCompleteCallback ();
+            piece = null;
 		} else {
 			
 			if(piece!=null)

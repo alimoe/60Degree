@@ -25,6 +25,7 @@ public class DelayCall : TimeEffect {
 			TimerControl.Instance.effects -= DelayCallUpdate;
 			if(onCompleteCallbackWithParam!=null)onCompleteCallbackWithParam(data);
 			if(onCompleteCallback!=null)onCompleteCallback();
+            data = null;
 		} 
 	}
 }

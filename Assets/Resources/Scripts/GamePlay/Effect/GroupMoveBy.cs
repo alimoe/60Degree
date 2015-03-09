@@ -36,7 +36,7 @@ public class GroupMoveBy : TimeEffect {
 	{
 		if (onCompleteCallback != null)onCompleteCallback ();
 		if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (this);
-						
+        pieces = null;
 	}
 	public void OnSingleTaskDone()
 	{

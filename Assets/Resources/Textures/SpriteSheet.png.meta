@@ -14,7 +14,7 @@ TextureImporter:
     21300018: SpriteRopeV
     21300020: SpriteSheet_13
     21300022: SpriteSheet_14
-    21300024: SpriteSheet_15
+    21300024: SpriteBlock
     21300026: SpriteMaze
     21300028: SpriteLineDot
     21300030: SpriteGrid
@@ -55,7 +55,7 @@ TextureImporter:
   textureFormat: -3
   maxTextureSize: 1024
   textureSettings:
-    filterMode: -1
+    filterMode: 1
     aniso: 1
     mipBias: -1
     wrapMode: 1
@@ -147,10 +147,10 @@ TextureImporter:
     - name: SpriteMaze
       rect:
         serializedVersion: 2
-        x: 291
-        y: 335
-        width: 115
-        height: 113
+        x: 273
+        y: 334
+        width: 114
+        height: 114
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,6 +221,16 @@ TextureImporter:
         y: 713
         width: 68
         height: 145
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteBlock
+      rect:
+        serializedVersion: 2
+        x: 876
+        y: 477
+        width: 69
+        height: 7
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

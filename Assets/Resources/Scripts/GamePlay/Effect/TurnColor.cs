@@ -35,6 +35,7 @@ public class TurnColor : TimeEffect {
             render.color = new Color32(r, g, b, 255);
 			TimerControl.Instance.effects -= TurnColorUpdate;
 			if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (render.gameObject);
+            render = null;
 		} else {
 			render.color = new Color32(Utility.LerpColorChannel(sr,r,progress.percent),Utility.LerpColorChannel(sg,g,progress.percent),Utility.LerpColorChannel(sb,b,progress.percent), 255);
 		}

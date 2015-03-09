@@ -37,6 +37,8 @@ public class DropDown : TimeEffect {
 		duration = Mathf.Sqrt(direction.magnitude*2f/G);
 		progress = new Counter(duration);
 
+        new BlinkPiece().Init(p, .4f);
+
 		onCompleteCallbackWithParam = callback;
 	}
 
@@ -75,6 +77,7 @@ public class DropDown : TimeEffect {
 				{
 					TimerControl.Instance.effects -= DropDownUpdate;
 					if(onCompleteCallbackWithParam!=null)onCompleteCallbackWithParam(this);
+                    piece = null;
 				}
 				else
 				{
