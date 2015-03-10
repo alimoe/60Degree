@@ -7,9 +7,11 @@ public class TurnColor : TimeEffect {
 	private byte r;
 	private byte g;
 	private byte b;
+	private byte a;
 	private byte sr;
 	private byte sg;
 	private byte sb;
+	private byte sa;
 	public void Init(GameObject target,float time, Color32 color,Action<object> callback )
 	{
 		render = target.GetComponent<SpriteRenderer> ();
@@ -18,11 +20,12 @@ public class TurnColor : TimeEffect {
 			r = color.r;
 			g = color.g;
 			b = color.b;
+			a = color.a;
 			Color32 e = render.color;
 			sr =  e.r;
 			sg =  e.g;
 			sb =  e.b;
-
+			sa = e.a;
 			onCompleteCallbackWithParam = callback;
 			TimerControl.Instance.effects+= TurnColorUpdate;
 		}
@@ -32,12 +35,12 @@ public class TurnColor : TimeEffect {
 	{
 		progress.Tick (Time.deltaTime);
 		if (progress.Expired ()) {
-            render.color = new Color32(r, g, b, 255);
+            render.color = new Color32(r, g, b, a);
 			TimerControl.Instance.effects -= TurnColorUpdate;
 			if (onCompleteCallbackWithParam != null)onCompleteCallbackWithParam (render.gameObject);
             render = null;
 		} else {
-			render.color = new Color32(Utility.LerpColorChannel(sr,r,progress.percent),Utility.LerpColorChannel(sg,g,progress.percent),Utility.LerpColorChannel(sb,b,progress.percent), 255);
+			render.color = new Color32(Utility.LerpColorChannel(sr,r,progress.percent),Utility.LerpColorChannel(sg,g,progress.percent),Utility.LerpColorChannel(sb,b,progress.percent), Utility.LerpColorChannel(sa,a,progress.percent));
 		}
 	}
 

@@ -289,14 +289,19 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 		if (totalRound > historyRound) {
 			PlayerSetting.Instance.SetSetting("Round",totalRound);
+			/*
 			achivementLabel.gameObject.SetActive(true);
 			new DelayCall().Init(4f,HideAchivement);
 			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
+			*/
 		}
 
 		roundValue.text = round.ToString ();
 
 		inNewRound = true;
+
+		EnviormentControl.Instance.Blink (Wall.GetLevelColor (round - 1));
+
 	}
 	public void HideAchivement()
 	{
@@ -405,11 +410,15 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			List<TipAnimateTask> temp = new List<TipAnimateTask>(animateTips.ToArray());
 			foreach (var i in temp) {
 				i.Process();
-				if(i.Done())
+				if(i.Done() )
 				{
 					animateTips.Remove(i);
-					if(inusedTips.Contains(i.label))inusedTips.Remove(i.label);
-					if(!unusedTips.Contains(i.label))unusedTips.Add(i.label);
+					if(i.label.name.Contains("Tips"))
+					{
+						if(inusedTips.Contains(i.label))inusedTips.Remove(i.label);
+						if(!unusedTips.Contains(i.label))unusedTips.Add(i.label);
+					}
+
 					i.label.gameObject.SetActive(false);
 				}
 			}

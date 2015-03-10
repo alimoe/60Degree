@@ -21,7 +21,7 @@ public class Wall :MonoBehaviour {
 	private int life;
 	private int totalLife = 2;
 	private static byte[]alpha = new byte[3]{0,95,255};
-	private static Color32[]levels = new Color32[5]{new Color32(255,255,0,255),new Color32(255,0,255,255),new Color32(0,0,255,255),new Color32(0,255,0,255),new Color32(255,0,0,255)};
+	private static Color32[]levels = new Color32[5]{new Color32(255,255,0,255),new Color32(255,0,255,255),new Color32(89,255,255,255),new Color32(0,255,0,255),new Color32(255,0,0,255)};
 	private Color32 currentColor;
 	private Color32 targetColor;
 	private Color32 lastTimeColor;
@@ -37,8 +37,7 @@ public class Wall :MonoBehaviour {
 	public bool isInvincible = false;
 	private int level = -1;
 	private static Color32 WHITE = new Color32 (255, 255, 255, 255);
-
-    private SpriteRenderer icon;
+	private SpriteRenderer icon;
 
     public void Awake()
     {

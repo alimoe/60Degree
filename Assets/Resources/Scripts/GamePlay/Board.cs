@@ -46,7 +46,7 @@ public class Board : Core.MonoSingleton<Board> {
 	private Vector3 xAxis;
 	private Vector3 yAxis;
 	private bool lastTimeIsUpper = false;
-    private SpriteRenderer gameBoard;
+  	
     private BoardDirection lastTimeDirection;
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
@@ -85,19 +85,7 @@ public class Board : Core.MonoSingleton<Board> {
 	void Start () {
 		gemContainer = GameObject.Find ("Board/Gems").transform;
 		Hexagon.totalSegment = this.segment;
-        GameObject enviorment = GameObject.Find("Enviorment");
-        Transform[] children = enviorment.GetComponentsInChildren<Transform>(true);
-
-        foreach (var child in children)
-        {
-            //Debug.Log(child.name);
-            if (child.name.Contains("Board"))
-            {
-                gameBoard = child.GetComponent<SpriteRenderer>();
-            }
-        }
-
-
+        
 		freezeCoreCounter.percent = 1f;
 		generateType = new List<GenerateType>();
 		ResetColorsPriority ();
@@ -130,8 +118,8 @@ public class Board : Core.MonoSingleton<Board> {
 
 	public void StartPlay()
 	{
-
-        if (gameBoard != null) gameBoard.gameObject.SetActive(true);
+		EnviormentControl.Instance.board.gameObject.SetActive (true);
+     	
 		if (autoBirth) {
 
 			GeneratePiece ();
@@ -177,7 +165,7 @@ public class Board : Core.MonoSingleton<Board> {
 					
 					break;
 					case GenerateType.Fire:
-                        if (pieces.Count < 15)
+                        if (pieces.Count < 27)
                         {
                             GenerateFire();
                         }
@@ -206,7 +194,7 @@ public class Board : Core.MonoSingleton<Board> {
 					break;
 					case GenerateType.Block:
 
-                        if (pieces.Count < 17)
+                        if (pieces.Count < 32)
                         {
                             GenerateBlock();
                         }
