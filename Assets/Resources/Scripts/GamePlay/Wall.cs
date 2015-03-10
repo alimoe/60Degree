@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 public enum WallFace
 {
 	Left,
@@ -36,6 +37,18 @@ public class Wall :MonoBehaviour {
 	public bool isInvincible = false;
 	private int level = -1;
 	private static Color32 WHITE = new Color32 (255, 255, 255, 255);
+
+    private SpriteRenderer icon;
+
+    public void Awake()
+    {
+        Transform[] children = this.GetComponentsInChildren<Transform>(true);
+        foreach (var child in children)
+        {
+            if (child.name.Contains("Icon")) icon = child.GetComponent<SpriteRenderer>();
+        }
+    }
+   
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
@@ -45,6 +58,7 @@ public class Wall :MonoBehaviour {
 		currentColor = WHITE;
 		render = this.gameObject.GetComponent<SpriteRenderer> ();
 		UpdateColor ();
+        UpdateIcon();
 	}
 	public static Color32 GetLevelColor(int round)
 	{
@@ -91,6 +105,7 @@ public class Wall :MonoBehaviour {
 		isInvincible = false;
 		life = totalLife;
 		UpdateColor ();
+        UpdateIcon();
 	}
 
 	public void ResetToZero()
@@ -109,7 +124,7 @@ public class Wall :MonoBehaviour {
 		isInvincible = true;
 		level++;
 		UpdateColor ();
-
+        UpdateIcon();
 	}
 	public void Hit()
 	{
@@ -133,13 +148,33 @@ public class Wall :MonoBehaviour {
 			if(repearProcess>1)Reset();
 		}
 	}
+    public void UpdateIcon()
+    {
+        Vector3 position;
+        if (level == -1)
+        {
+            icon.sprite = WallIcon.Instance.GetIconAndPosition(0, out position);
+        }
+        else
+        {
+            icon.sprite = WallIcon.Instance.GetIconAndPosition((level % 5 + 1), out position);
+        }
+        icon.transform.localPosition = position;
+    }
 	public void UpdateColor()
 	{
 
 		if (!isInvincible) {
 			Color32 mainColor;
-			if(level == -1)mainColor = WHITE;
-			else mainColor = levels[level%5];
+            if (level == -1)
+            {
+                mainColor = WHITE;
+                
+            }
+            else
+            {
+                mainColor = levels[level % 5];
+            }
 			targetColor = new Color32(mainColor.r,mainColor.g,mainColor.b, alpha[life]);
 			if (!currentColor.Equals (targetColor)) {
 					lastTimeColor = currentColor;
@@ -157,7 +192,7 @@ public class Wall :MonoBehaviour {
 	public void Render()
 	{
 		if (render != null)render.color = currentColor;
-						
+        if (icon != null) icon.color = currentColor;
 	}
 	public Color32 GetColor()
 	{
@@ -220,6 +255,7 @@ public class Wall :MonoBehaviour {
 	public void RenderColor()
 	{
 		if (render != null)render.color = currentColor;
+        if (icon != null) icon.color = currentColor;
 	}
 
 }

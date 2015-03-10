@@ -44,7 +44,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private int historyScore;
 
 	private string corePieceWarningMessage = "Puzzle with core color [00ff00]can't be send out[-] the Broken wall";
-	private string overFlowWarningMessage = "The Broken wall can only send [00ff00]4 grid's[-] puzzle out at one momenet";
+	private string overFlowWarningMessage = "The Broken wall can only send [00ff00]4 puzzles[-] out at one momenet";
 	void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();

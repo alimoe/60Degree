@@ -30,9 +30,15 @@ TextureImporter:
     21300050: SpriteChain
     21300052: SpriteBoard
     21300054: SpriteCheese
-    21300056: SpriteSheet_21
+    21300056: SpriteWall4
     21300058: SpriteParticle
     21300060: SpriteArrow
+    21300062: SpriteFragment
+    21300064: SpriteWall0
+    21300066: SpriteWall1
+    21300068: SpriteWall2
+    21300070: SpriteWall3
+    21300072: SpriteWall5
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -97,8 +103,8 @@ TextureImporter:
     - name: SpriteBoard
       rect:
         serializedVersion: 2
-        x: 0
-        y: 579
+        x: 4
+        y: 572
         width: 512
         height: 445
       alignment: 0
@@ -207,10 +213,10 @@ TextureImporter:
     - name: SpriteWall
       rect:
         serializedVersion: 2
-        x: 91
-        y: 7
-        width: 83
-        height: 33
+        x: 168
+        y: 44
+        width: 88
+        height: 16
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -231,6 +237,76 @@ TextureImporter:
         y: 477
         width: 69
         height: 7
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteFragment
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 369
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall0
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 405
+        width: 36
+        height: 19
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall1
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 402
+        width: 81
+        height: 22
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall2
+      rect:
+        serializedVersion: 2
+        x: 891
+        y: 401
+        width: 40
+        height: 23
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall3
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 335
+        width: 50
+        height: 38
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall4
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 339
+        width: 46
+        height: 34
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteWall5
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 335
+        width: 48
+        height: 38
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

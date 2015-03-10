@@ -55,10 +55,14 @@ public class Ice : Entity {
         {
             if (crack != null) crack.gameObject.SetActive(true);
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ICE);
+            int count = UnityEngine.Random.Range(6, 8);
+            new Spread().Init(piece, count, 0.7f, 4.5f);
         }
         else if(life == 0)
         {
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_BROKEN);
+            int count = UnityEngine.Random.Range(8,12);
+            new Spread().Init(piece, count, 0.7f, 4.5f);
             ShutDown();
         }
     }

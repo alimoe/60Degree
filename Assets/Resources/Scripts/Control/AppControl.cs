@@ -19,8 +19,11 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.Initialize ();
 		skills = new List<Skill> ();
 		state = GameState.GameNotStart;
+        
 		UIControl.Instance.OpenMenu("StartMenu");
 		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);
+
+        WallIcon.Instance.SetUp();
 	}
 
 	public void AddSkill(Skill skill)

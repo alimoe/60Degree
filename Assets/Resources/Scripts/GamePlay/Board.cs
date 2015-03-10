@@ -916,70 +916,78 @@ public class Board : Core.MonoSingleton<Board> {
         UpdateGameplayDifficulty();
 
 	}
+    private int GetTwoPieceDistance(Piece a, Piece b, BoardDirection direction)
+    {
+        int step = 0;
+        Hexagon hexagon = GetHexagonAt(a.x, a.y);
+        bool isUpper = a.isUpper;
+        while (hexagon != null)
+        {
+            hexagon = GetHexagonByStep(hexagon, direction, isUpper, 1);
+            if (hexagon.GetPiece(!isUpper) != b) step++;
+            else break;
+            isUpper = !isUpper;
+        }
+        if (hexagon != null)
+        {
+            return step;
+        }
+        return 0;
+    }
 	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count, Action callback = null)
 	{
-		List<Piece> existPiece = new List<Piece> ();
-		Vector3 delta = Vector3.zero;
-		float delayTime = 0f;
-		int step = (eliminate[eliminate.Count-1].isUpper)?0:1;
-		Piece lastPiece = null;
-		for (int i = eliminate.Count-1; i>=0; i--) {
+        float delayTime = 0f;
+        Vector3 delta = Vector3.zero;
+        int eliminateCount = 0;
+        for (int i = eliminate.Count - 1; i >= 0; i--)
+        {
+            Piece piece = eliminate[i];
+            
+            if (piece.isCore)
+            {
+                if (OnTryToGetawayCorePieceCallback != null) OnTryToGetawayCorePieceCallback();
+                break;
+            }
+            if (eliminateCount >= count)
+            {
+                if (OnTryToGetawayOverflowPieceCallback != null) OnTryToGetawayOverflowPieceCallback();
+                break;
+            }
 
-			Piece piece = eliminate[i];
-			Hexagon first;
-			Hexagon hexagon = GetHexagonAt(piece.x,piece.y);
-			hexagon.RemovePiece(piece);
-			if(piece.isCore)
-			{
-				if(OnTryToGetawayCorePieceCallback!=null)OnTryToGetawayCorePieceCallback();
-			}
-			if(step>=count)
-			{
-				if(OnTryToGetawayOverflowPieceCallback!=null)OnTryToGetawayOverflowPieceCallback();
-			}
-			if(step<count && existPiece.Count == 0 &&!piece.isCore)
-			{
-				//if(!piece.isCore)
-				{
-					MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
-					step++;
-					if(lastPiece!=null&&lastPiece.isUpper == piece.isUpper)step++;
-					pieces.Remove(piece);
-					lastPiece = piece;
-					Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition( );
-					delayTime+=length*2f/moveSpeed;
-					moveBy.Init(piece, trackingPosition,finalPosition, moveSpeed*.4f,delayTime,OnPopEliminateAnimationDone);
-				}
-
-
-			}
-			else
-			{
-
-				if(existPiece.Count == 0)
-				{
-					step = GetEmptyPieceSlotCount(piece,direction);
-				}
-				first = GetHexagonByStep(hexagon,direction,piece.isUpper,step);
-				lastPiece = piece;
-				if(first!=null)
-				{
-					first.SetPiece(piece);
-					existPiece.Add(piece);
-					delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY,0);
-					
-				}
+            eliminateCount++;
+            eliminate.Remove(piece);
+            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
+            hexagon.RemovePiece(piece);
+            pieces.Remove(piece);
+            MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
+            Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition();
+            delayTime += length * 2f / moveSpeed;
+            moveBy.Init(piece, trackingPosition, finalPosition, moveSpeed * .4f, delayTime, OnPopEliminateAnimationDone);
+        }
+        if (eliminate.Count > 0)
+        {
+            Piece piece = eliminate[eliminate.Count - 1];
+            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
+            int step = GetEmptyPieceSlotCount(piece, direction);
+            Hexagon first = GetHexagonByStep(hexagon, direction, piece.isUpper, step);
+            foreach (var i in eliminate)
+            {
+                Hexagon old = GetHexagonAt(i.x, i.y);
+                old.RemovePiece(i);
+                GetHexagonByStep(old, direction, i.isUpper, step).SetPiece(i);
+            }
 
 
-			}
-		}
+            delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY, 0);
+            GroupMoveBy groupMoveBy = new GroupMoveBy();
+            groupMoveBy.Init(eliminate, delta, direction, delta.magnitude / (moveSpeed * .4f), callback);
+            
 
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_DISAPPEAR);
+        }
 
-		if (existPiece.Count > 0) {
-			GroupMoveBy groupMoveBy = new GroupMoveBy();
-            groupMoveBy.Init(existPiece, delta, direction, delta.magnitude / (moveSpeed * .4f), callback);
-		}
+        if (eliminateCount>0)SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DISAPPEAR);
+        
+        
 		
 	}
 	private void OnResetWall(object obj)
