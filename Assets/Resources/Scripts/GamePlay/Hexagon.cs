@@ -237,16 +237,20 @@ public class Hexagon:MonoBehaviour  {
 	public bool CanLeave(bool isUpper, BoardDirection direction)
 	{
 		if (isUpper) {
-			if (direction == BoardDirection.Right || direction == BoardDirection.BottomRight|| direction == BoardDirection.TopRight)
+			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight)
 				return ((blockState & (int)HexagonEdget.UpperRight) == 0);
-			if (direction == BoardDirection.Left || direction == BoardDirection.BottomLeft || direction == BoardDirection.TopLeft)
+			if (direction == BoardDirection.Left  || direction == BoardDirection.TopLeft)
 				return ((blockState & (int)HexagonEdget.UpperLeft) == 0);
-			
+			if(direction == BoardDirection.BottomRight || direction == BoardDirection.BottomLeft)
+				return ((blockState & (int)HexagonEdget.UpperDown) == 0&&(blockState & (int)HexagonEdget.DownUp) == 0);
+
 		} else {
-			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight || direction == BoardDirection.BottomRight)
+			if (direction == BoardDirection.Right  || direction == BoardDirection.BottomRight)
 				return ((blockState & (int)HexagonEdget.DownRight) == 0);
-			if (direction == BoardDirection.Left || direction == BoardDirection.TopLeft || direction == BoardDirection.BottomLeft)
+			if (direction == BoardDirection.Left ||  direction == BoardDirection.BottomLeft)
 				return ((blockState & (int)HexagonEdget.DownLeft) == 0);
+			if(direction == BoardDirection.TopLeft || direction == BoardDirection.TopRight)
+				return ((blockState & (int)HexagonEdget.UpperDown) == 0&&(blockState & (int)HexagonEdget.DownUp) == 0);
 
 		}
 		return true;
