@@ -7,9 +7,12 @@ public class Spread : TimeEffect {
     {
         float delta = Mathf.PI * 2f / (float)count;
         float angle = -Mathf.PI * .5f;
+        float offset = 0;
         for (int i = 0; i < count; i++)
         {
-            angle += delta;
+            offset = delta * .25f * UnityEngine.Random.Range(-1f, 1f);
+            angle = delta * (float)i;
+            angle += offset;
             GameObject particleObj = EntityPool.Instance.Use("Fragment") as GameObject;
             Fragment particle = particleObj.GetComponent<Fragment>();
             particle.Drop(time, speed, piece.transform.position, 0f);

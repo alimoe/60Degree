@@ -169,23 +169,64 @@ public class Board : Core.MonoSingleton<Board> {
 			if(generateType.Count>0)
 			{
 				GenerateType type = generateType[UnityEngine.Random.Range(0,generateType.Count)];
+                float seed = UnityEngine.Random.Range(0, 1f);
 				switch(type)
 				{
 					case GenerateType.Chain:
-					new DelayCall().Init(.4f,GenerateGroup);
+					    new DelayCall().Init(.4f,GenerateGroup);
 					
 					break;
 					case GenerateType.Fire:
-					GenerateFire();
+                        if (pieces.Count < 15)
+                        {
+                            GenerateFire();
+                        }
+                        else
+                        {
+                            if (seed < .5f)
+                            {
+                                new DelayCall().Init(.4f, GenerateGroup);
+                            }
+                            else if (seed < .75f)
+                            {
+                                GenerateRope();
+                            }
+                            else
+                            {
+                                GenerateIce();
+                            }
+                        }
+					
 					break;
 					case GenerateType.Rope:
-					GenerateRope();
+					    GenerateRope();
 					break;
 					case GenerateType.Ice:
-					GenerateIce();
+					    GenerateIce();
 					break;
 					case GenerateType.Block:
-					GenerateBlock();
+
+                        if (pieces.Count < 17)
+                        {
+                            GenerateBlock();
+                        }
+                        else
+                        {
+                            if (seed < .5f)
+                            {
+                                new DelayCall().Init(.4f, GenerateGroup);
+                            }
+                            else if (seed < .75f)
+                            {
+                                GenerateRope();
+                            }
+                            else
+                            {
+                                GenerateIce();
+                            }
+                        }
+
+					    
 					break;
 				}
 			}
