@@ -51,9 +51,7 @@ public class MoveByWithAccelerate :TimeEffect {
 				{
 					TimerControl.Instance.effects -= MoveByWithAccelerateUpdate;
 					if(onCompleteCallbackWithParam!=null)onCompleteCallbackWithParam(this);
-                    piece = null;
-					return;
-				}
+                }
 			}
 			else
 			{

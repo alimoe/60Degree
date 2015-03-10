@@ -16,7 +16,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private UILabel roundValue;
 	private UILabel recordLabel;
 	private UILabel hintLabel;
-
+	private UILabel achivementLabel;
 	private SkillButton skillButton;
 	private Counter progressCounter;
 	private Counter threholdCounter;
@@ -33,6 +33,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private bool inNewRound;
 	private Counter roundFadeInCounter;
 	private Counter roundIdleCounter;
+	private Counter resetSkillButtonPositionCounter;
 	private int roundStep = 0;
 	private float roundXPosition;
 	private float headYPosition;
@@ -41,6 +42,9 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private int level = 1;
 	private int historyRound;
 	private int historyScore;
+
+	private string corePieceWarningMessage = "Puzzle with core color [00ff00]can't be send out[-] the Broken wall";
+	private string overFlowWarningMessage = "The Broken wall can only send [00ff00]4 grid's[-] puzzle out at one momenet";
 	void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();
@@ -105,7 +109,12 @@ public class HudMenu : MenuSingleton<HudMenu>{
 				bgmButton = child.GetComponent<ToggleButton>();
 				
 			}
-
+			if (child.name.Contains("Achivement"))
+			{
+				achivementLabel = child.GetComponent<UILabel>();
+				achivementLabel.gameObject.SetActive(false);
+				
+			}
 		}
 		inusedTips = new List<UILabel> ();
 		unusedTips = new List<UILabel> (tips.ToArray());
@@ -114,7 +123,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		threholdCounter = new Counter (2f);
 		threholdMaxCounter = new Counter (10f);
 		totalScoreCounter = new Counter (.5f);
-
+		resetSkillButtonPositionCounter = new Counter (5f);
         initPosition = scoreLabel.transform.localPosition;
 		//Debug.LogWarning (scoreLabel.transform.localPosition);
 		totalScore = 0;
@@ -184,9 +193,20 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		Board.Instance.onDropDownPieceCallback += AddProgress;
 		Board.Instance.onHitRoundCallback += AddRound;
 		Board.Instance.onWallProgressCallback += ReinforceWall;
+		Board.Instance.OnTryToGetawayCorePieceCallback += WarnCorePiece;
+		Board.Instance.OnTryToGetawayOverflowPieceCallback += WarnOverFlow;
 		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
 		historyScore = PlayerSetting.Instance.GetSetting ("Score");
 		historyRound = PlayerSetting.Instance.GetSetting ("Round");
+	}
+
+	private void WarnCorePiece ()
+	{
+		ShowHint (ref corePieceWarningMessage);
+	}
+	private void WarnOverFlow()
+	{
+		ShowHint (ref overFlowWarningMessage);
 	}
     private UILabel GetAvailableLabel()
     {
@@ -269,13 +289,19 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 		if (totalRound > historyRound) {
 			PlayerSetting.Instance.SetSetting("Round",totalRound);
+			achivementLabel.gameObject.SetActive(true);
+			new DelayCall().Init(4f,HideAchivement);
+			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
 		}
 
-		//roundValue.text = round.ToString ();
+		roundValue.text = round.ToString ();
 
 		inNewRound = true;
 	}
-
+	public void HideAchivement()
+	{
+		achivementLabel.gameObject.SetActive(false);
+	}
     public void ReinforceWall(Vector3 worldPosition)
     {
 
@@ -283,7 +309,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
         UILabel label = wallTip;
         label.gameObject.SetActive(true);
-        label.text = "+1";
+        //label.text = "+1";
 
         label.color = Wall.GetLevelColor(Board.Instance.round);
         TipAnimateTask task = new TipAnimateTask();
@@ -291,7 +317,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
         task.speed = .1f;
         task.birthPosition = nguiCamera.ScreenToWorldPoint(Camera.main.WorldToScreenPoint(worldPosition));
 		level += 1;
-		roundValue.text = level.ToString ();
+		//roundValue.text = level.ToString ();
 
         animateTips.Add(task);
     }
@@ -395,19 +421,10 @@ public class HudMenu : MenuSingleton<HudMenu>{
 			scoreLabel.transform.localScale = new Vector3(ratio,ratio,ratio);
 			if(recordLabel.gameObject.activeInHierarchy)recordLabel.transform.localScale = scoreLabel.transform.localScale;
 		}
-		if (inTransitionIn) {
-			transitionInCounter.Tick(Time.deltaTime);
-			float percent = Mathf.Max(0, 1f - transitionInCounter.percent);
-			scoreLabel.transform.localPosition = new Vector3(scoreLabel.transform.localPosition.x, headYPosition + 50f*percent,scoreLabel.transform.localPosition.z);
-			roundLabel.transform.localPosition = new Vector3(roundLabel.transform.localPosition.x, headYPosition + 50f*percent,roundLabel.transform.localPosition.z);
-			roundValue.transform.localPosition = new Vector3(roundValue.transform.localPosition.x, headYPosition + 50f*percent,roundValue.transform.localPosition.z);
-			skillButton.transform.localPosition = new Vector3(skillButton.transform.localPosition.x, footYPosition - 50f*percent,skillButton.transform.localPosition.z);
-			pauseButton.transform.localPosition = new Vector3(pauseButton.transform.localPosition.x, footYPosition - 50f*percent,pauseButton.transform.localPosition.z);
-
-			if(transitionInCounter.Expired())
-			{
-				inTransitionIn = false;
-			}
+		resetSkillButtonPositionCounter.Tick (Time.deltaTime);
+		if (resetSkillButtonPositionCounter.Expired ()) {
+			resetSkillButtonPositionCounter.Reset();
+			InitLayout();
 		}
 		if (inNewRound) {
 			if(roundStep == 0)

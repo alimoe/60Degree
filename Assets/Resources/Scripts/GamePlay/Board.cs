@@ -53,6 +53,8 @@ public class Board : Core.MonoSingleton<Board> {
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
 	public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
 	public delegate void OnDropDonePiece();
+	public delegate void OnTryToGetawayCorePiece();
+	public delegate void OnTryToGetawayOverflowPiece();
 	public delegate void OnHitRound(int round);
     public delegate void OnWallProgress(Vector3 position);
 
@@ -60,7 +62,8 @@ public class Board : Core.MonoSingleton<Board> {
     public event OnEliminatePiece onEliminatePieceCallback;
     public event OnDropDonePiece onDropDownPieceCallback;
     public event OnWallProgress onWallProgressCallback;
-
+	public event OnTryToGetawayCorePiece OnTryToGetawayCorePieceCallback;
+	public event OnTryToGetawayOverflowPiece OnTryToGetawayOverflowPieceCallback;
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
 	private Counter generateCounter = new Counter (20f);
@@ -901,14 +904,14 @@ public class Board : Core.MonoSingleton<Board> {
         wall.Invincible();
 		freezeWallIndex++;
 		int currentRound = freezeWallIndex/(3*segment) + 1;
+
+		if (onWallProgressCallback != null) onWallProgressCallback(wall.transform.position);
 		if(round!=currentRound)
 		{
 			round = currentRound;
 			if(onHitRoundCallback!=null)onHitRoundCallback(round);
 			ResetWalls();
 		}
-
-        if (onWallProgressCallback != null) onWallProgressCallback(wall.transform.position);
 
         UpdateGameplayDifficulty();
 
@@ -926,21 +929,33 @@ public class Board : Core.MonoSingleton<Board> {
 			Hexagon first;
 			Hexagon hexagon = GetHexagonAt(piece.x,piece.y);
 			hexagon.RemovePiece(piece);
-
-			if(step<count && existPiece.Count == 0 && !piece.isCore)
+			if(piece.isCore)
 			{
-				MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
-				step++;
-				if(lastPiece!=null&&lastPiece.isUpper == piece.isUpper)step++;
-				pieces.Remove(piece);
-				lastPiece = piece;
-				Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition( );
-				delayTime+=length*2f/moveSpeed;
-				moveBy.Init(piece, trackingPosition,finalPosition, moveSpeed*.4f,delayTime,OnPopEliminateAnimationDone);
+				if(OnTryToGetawayCorePieceCallback!=null)OnTryToGetawayCorePieceCallback();
+			}
+			if(step>=count)
+			{
+				if(OnTryToGetawayOverflowPieceCallback!=null)OnTryToGetawayOverflowPieceCallback();
+			}
+			if(step<count && existPiece.Count == 0 &&!piece.isCore)
+			{
+				//if(!piece.isCore)
+				{
+					MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
+					step++;
+					if(lastPiece!=null&&lastPiece.isUpper == piece.isUpper)step++;
+					pieces.Remove(piece);
+					lastPiece = piece;
+					Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition( );
+					delayTime+=length*2f/moveSpeed;
+					moveBy.Init(piece, trackingPosition,finalPosition, moveSpeed*.4f,delayTime,OnPopEliminateAnimationDone);
+				}
+
 
 			}
 			else
 			{
+
 				if(existPiece.Count == 0)
 				{
 					step = GetEmptyPieceSlotCount(piece,direction);
@@ -954,6 +969,8 @@ public class Board : Core.MonoSingleton<Board> {
 					delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY,0);
 					
 				}
+
+
 			}
 		}
 
@@ -1221,9 +1238,9 @@ public class Board : Core.MonoSingleton<Board> {
 		float time = 0;
 		int step = 0;
 		MovePiece(piece, direction, ref time, ref step);
-		CommitPieceStateChange ();
-		CommitHexagonStateChange ();
 		if (step > 0) {
+			CommitPieceStateChange ();
+			CommitHexagonStateChange ();
 			inProcess = true;
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_MOVE);
 			new DelayCall().Init(time, OnPiecesMoveDone);
@@ -1355,7 +1372,7 @@ public class Board : Core.MonoSingleton<Board> {
             bool isUpper = currentPiece.isUpper;
 			//Debug.LogWarning("CurrentPiece "+ currentPiece);
 			BoardDirection cross;
-
+			float passedTime = 0;
 			if(hexagon!=null )
 			{
 				hexagon.RemovePiece(currentPiece);
@@ -1363,14 +1380,14 @@ public class Board : Core.MonoSingleton<Board> {
                 while (count <= step)
                 {
 					cross = GetCrossDirection(isUpper,direction);
-
+					passedTime = (float)count*length/moveSpeed;
 					if (hexagon != null)
 					{
 						Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
 						//Debug.LogWarning(neighbour+" isUpper"+isUpper);
 
 						Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
-						if(crossPiece!=null)crossPiece.OnPassByPiece(direction);
+						if(crossPiece!=null)crossPiece.OnPassByPiece(direction, passedTime);
 					}
 
 
@@ -1380,19 +1397,19 @@ public class Board : Core.MonoSingleton<Board> {
 
                     if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
-						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), (float)count*length/moveSpeed);
+						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), passedTime);
                     }
 
                     count++;
                     isUpper = !isUpper;
                 }
-
+				passedTime = (float)count*length/moveSpeed;
 				cross = GetCrossDirection(isUpper,direction);
 				if (hexagon != null)
 				{
 					Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
 					Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
-					if(crossPiece!=null)crossPiece.OnPassByPiece(direction);
+					if(crossPiece!=null)crossPiece.OnPassByPiece(direction,passedTime);
 				}
                 if (isUpper && hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
                 {

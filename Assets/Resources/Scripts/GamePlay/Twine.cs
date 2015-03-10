@@ -78,7 +78,13 @@ public class Twine : Entity {
 			g.SetActive(false);
 		}
 	}
-    public void OnPass(BoardDirection direction)
+	public void FadeAway(object target)
+	{
+		GameObject rope = target as GameObject;
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ROPE);
+		new FadeAway().Init(rope,.2f,OnFadeAway);
+	}
+    public void OnPass(BoardDirection direction, float time)
     {
 		//Debug.LogWarning ("OnPass " + direction);
 		int last = life;
@@ -91,8 +97,8 @@ public class Twine : Entity {
 					if (left.gameObject.activeInHierarchy)
 					{
 						life--;
-						new FadeAway().Init(left.gameObject,.2f,OnFadeAway);
-							
+						//new FadeAway().Init(left.gameObject,.2f,OnFadeAway);
+						new DelayCall().Init(time,left.gameObject,FadeAway);
 					}
 				}
 				else
@@ -100,7 +106,8 @@ public class Twine : Entity {
 					if (right.gameObject.activeInHierarchy)
 					{
 						life--;
-						new FadeAway().Init(right.gameObject,.2f,OnFadeAway);
+						//new FadeAway().Init(right.gameObject,.2f,OnFadeAway);
+						new DelayCall().Init(time,right.gameObject,FadeAway);
 					}
 				}
                 break;
@@ -111,7 +118,8 @@ public class Twine : Entity {
 					if (right.gameObject.activeInHierarchy)
 					{
 						life--;
-						new FadeAway().Init(right.gameObject,.2f,OnFadeAway);
+						//new FadeAway().Init(right.gameObject,.2f,OnFadeAway);
+						new DelayCall().Init(time,right.gameObject,FadeAway);
 					}
 				}
 			else
@@ -119,7 +127,8 @@ public class Twine : Entity {
 				if (left.gameObject.activeInHierarchy)
 				{
 					life--;
-					new FadeAway().Init(left.gameObject,.2f,OnFadeAway);
+					//new FadeAway().Init(left.gameObject,.2f,OnFadeAway);
+					new DelayCall().Init(time,left.gameObject,FadeAway);
 				}
 			}
                
@@ -129,12 +138,13 @@ public class Twine : Entity {
                 if (verticle.gameObject.activeInHierarchy)
                 {
                     life--;
-					new FadeAway().Init(verticle.gameObject,.2f,OnFadeAway);
+					//new FadeAway().Init(verticle.gameObject,.2f,OnFadeAway);
+					new DelayCall().Init(time,verticle.gameObject,FadeAway);
                 }
                 break;
 
         }
-		if (last != life)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ROPE);
+
 						
         
     }

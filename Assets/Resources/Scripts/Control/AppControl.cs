@@ -123,6 +123,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             }
             else
             {
+				HudMenu.Instance.HideHint();
                 if (skills.Count > 0)
                 {
                     Skill skill = skills[0];
@@ -130,8 +131,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                     if (result) skills.RemoveAt(0);
 
 					Board.Instance.GeneratePiece();
-					HudMenu.Instance.HideHint();
-
+					
                 }
 				else
 				{

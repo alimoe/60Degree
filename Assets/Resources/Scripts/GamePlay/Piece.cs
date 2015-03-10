@@ -40,11 +40,12 @@ public class Piece : Entity {
 	private Counter cokeCounter = new Counter(4f);
 	public bool moving = false;
 	private BoardDirection passSession;
-	
+	private float passSessionTime;
 	private Vector3 _centerPosition;
 	private static Color32 BLACK = new Color32(60,60,60,0);
 	private Color32 defaultColor;
 	private Shake shaker;
+
 	public Vector3 centerPosition
 	{
 		get{
@@ -119,7 +120,10 @@ public class Piece : Entity {
     {
         return state == PieceState.Normal || state == PieceState.Coke;
     }
-
+	public void SetState(object s)
+	{
+		SetState ((PieceState)s);
+	}
     public void SetState(PieceState s)
     {
         if (s == PieceState.Normal)
@@ -204,11 +208,11 @@ public class Piece : Entity {
 		}
 	}
 
-    public void OnPassByPiece(BoardDirection direction)
+    public void OnPassByPiece(BoardDirection direction,float time)
     {
 		//Debug.LogWarning ("OnPassBy " + this);
 		passSession = direction;
-        
+		passSessionTime = time;
     }
 	public void CommitChanges()
 	{
@@ -221,10 +225,10 @@ public class Piece : Entity {
 			{
 				if (twine != null)
 				{
-					twine.OnPass(passSession);
+					twine.OnPass(passSession,passSessionTime);
 					if (twine.life == 0)
 					{
-						SetState(PieceState.Normal);
+						new DelayCall().Init(passSessionTime+.2f,PieceState.Normal,SetState);
 					}
 				}
 				passSession = BoardDirection.None;
