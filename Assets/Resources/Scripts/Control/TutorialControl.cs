@@ -11,6 +11,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	private List<Piece> pieces;
 	private List<TutorialStep> steps;
 	private Arrow arrow;
+    private Counter idleCount = new Counter(3f);
 	private string step1Hint = "Tap on the puzzle and move [00ff00]right[-]";
 	private string step2Hint = "[00ff00]3[-] puzzles [00ff00]side by side[-] will be eliminated";
     private string step3Hint = "You can move stack puzzles from the [00ff00]bottom[-]";
@@ -28,7 +29,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
     private string step15Hint = "Puzzle might be [00ff00]tied[-] in a grid";
     private string step16Hint = "You can free a puzzle by [00ff00]cut[-] its edgets";
     private string step17Hint = "[00ff00]Cut[-] the final edget to free the puzzle";
-    private string step18Hint = "[00ff00]Tap to Start[-]";
+    private string step18Hint = "Tutorial Completed! \n[00ff00]Tap to Start[-]";
 	private string[] hints;
 	void Awake () {
         base.Awake();
@@ -37,7 +38,22 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	
 	// Update is called once per frame
 	void Update () {
+        if (isActive)
+        {
+            idleCount.Tick(Time.deltaTime);
+            if (idleCount.Expired())
+            {
+                idleCount.Reset();
+                if (currentStep < steps.Count)
+                {
+                    Piece piece = pieces[steps[currentStep].target];
+                    piece.Shake();
+                }
+            }
+        }
+       
 	    
+
 	}
 	void Start()
 	{
@@ -142,6 +158,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	public void StopArrow()
 	{
 		if(arrow!=null)arrow.Stop ();
+        idleCount.Reset();
 	}
 	public void StepThreeComplete()
 	{

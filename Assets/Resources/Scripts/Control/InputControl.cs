@@ -6,6 +6,11 @@ public class InputControl : Core.MonoSingleton<InputControl> {
 
 	private Vector3 currentPressedPosition;
 
+    public void ChangePressedPosition(Vector3 position)
+    {
+        currentPressedPosition = position;
+    }
+
 	void Update () {
 		
 		if (Input.GetMouseButtonDown (0)) {
@@ -13,6 +18,12 @@ public class InputControl : Core.MonoSingleton<InputControl> {
 			currentPressedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			AppControl.Instance.HandleTap(currentPressedPosition);
 		}
+
+        if (Input.GetMouseButton(0))
+        {
+            AppControl.Instance.HandleDrag(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
+
 		if (Input.GetMouseButtonUp (0)) {
 			//Debug.Log("Input.mousePosition"+Input.mousePosition);
 			Vector3 delta = Camera.main.ScreenToWorldPoint(Input.mousePosition) - currentPressedPosition;

@@ -300,7 +300,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 		inNewRound = true;
 
-		EnviormentControl.Instance.Blink (Wall.GetLevelColor (round - 1));
+        if (round>1) EnviormentControl.Instance.Blink(Wall.GetLevelColor(round - 1));
 
 	}
 	public void HideAchivement()

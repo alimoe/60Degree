@@ -116,6 +116,15 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         HudMenu.Instance.EnergyRefill();
     }
 
+    public void HandleDrag(Vector3 position)
+    {
+        if (Board.Instance.selected == null)
+        {
+            Board.Instance.SelectFrom(position);
+            if (Board.Instance.selected!=null) InputControl.Instance.ChangePressedPosition(position);
+        }
+    }
+
 	public void HandleTap(Vector3 position)
 	{
 		if (state == GameState.GamePlaying) 

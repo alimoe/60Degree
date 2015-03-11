@@ -42,7 +42,7 @@ public class Piece : Entity {
 	private BoardDirection passSession;
 	private float passSessionTime;
 	private Vector3 _centerPosition;
-	private static Color32 BLACK = new Color32(60,60,60,0);
+	private static Color32 BLACK = new Color32(60,60,60,255);
 	private Color32 defaultColor;
 	private Shake shaker;
 

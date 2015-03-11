@@ -46,7 +46,9 @@ public class Board : Core.MonoSingleton<Board> {
 	private Vector3 xAxis;
 	private Vector3 yAxis;
 	private bool lastTimeIsUpper = false;
-  	
+
+    public Piece selected;
+
     private BoardDirection lastTimeDirection;
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
@@ -1258,16 +1260,18 @@ public class Board : Core.MonoSingleton<Board> {
         return result;
     }
 
-	public void SelectFrom(Vector3 position)
+    public void SelectFrom(Vector3 position)
 	{
 		if (inProcess)return;
 		Piece piece = GetPieceFromPosition (position);
 		if (piece != null)piece.Shake ();
-						
+        selected = piece;
 	}
 
 	public void MoveFrom(Vector3 position,BoardDirection direction)
 	{
+        selected = null;
+
 		if (inProcess)return;
 		
 		Piece piece = GetPieceFromPosition (position);
