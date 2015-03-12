@@ -46,11 +46,11 @@ public class IOSControl : Core.MonoSingleton<IOSControl> {
         float ratio = (float)Screen.height / (float)Screen.width;
         if (ratio > 1.7f)
         {
-            Camera.main.orthographicSize = 7;
+            Camera.main.orthographicSize = 6.7f;
         }
         else
         {
-            Camera.main.orthographicSize = 6;
+            Camera.main.orthographicSize = 5.5f;
         }
     }
 	public void OnGetProduct(string s){
