@@ -33,13 +33,26 @@ public class IOSControl : Core.MonoSingleton<IOSControl> {
 	private static extern void ShowLeadboard();
 
 	void Start () {
+        InitResolution();
 #if UNITY_IPHONE
+        
 		InitIAPManager();
 		InitAppirater();
 		InitGameCenterManager();
 #endif
-	}
-
+                  }
+    public void InitResolution()
+    {
+        float ratio = (float)Screen.height / (float)Screen.width;
+        if (ratio > 1.7f)
+        {
+            Camera.main.orthographicSize = 7;
+        }
+        else
+        {
+            Camera.main.orthographicSize = 6;
+        }
+    }
 	public void OnGetProduct(string s){
 		productInfo.Add (s);
 		//BuyProduct (s);
