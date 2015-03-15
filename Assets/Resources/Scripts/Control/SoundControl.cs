@@ -50,14 +50,14 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 
 	public string Track1 = "01_The Initiation";
 	public string Track2 = "03_Falling Through the Sun";
-	public string Track3 = "07_Beautiful Desolate Spaces";
+	
 	public List<string> Tracks;
 	public int currentTrack;
     void Awake ()
     {
         base.Awake();
         trasitionCounter = new Counter(volume);
-		Tracks = new List<string>{Track1,Track2,Track3};
+		Tracks = new List<string>{Track1,Track2};
 
     }
     public void PlaySound(AudioClip clip)

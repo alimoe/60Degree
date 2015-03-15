@@ -39,7 +39,8 @@ public class StartMenu : MenuSingleton<StartMenu> {
 
 		staffButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
 		helpButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
-		leaderboardButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
+		//leaderboardButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
+		leaderboardButton.gameObject.SetActive (false);
 		transitionOutState = false;
 		
 		foreach (var i in letters) {

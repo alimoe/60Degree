@@ -10,7 +10,7 @@ public class SkillButton : MonoBehaviour {
 	private UIButton button;
 	private int lastIcon;
 	private Transform maxIcon;
-	private int grade = 9;
+	private int grade = 12;
 	private int progress;
 
 	void Start () {
@@ -53,20 +53,21 @@ public class SkillButton : MonoBehaviour {
 
 	private int CompareProgress(Transform a, Transform b)
 	{
-		int aIndex = int.Parse(a.name.Substring (8, 1));
-		int bIndex = int.Parse(b.name.Substring (8, 1));
+		
+		int aIndex = int.Parse(a.name.Substring (8, a.name.Length - 8));
+		int bIndex = int.Parse(b.name.Substring (8, b.name.Length - 8));
 
 		return aIndex - bIndex;
 	}
     public int GetRemainingProgress()
     {
-        return 28 - progress;
+        return 37 - progress;
     }
 	public void UpdateIconAndProgress()
 	{
 		int icon = progress / grade;
 
-		int valide = (progress - icon*9 -1) % 8;
+		int valide = (progress - icon*12 -1) % 11;
 
 		for (int i = 0; i<progresses.Count; i++) {
 			if(i <= valide)progresses[i].gameObject.SetActive(true);
@@ -101,7 +102,7 @@ public class SkillButton : MonoBehaviour {
 	}
 	public void AddProgress(int p)
 	{
-		if (progress > 27)return;
+		if (progress > 36)return;
 		
 		progress += p;
 		if (progress / grade > lastIcon) {

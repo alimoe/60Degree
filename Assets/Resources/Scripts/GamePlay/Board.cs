@@ -68,7 +68,7 @@ public class Board : Core.MonoSingleton<Board> {
 	public event OnTryToGetawayOverflowPiece OnTryToGetawayOverflowPieceCallback;
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
-	private Counter generateCounter = new Counter (20f);
+	private Counter generateCounter = new Counter (15f);
 	private List<GenerateType> generateType ;
 	private bool inProcess = false;
 
@@ -1262,7 +1262,7 @@ public class Board : Core.MonoSingleton<Board> {
 
     public void SelectFrom(Vector3 position)
 	{
-		if (inProcess)return;
+
 		Piece piece = GetPieceFromPosition (position);
 		if (piece != null)piece.Shake ();
         selected = piece;
@@ -1639,11 +1639,12 @@ public class Board : Core.MonoSingleton<Board> {
 		CheckBoard();
 		new DelayCall ().Init (.2f, GeneratePiece);
 		new DelayCall ().Init (.4f, CheckBoard);
-		new DelayCall ().Init (.45f, CheckMovement);
-		new DelayCall ().Init (.45f, EndProcess);
+		new DelayCall ().Init (.42f, CheckMovement);
+		new DelayCall ().Init (.42f, EndProcess);
 		RepearWalls ();
 		GenerateSpecialItem ();
 	}
+
 	private void EndProcess()
 	{
 		inProcess = false;

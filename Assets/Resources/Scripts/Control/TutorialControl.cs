@@ -12,23 +12,23 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	private List<TutorialStep> steps;
 	private Arrow arrow;
     private Counter idleCount = new Counter(3f);
-	private string step1Hint = "Tap on the puzzle and move [00ff00]right[-]";
+	private string step1Hint = "Tap on the puzzle and move to the [00ff00]right[-]";
 	private string step2Hint = "[00ff00]3[-] puzzles [00ff00]side by side[-] will be eliminated";
-    private string step3Hint = "You can move stack puzzles from the [00ff00]bottom[-]";
-    private string step4Hint = "Eliminate the puzzle with [00ff00]core color[-] will upgrade [00ff00]wall[-]";
-	private string step5Hint = "You can break a wall by hit it [00ff00]twice[-]";
-	private string step6Hint = "Once the wall [00ff00]broken[-], You can send puzzles out";
-    private string step7Hint = "Puzzles be [00ff00]chained[-] can be [00ff00]moved together[-]";
-    private string step8Hint = "You can [00ff00]break the chain [-]by eliminate one of these puzzles";
+    private string step3Hint = "You can move stacked puzzles from the [00ff00]bottom[-]";
+    private string step4Hint = "Eliminate the puzzle with [00ff00]a core[-] will upgrade [00ff00]wall[-]";
+	private string step5Hint = "You can break a wall by hitting it [00ff00]twice[-]";
+	private string step6Hint = "Once the wall is [00ff00]broken[-], You can wipe the puzzles out";
+    private string step7Hint = "[00ff00]Chained[-] puzzles can only be [00ff00]moved together[-]";
+    private string step8Hint = "You can [00ff00]break the chain [-]by eliminating one of these puzzles";
     private string step9Hint = "Path could be [00ff00]blocked[-] for a while";
-    private string step10Hint = "But you always have [00ff00]other ways[-] to go";
-    private string step11Hint = "[00ff00]Freezed[-] puzzle can't be move";
-    private string step12Hint = "You can [00ff00]break[-] the ice by eliminate the puzzle [00ff00]twice[-]";
-    private string step13Hint = "[00ff00]Cluster[-] will [00ff00]disable[-] the puzzle for a while";
-    private string step14Hint = "[00ff00]Disabled[-] puzzle can't be eliminate";
-    private string step15Hint = "Puzzle might be [00ff00]tied[-] in a grid";
-    private string step16Hint = "You can free a puzzle by [00ff00]cut[-] its edgets";
-    private string step17Hint = "[00ff00]Cut[-] the final edget to free the puzzle";
+    private string step10Hint = "But you can always find [00ff00]other ways[-]";
+    private string step11Hint = "[00ff00]Frozen[-] puzzle can't be move";
+    private string step12Hint = "You can [00ff00]break[-] the ice by eliminating the puzzle [00ff00]twice[-]";
+	private string step13Hint = "Once a puzzle passed over a [00ff00]black hole[-], it will [00ff00]be disabled[-]";
+    private string step14Hint = "[00ff00]Disabled[-] puzzle can't be eliminated";
+	private string step15Hint = "Puzzle might be [00ff00]tied[-] in a knot";
+	private string step16Hint = "You can untie a knotted puzzle by [00ff00]slicing[-] others by its three edgets";
+    private string step17Hint = "[00ff00]Untie[-] the final edget to free the puzzle";
     private string step18Hint = "Tutorial Completed! \n[00ff00]Tap to Start[-]";
 	private string[] hints;
 	void Awake () {
@@ -106,7 +106,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
         step = new TutorialStep(19, BoardDirection.Right, 14, 0.5f, Vector2.zero, StopArrow, StepFourtweenComplete);
         steps.Add(step);
 
-        step = new TutorialStep(19, BoardDirection.TopLeft, 15, 0.5f, new Vector2(-.3f, 0), StopArrow, StepFifthtweenComplete);
+        step = new TutorialStep(19, BoardDirection.TopLeft, 15, 0.5f, new Vector2(0, 0), StopArrow, StepFifthtweenComplete);
         steps.Add(step);
 
         step = new TutorialStep(20, BoardDirection.TopRight, 16, 0.5f, new Vector2(.3f, 0), StopArrow, null);

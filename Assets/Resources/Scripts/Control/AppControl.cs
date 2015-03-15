@@ -100,15 +100,15 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 
 	public void ReportScore(int score)
 	{
-		IOSControl.Instance.ReportGameScore (score);
+		ExternalControl.Instance.ReportGameScore (score);
 	}
 	public void PurchaseEnergy()
 	{
-		IOSControl.Instance.Purchase (EnergyRefill);
+		ExternalControl.Instance.Purchase (EnergyRefill);
 	}
 	public void ShowLeadboard()
 	{
-		IOSControl.Instance.ShowGameCenterLeaderBoard ();
+		ExternalControl.Instance.ShowGameCenterLeaderBoard ();
 	}
     public void EnergyRefill()
     {
@@ -135,18 +135,23 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             }
             else
             {
-				HudMenu.Instance.HideHint();
+
                 if (skills.Count > 0)
                 {
                     Skill skill = skills[0];
                     bool result = skill.Excute(position);
-                    if (result) skills.RemoveAt(0);
+                    if (result)
+					{
+						skills.RemoveAt(0);
+						HudMenu.Instance.HideHint();
+						Board.Instance.GeneratePiece();
+					}
 
-					Board.Instance.GeneratePiece();
 					
                 }
 				else
 				{
+					HudMenu.Instance.HideHint();
 					Board.Instance.SelectFrom(position);
 				}
             }

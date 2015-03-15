@@ -30,7 +30,7 @@ public class InputControl : Core.MonoSingleton<InputControl> {
 			if(delta.magnitude<0.15f)return;
 			float angle = (Mathf.Atan2(delta.y,delta.x)/Mathf.PI)*180f;
 			if(angle<0)angle = 360f+angle;
-			float thred = 20f;
+			float thred = 30f;
 			if(angle< thred || angle>360f - thred)
 			{
 				AppControl.Instance.HandleSwipe(currentPressedPosition,BoardDirection.Right);

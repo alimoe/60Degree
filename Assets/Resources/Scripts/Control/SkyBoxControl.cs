@@ -95,9 +95,14 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
     public void OnChangeRound(int round)
     {
         SkyColor color = (SkyColor)((round - 1) % 5);
-        ChangeColor(color);
+		new DelayCall ().Init (1.5f, color, ChangeColor);
+     	
     }
-
+	public void ChangeColor(object target)
+	{
+		SkyColor color = (SkyColor) target;
+		ChangeColor (color);
+	}
     public void ChangeColor(SkyColor color)
     {
         if (inTransition) return;
@@ -112,21 +117,21 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
         {
 
 			tasks.Add(new LoadTask().Init(skyBox,0.05f,"_UpTex2",folderName + SkyFace.Up.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.3f,"_DownTex2",folderName + SkyFace.Down.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.5f,"_BackTex2",folderName + SkyFace.Back.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.7f,"_FrontTex2",folderName + SkyFace.Front.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.9f,"_LeftTex2",folderName + SkyFace.Left.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,1.1f,"_RightTex2",folderName + SkyFace.Right.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,.5f,"_DownTex2",folderName + SkyFace.Down.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,1f,"_BackTex2",folderName + SkyFace.Back.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,1.5f,"_FrontTex2",folderName + SkyFace.Front.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,2.0f,"_LeftTex2",folderName + SkyFace.Left.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,2.5f,"_RightTex2",folderName + SkyFace.Right.ToString()));
             
         }
         else
         {
 			tasks.Add(new LoadTask().Init(skyBox,0.05f,"_UpTex",folderName + SkyFace.Up.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.3f,"_DownTex",folderName + SkyFace.Down.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.5f,"_BackTex",folderName + SkyFace.Back.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.7f,"_FrontTex",folderName + SkyFace.Front.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,.9f,"_LeftTex",folderName + SkyFace.Left.ToString()));
-			tasks.Add(new LoadTask().Init(skyBox,1.1f,"_RightTex",folderName + SkyFace.Right.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,.5f,"_DownTex",folderName + SkyFace.Down.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,1f,"_BackTex",folderName + SkyFace.Back.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,1.5f,"_FrontTex",folderName + SkyFace.Front.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,2.0f,"_LeftTex",folderName + SkyFace.Left.ToString()));
+			tasks.Add(new LoadTask().Init(skyBox,2.5f,"_RightTex",folderName + SkyFace.Right.ToString()));
 
         }
 

@@ -43,8 +43,8 @@ public class HudMenu : MenuSingleton<HudMenu>{
 	private int historyRound;
 	private int historyScore;
 
-	private string corePieceWarningMessage = "Puzzle with core color [00ff00]can't be send out[-] the Broken wall";
-	private string overFlowWarningMessage = "The Broken wall can only send [00ff00]4 puzzles[-] out at one momenet";
+	private string corePieceWarningMessage = "Core Puzzle [00ff00]can't be wiped[-]";
+	private string overFlowWarningMessage = "You can only wipe out [00ff00]4 puzzles[-] through broken wall at a time";
 	void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();
@@ -121,7 +121,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 		progressCounter = new Counter (.5f);
 		threholdCounter = new Counter (2f);
-		threholdMaxCounter = new Counter (10f);
+		threholdMaxCounter = new Counter (13f);
 		totalScoreCounter = new Counter (.5f);
 		resetSkillButtonPositionCounter = new Counter (5f);
         initPosition = scoreLabel.transform.localPosition;
