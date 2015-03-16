@@ -626,7 +626,7 @@ public class Board : Core.MonoSingleton<Board> {
 		int up = 0;
 		int down = 0;
 		foreach (var piece in pieces) {
-			if(piece.type == color)
+			if(piece.colorType == color)
 			{
 				if(piece.isUpper)up++;
 				else down++;
@@ -799,7 +799,7 @@ public class Board : Core.MonoSingleton<Board> {
 			{
 				isCheck.Add(candidate);
 				//Debug.Log("candidate"+candidate);
-				List<Piece> neighbour = GetSurroundSameColorPiece(candidate,candidate.type);
+				List<Piece> neighbour = GetSurroundSameColorPiece(candidate,candidate.colorType);
 				//Debug.Log("candidate surround count "+neighbour.Count);
 				List<Piece> eliminateCandidate = new List<Piece> (neighbour.ToArray());
 				eliminate.Clear();
@@ -817,7 +817,7 @@ public class Board : Core.MonoSingleton<Board> {
 					if(!isCheck.Contains(friend))
 					{
 						isCheck.Add(friend);
-						List<Piece> friends = GetSurroundSameColorPiece(friend,friend.type);
+						List<Piece> friends = GetSurroundSameColorPiece(friend,friend.colorType);
 						//Debug.Log("friends surround count "+friends.Count);
 						eliminateCandidate.AddRange(friends);
 					}
@@ -864,7 +864,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		if (eliminate.Count > 0) {
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ELIMINATE);
-			if (onEliminatePieceCallback != null)onEliminatePieceCallback (eliminate.Count, eliminate [0].type, eliminate [0].transform.position);
+			if (onEliminatePieceCallback != null)onEliminatePieceCallback (eliminate.Count, eliminate [0].colorType, eliminate [0].transform.position);
 		}
 
 	}
@@ -1106,7 +1106,7 @@ public class Board : Core.MonoSingleton<Board> {
 	{
 		List<Piece> same = new List<Piece> ();
 		foreach (var i in pieces) {
-			if(piece.type == i.type)same.Add(i);
+			if(piece.colorType == i.colorType)same.Add(i);
 		}
 		return same;
 	}
@@ -1133,7 +1133,7 @@ public class Board : Core.MonoSingleton<Board> {
 		List<Piece> neighbour = GetSurroundPiece (piece);
 		int index = neighbour.Count - 1;
 		while (index>=0) {
-			if(neighbour[index].type != color)
+			if(neighbour[index].colorType != color)
 			{
 				neighbour.RemoveAt(index);
 			}

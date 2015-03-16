@@ -32,13 +32,15 @@ public class Piece : Entity {
 	private Vector3 heightVector;
 
 	public PieceColor type;
+    public PieceColor colorType;
 	public float scale = 0f;
 	public bool isDead;
 	public Twine twine;
     public Ice ice;
-	public bool coke;
+    private Clock bomb;
 
-	private Counter cokeCounter = new Counter(4f);
+	public bool coke;
+    private Counter cokeCounter = new Counter(4f);
 	public bool moving = false;
 	private BoardDirection passSession;
 	private float passSessionTime;
@@ -46,7 +48,7 @@ public class Piece : Entity {
 	private static Color32 BLACK = new Color32(60,60,60,255);
 	private Color32 defaultColor;
 	private Shake shaker;
-    private Clock bomb;
+    
 	public Vector3 centerPosition
 	{
 		get{
@@ -108,6 +110,8 @@ public class Piece : Entity {
 		ice = null;
 		coke = false;
 		shaker = null;
+        colorType = type;
+        defaultColor = Wall.GetColor(type);
         this.GetComponent<SpriteRenderer>().color = defaultColor;
 		passSession = BoardDirection.None;
 		cokeCounter.Reset ();
@@ -122,7 +126,19 @@ public class Piece : Entity {
     {
         return state == PieceState.Normal || state == PieceState.Coke;
     }
-
+    public void ChangeColor(PieceColor color, bool instant = true)
+    {
+        colorType = color;
+        defaultColor = Wall.GetColor(color);
+        if (instant)
+        {
+            this.GetComponent<SpriteRenderer>().color = defaultColor;
+        }
+        else
+        {
+            new TurnColor().Init(this.gameObject, .3f, defaultColor, null);
+        }
+    }
 	public void SetState(object s)
 	{
 		SetState ((PieceState)s);
@@ -328,6 +344,7 @@ public class Piece : Entity {
 		length = l;
 		height = Mathf.Sin (Mathf.PI / 3f) * length;
 		heightVector = Vector3.up * height;
+        colorType = this.type;
 		SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
 		float originalLength = spriteRender.sprite.bounds.extents.x*2f;
         scale = length / originalLength;

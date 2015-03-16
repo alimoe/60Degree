@@ -31,7 +31,7 @@ public class HexagonEditor : Editor
         upperPiece = hexagon.upper != null;
         lowerPiece = hexagon.lower != null;
         upperPiece = EditorGUILayout.Toggle("Upper Piece", upperPiece);
-        lowerPiece = EditorGUILayout.Toggle("Upper Piece", lowerPiece);
+        lowerPiece = EditorGUILayout.Toggle("Lower Piece", lowerPiece);
 
         
         UpdateHexagonState();
@@ -41,15 +41,18 @@ public class HexagonEditor : Editor
     public void UpdatePiece()
     {
         Hexagon hexagon = this.target as Hexagon;
+        
         if (upperPiece && hexagon.upper == null)
         {
             GameObject pieceObj = Instantiate(Resources.Load("Prefabs/Blue_0")) as GameObject;
             Piece piece = pieceObj.GetComponent<Piece>();
+            piece.SetLength(hexagon.length);
             hexagon.SetPiece(piece, true);
         }
         else if (!upperPiece && hexagon.upper!=null)
         {
-            GameObject.DestroyImmediate(hexagon.upper);
+            hexagon.upper.gameObject.SetActive(false);
+            GameObject.DestroyImmediate(hexagon.upper.gameObject);
             hexagon.upper = null;
         }
 
@@ -58,11 +61,13 @@ public class HexagonEditor : Editor
         {
             GameObject pieceObj = Instantiate(Resources.Load("Prefabs/Blue_1")) as GameObject;
             Piece piece = pieceObj.GetComponent<Piece>();
+            piece.SetLength(hexagon.length);
             hexagon.SetPiece(piece, false);
         }
         else if (!lowerPiece && hexagon.lower != null)
         {
-            GameObject.DestroyImmediate(hexagon.lower);
+            hexagon.lower.gameObject.SetActive(false);
+            GameObject.DestroyImmediate(hexagon.lower.gameObject);
             hexagon.lower = null;
         }
 

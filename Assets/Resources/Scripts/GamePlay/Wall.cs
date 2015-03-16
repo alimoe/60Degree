@@ -84,6 +84,27 @@ public class Wall :MonoBehaviour {
 		}
 		return levels[0];
 	}
+    public static Color32 GetColor(PieceColor c)
+    {
+        switch (c) {
+			case PieceColor.Red:
+				return levels[4];
+			break;
+			case PieceColor.Blue:
+				return levels[2];
+			break;
+			case PieceColor.Green:
+				return levels[3];
+			break;
+			case PieceColor.Purple:
+				return levels[1];
+			break;
+			case PieceColor.Yellow:
+				return levels[0];
+			break;
+		}
+		return levels[0];
+    }
 	public void SetFace(WallFace wallFace)
 	{
 		face = wallFace;
