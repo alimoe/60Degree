@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
-using GooglePlayGames;
 using UnityEngine.SocialPlatforms;
 
 public class ExternalControl : Core.MonoSingleton<ExternalControl> {
@@ -68,8 +67,6 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 		//BuyProduct (s);
 		//Debug.Log ("OnGetProduct " + s);
 	}
-	
-	//获取商品回执
 	public void OnPurchaseSuccess(string s){
 		//Debug.Log ("OnPurchaseSuccess " + s);
 		if (onPurchaseSuccessCallback != null)onPurchaseSuccessCallback ();

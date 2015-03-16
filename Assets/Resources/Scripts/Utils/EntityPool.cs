@@ -30,12 +30,20 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
         pool.Add("Twine", Resources.Load("Prefabs/Twine"));
         pool.Add("Ice", Resources.Load("Prefabs/Ice"));
         pool.Add("Maze", Resources.Load("Prefabs/Maze"));
+        pool.Add("Rock", Resources.Load("Prefabs/Rock"));
 		pool.Add("Block", Resources.Load("Prefabs/Block"));
 		pool.Add("Arrow", Resources.Load("Prefabs/Arrow"));
         pool.Add("Fragment", Resources.Load("Prefabs/Fragment"));
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}
+    public void SetupSingleton()
+    {
+        if (s_instance == null)
+        {
+            s_instance = this;
+        }
+    }
 	public GameObject Use(string type)
 	{
 		//Debug.Log ("Use Entity type:" + type);

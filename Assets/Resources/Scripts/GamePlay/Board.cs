@@ -68,7 +68,9 @@ public class Board : Core.MonoSingleton<Board> {
 	public event OnTryToGetawayOverflowPiece OnTryToGetawayOverflowPieceCallback;
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
-	private Counter generateCounter = new Counter (15f);
+    private float generateMaxStep = 15f;
+    private float generateMinStep = 10f;
+    private Counter generateCounter;
 	private List<GenerateType> generateType ;
 	private bool inProcess = false;
 
@@ -76,6 +78,10 @@ public class Board : Core.MonoSingleton<Board> {
 	public int round = 1;
 	[HideInInspector]
 	public bool autoBirth = true;
+    [HideInInspector]
+    public bool autoGenerateItem = true;
+    [HideInInspector]
+    public bool autoUpdateBoard = true;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
 		BoardDirection.BottomLeft,
 		BoardDirection.BottomRight,
@@ -87,9 +93,10 @@ public class Board : Core.MonoSingleton<Board> {
 	void Start () {
 		gemContainer = GameObject.Find ("Board/Gems").transform;
 		Hexagon.totalSegment = this.segment;
-        
+        generateCounter = new Counter(generateMaxStep);
 		freezeCoreCounter.percent = 1f;
 		generateType = new List<GenerateType>();
+
 		ResetColorsPriority ();
 		GenerateHexagon ();
 
@@ -110,8 +117,7 @@ public class Board : Core.MonoSingleton<Board> {
 			i.Reset();
 		}
 		round = 1;
-			
-		generateCounter.Reset ();
+        generateCounter = new Counter(generateMaxStep);
 		freezeWallIndex = 0;
 		inProcess = false;
 		generateType = new List<GenerateType>();
@@ -130,32 +136,18 @@ public class Board : Core.MonoSingleton<Board> {
 
 		}
 
-
-		/*
-		GeneratePieceAt (2, 1, false, PieceColor.Red, false);
-		GeneratePieceAt (2, 0, true, PieceColor.Blue, false);
-		//GeneratePieceAt (2, 0, true, PieceColor.Blue, false);
-
-		PieceGroup group = new PieceGroup ();
-		group.AddChild (pieces [0]);
-		group.AddChild (pieces [1]);
-		group.MakeChain ();
-		*/
-        //GenerateFire();
-
 		GenerateWall ();
-
-        
-
-		//new DelayCall ().Init (.5f, DisplayRoundInfo);
-						
+				
 	}
+
 	private void GenerateSpecialItem()
 	{
+        if (!autoGenerateItem) return;
 		generateCounter.Tick(1f);
 		if(generateCounter.Expired())
 		{
-			generateCounter.Reset();
+            float difficult = generateMinStep + Mathf.Max(generateMaxStep - generateMinStep -round, 0f);
+            generateCounter.Reset(difficult);
 			if(generateType.Count>0)
 			{
 				GenerateType type = generateType[UnityEngine.Random.Range(0,generateType.Count)];
@@ -469,6 +461,7 @@ public class Board : Core.MonoSingleton<Board> {
 			i.Reset();
 		}
 	}
+
 	public void GenerateHexagon()
 	{
 		Hexagon[] children = this.transform.GetComponentsInChildren<Hexagon> ();
@@ -483,6 +476,11 @@ public class Board : Core.MonoSingleton<Board> {
 			GameObject.DestroyImmediate(lines[i].gameObject);
 		}
 
+        Entity[] entities = this.transform.GetComponentsInChildren<Entity>();
+        for (int i = 0; i < entities.Length; i++)
+        {
+            GameObject.DestroyImmediate(entities[i].gameObject);
+        }
 		hexagons.Clear ();
 		halfWidth = Mathf.Cos (Mathf.PI / 3) * (float)length;
 		halfHeight = Mathf.Sin (Mathf.PI / 3) * (float)length;
@@ -514,6 +512,13 @@ public class Board : Core.MonoSingleton<Board> {
 		}
     }
 
+    public void RenderInEditor()
+    {
+        foreach (var i in hexagons.Values)
+        {
+            i.RenderInEditor();
+        }
+    }
     public BoardDirection GetCrossDirection( bool isUpper, BoardDirection direction)
     {
 		switch (direction) {
@@ -1281,7 +1286,7 @@ public class Board : Core.MonoSingleton<Board> {
 		MovePiece(piece, direction, ref time, ref step);
 		if (step > 0) {
 			CommitPieceStateChange ();
-			CommitHexagonStateChange ();
+            if (autoUpdateBoard) CommitHexagonStateChange();
 			inProcess = true;
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_MOVE);
 			new DelayCall().Init(time, OnPiecesMoveDone);

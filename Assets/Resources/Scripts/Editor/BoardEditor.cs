@@ -13,10 +13,11 @@ public class BoardEditor : Editor {
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("segment"), true);
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("length"), true);
 		serializedObject.ApplyModifiedProperties();
-
+        
 		if (board.segment != this.segment || board.length!=length) {
 			board.GenerateHexagon();
-			board.GenerateLines();
+			//board.GenerateLines();
+            board.RenderInEditor();
 		}
 
 	}

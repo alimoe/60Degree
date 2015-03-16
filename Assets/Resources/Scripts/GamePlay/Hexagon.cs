@@ -11,23 +11,24 @@ public enum HexagonState
 {
     Normal,
     Fire,
-    Block,
-    Rock
+    Rock,
+    SwitchType
 }
 public enum HexagonEdget
 {
+    None = 0,
 	UpperLeft = 1,
 	UpperRight = 2,
 	UpperDown = 4,
 	DownLeft = 8,
 	DownRight = 16,
 	DownUp = 32,
-	None = 0
+	
 }
 public class Hexagon:MonoBehaviour  {
-		
+    [HideInInspector]
 	public Piece upper;
-	
+    [HideInInspector]
 	public Piece lower;
 	[HideInInspector]
 	public int x;
@@ -43,21 +44,34 @@ public class Hexagon:MonoBehaviour  {
 	public bool isBoard;
     [HideInInspector]
     public HexagonState upperState;
+    [HideInInspector]
     public HexagonState lowerState;
+    [HideInInspector]
 	public float halfW;
+    [HideInInspector]
 	public float halfH;
+    [HideInInspector]
     public Vector3 upPosition;
+    [HideInInspector]
     public Vector3 lowPosition;
+    [HideInInspector]
     public Maze mazeU;
+    [HideInInspector]
     public Maze mazeD;
+
 	public static Mesh sharedMesh;
 	public static Mesh sharedBoardMesh;
 	public static Material evenMaterial;
 	public static Material oddMaterial;
 	public static int totalSegment;
-	public int blockState = 0 ;
+    [HideInInspector]
+	public int blockState = 0;
+    [HideInInspector]
 	public Block block;
-
+    [HideInInspector]
+    public Rock rockU;
+    [HideInInspector]
+    public Rock rockD;
     public static float Scale = 1f;
 
 	public float posX
@@ -139,16 +153,31 @@ public class Hexagon:MonoBehaviour  {
         {
             mazeD = EntityPool.Instance.Use("Maze").GetComponent<Maze>().SetUp(this, false);
         }
-        if (upperState == HexagonState.Normal && mazeU != null)
+
+        if (upperState == HexagonState.Rock && rockU == null)
         {
-            mazeU.ShutDown();
+            rockU = EntityPool.Instance.Use("Rock").GetComponent<Rock>().SetUp(this, true);
+        }
+        if (lowerState == HexagonState.Rock && rockD == null)
+        {
+            rockD = EntityPool.Instance.Use("Rock").GetComponent<Rock>().SetUp(this, false);
+        }
+
+        if (upperState == HexagonState.Normal && mazeU != null || rockU!=null)
+        {
+            if (mazeU!=null) mazeU.ShutDown();
             mazeU = null;
+            if (rockU != null) rockU.ShutDown();
+            rockU = null;
         }
-        if (lowerState == HexagonState.Normal && mazeD != null)
+        if (lowerState == HexagonState.Normal && mazeD != null || rockD != null)
         {
-            mazeD.ShutDown();
+            if (mazeD!=null) mazeD.ShutDown();
             mazeD = null;
+            if (rockD != null) rockD.ShutDown();
+            rockD = null;
         }
+
     }
 
 	public void SetBlock(HexagonEdget side)
@@ -156,13 +185,14 @@ public class Hexagon:MonoBehaviour  {
 		if (block == null) {
 			GameObject blockObj = EntityPool.Instance.Use("Block") as GameObject;
 			block = blockObj.GetComponent<Block>();
-
-		}
+        }
 		this.blockState |= (int)side;
 		block.SetUp (this);
-
-	}
-
+    }
+    public void SetBlock(int state)
+    {
+        this.blockState = state;
+    }
 
 
 	public void RemoveBlock(HexagonEdget side)
@@ -185,13 +215,6 @@ public class Hexagon:MonoBehaviour  {
 		halfW = Mathf.Cos (Mathf.PI / 3f) * (float)length;
 		halfH = Mathf.Sin (Mathf.PI / 3f) * (float)length;
 
-        
-		if (evenMaterial == null) {
-			//evenMaterial = Resources.Load("Materials/Grid_Even") as Material;
-		}
-		if (oddMaterial == null) {
-			//oddMaterial = Resources.Load("Materials/Grid_Odd") as Material;
-		}
 	}
 	public void UpdatePosition()
 	{
@@ -216,7 +239,9 @@ public class Hexagon:MonoBehaviour  {
 
 	public bool CanEnter(bool isUpper, BoardDirection direction)
 	{
+
 		if (isUpper) {
+                if (upperState == HexagonState.Rock) return false;
 				if (direction == BoardDirection.Right || direction == BoardDirection.BottomRight)
 						return ((blockState & (int)HexagonEdget.UpperLeft) == 0);
 				if (direction == BoardDirection.Left || direction == BoardDirection.BottomLeft)
@@ -224,6 +249,7 @@ public class Hexagon:MonoBehaviour  {
 				if (direction == BoardDirection.TopLeft || direction == BoardDirection.TopRight)
 						return ((blockState & (int)HexagonEdget.UpperDown) == 0 && (blockState & (int)HexagonEdget.DownUp) == 0);
 		} else {
+            if (lowerState == HexagonState.Rock) return false;
 			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight)
 				return ((blockState & (int)HexagonEdget.DownLeft) == 0);
 			if (direction == BoardDirection.Left || direction == BoardDirection.TopLeft)
@@ -237,6 +263,7 @@ public class Hexagon:MonoBehaviour  {
 	public bool CanLeave(bool isUpper, BoardDirection direction)
 	{
 		if (isUpper) {
+            if (upperState == HexagonState.Rock) return false;
 			if (direction == BoardDirection.Right || direction == BoardDirection.TopRight)
 				return ((blockState & (int)HexagonEdget.UpperRight) == 0);
 			if (direction == BoardDirection.Left  || direction == BoardDirection.TopLeft)
@@ -245,6 +272,7 @@ public class Hexagon:MonoBehaviour  {
 				return ((blockState & (int)HexagonEdget.UpperDown) == 0&&(blockState & (int)HexagonEdget.DownUp) == 0);
 
 		} else {
+            if (lowerState == HexagonState.Rock) return false;
 			if (direction == BoardDirection.Right  || direction == BoardDirection.BottomRight)
 				return ((blockState & (int)HexagonEdget.DownRight) == 0);
 			if (direction == BoardDirection.Left ||  direction == BoardDirection.BottomLeft)
@@ -259,6 +287,8 @@ public class Hexagon:MonoBehaviour  {
 
 	public bool HasBeBlocked(bool isUpper)
 	{
+        if (isUpper && upperState == HexagonState.Rock) return true;
+        if (!isUpper && lowerState == HexagonState.Rock) return true;
 		if (isUpper)return (blockState & (int)HexagonEdget.UpperDown) != 0 || (blockState & (int)HexagonEdget.UpperLeft) != 0 || (blockState & (int)HexagonEdget.UpperRight) != 0 || (blockState & (int)HexagonEdget.DownUp) != 0;
 		else return (blockState & (int)HexagonEdget.UpperDown) != 0 || (blockState & (int)HexagonEdget.DownLeft) != 0 || (blockState & (int)HexagonEdget.DownRight) != 0 || (blockState & (int)HexagonEdget.DownUp) != 0;
 
@@ -391,8 +421,7 @@ public class Hexagon:MonoBehaviour  {
 
 		if (sharedMesh == null ) {
 
-				
-			Mesh mesh = new Mesh ();
+		    Mesh mesh = new Mesh ();
 			mesh.name = "Grid:" + this.x + "_" + this.y;
 			Vector2[] uvs = new Vector2[4];
 			Vector3[] normals = new Vector3[4];
@@ -457,14 +486,32 @@ public class Hexagon:MonoBehaviour  {
 		} else {
 			this.gameObject.GetComponent<MeshFilter> ().sharedMesh = sharedBoardMesh;
 		}
-		if ((( this.y) & 1) != 0) {
-			//this.gameObject.GetComponent<MeshRenderer> ().material = oddMaterial;
-		} else {
-			//this.gameObject.GetComponent<MeshRenderer> ().material = evenMaterial;
-		}
+		
 		if (this.gameObject.GetComponent<MeshCollider> () == null) {
 			this.gameObject.AddComponent<MeshCollider>();
 				
 		}
 	}
+    public void RenderInEditor()
+    {
+        Render();
+
+        if (evenMaterial == null)
+        {
+            evenMaterial = Resources.Load("Materials/Grid_Even") as Material;
+        }
+        if (oddMaterial == null)
+        {
+            oddMaterial = Resources.Load("Materials/Grid_Odd") as Material;
+        }
+
+        if (((this.y) & 1) != 0)
+        {
+            this.gameObject.GetComponent<MeshRenderer> ().material = oddMaterial;
+        }
+        else
+        {
+            this.gameObject.GetComponent<MeshRenderer> ().material = evenMaterial;
+        }
+    }
 }

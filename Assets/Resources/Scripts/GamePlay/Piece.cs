@@ -15,7 +15,8 @@ public enum PieceState
     Normal,
     Freeze,
     Twine,
-    Coke
+    Coke,
+    Bomb
 
 }
 
@@ -45,7 +46,7 @@ public class Piece : Entity {
 	private static Color32 BLACK = new Color32(60,60,60,255);
 	private Color32 defaultColor;
 	private Shake shaker;
-
+    private Clock bomb;
 	public Vector3 centerPosition
 	{
 		get{
@@ -90,6 +91,7 @@ public class Piece : Entity {
 		if (shaker!=null && shaker.isRunning)shaker.Stop ();
 		shaker = null;
 	}
+
 	public override void Reset ()
 	{
 		base.Reset ();
@@ -120,6 +122,7 @@ public class Piece : Entity {
     {
         return state == PieceState.Normal || state == PieceState.Coke;
     }
+
 	public void SetState(object s)
 	{
 		SetState ((PieceState)s);
@@ -214,6 +217,31 @@ public class Piece : Entity {
 		passSession = direction;
 		passSessionTime = time;
     }
+
+    public void OnPassHexagon(HexagonState hexagonState, float time)
+    {
+        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
+        if (hexagonState == HexagonState.Fire)
+        {
+            if (this.state != PieceState.Coke)
+            {
+                state = PieceState.Coke;
+                new DelayCall().Init(time, OnFire);
+
+            }
+            else
+            {
+                cokeCounter.Reset();
+            }
+
+        }
+    }
+
+    public void OnHitPiece(HexagonEdget edget, float time)
+    {
+
+    }
+
 	public void CommitChanges()
 	{
 		if (moving) {
@@ -237,23 +265,7 @@ public class Piece : Entity {
 		}
 	}
 
-    public void OnPassHexagon(HexagonState hexagonState, float time)
-    {
-        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
-		if (hexagonState == HexagonState.Fire) {
-            if (this.state != PieceState.Coke)
-            {
-                state = PieceState.Coke;
-                new DelayCall().Init(time, OnFire);
-
-            }
-            else
-            {
-                cokeCounter.Reset();
-            }
-
-		}
-    }
+    
 	private void OnFire()
 	{
 		SetState (PieceState.Coke);
@@ -296,7 +308,7 @@ public class Piece : Entity {
 
 	public override void Dead ()
 	{
-		base.Dead ();
+        base.Dead ();
 		isDead = true;
 		DestoryGroup (false);
 		StopShake ();
@@ -318,8 +330,7 @@ public class Piece : Entity {
 		heightVector = Vector3.up * height;
 		SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
 		float originalLength = spriteRender.sprite.bounds.extents.x*2f;
-
-		scale = length / originalLength;
+        scale = length / originalLength;
 		ResetScale ();
 	}
 	public override string ToString ()
