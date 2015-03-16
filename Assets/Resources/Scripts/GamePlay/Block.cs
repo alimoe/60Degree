@@ -14,21 +14,24 @@ public class Block : Entity {
 	private List<Transform> childs;
 
 	void Awake () {
-		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
-		childs = new List<Transform> ();
-		foreach (var child in children)
-		{
-			
-			if (child.name.Contains("UpLeft")) up_left = child;childs.Add(child);
-			if (child.name.Contains("UpRight")) up_right = child;childs.Add(child);
-			if (child.name.Contains("UpDown")) up_down = child;childs.Add(child);
-			if (child.name.Contains("DownLeft")) down_left = child;childs.Add(child);
-			if (child.name.Contains("DownRight")) down_right = child;childs.Add(child);
-			if (child.name.Contains("DownUp")) down_up = child;childs.Add(child);
-
-		}
+        Init();
 	}
+    public void Init()
+    {
+        Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
+        childs = new List<Transform>();
+        foreach (var child in children)
+        {
 
+            if (child.name.Contains("UpLeft")) up_left = child; childs.Add(child);
+            if (child.name.Contains("UpRight")) up_right = child; childs.Add(child);
+            if (child.name.Contains("UpDown")) up_down = child; childs.Add(child);
+            if (child.name.Contains("DownLeft")) down_left = child; childs.Add(child);
+            if (child.name.Contains("DownRight")) down_right = child; childs.Add(child);
+            if (child.name.Contains("DownUp")) down_up = child; childs.Add(child);
+
+        }
+    }
 	public void SetUp(Hexagon hexagon)
 	{
 		this.transform.parent = hexagon.transform.parent;
@@ -52,7 +55,7 @@ public class Block : Entity {
 
 		life.Reset ();
 
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_DENY);
+        if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DENY);
 	}
 	public void OnFadeAway(object child)
 	{

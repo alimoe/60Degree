@@ -10,7 +10,8 @@ public class FadeIn : TimeEffect {
 	public void Init(GameObject target,float time, Action<object> callback )
 	{
 		render = target.GetComponent<SpriteRenderer> ();
-		if (render != null) {
+        if (render != null && TimerControl.Instance!=null)
+        {
 			progress = new Counter(time);
 			r = (byte)(render.color.r*255);
 			g = (byte)(render.color.g*255);

@@ -40,6 +40,7 @@ TextureImporter:
     21300070: SpriteWall3
     21300072: SpriteWall5
     21300074: SpriteGlow
+    21300076: SpriteRock
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -318,6 +319,16 @@ TextureImporter:
         y: 44
         width: 512
         height: 83
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteRock
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 596
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

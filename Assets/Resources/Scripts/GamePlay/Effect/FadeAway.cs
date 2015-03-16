@@ -10,13 +10,14 @@ public class FadeAway : TimeEffect {
 	public void Init(GameObject target,float time, Action<object> callback )
 	{
 		render = target.GetComponent<SpriteRenderer> ();
-		if (render != null) {
+        if (render != null && TimerControl.Instance != null)
+        {
 			progress = new Counter(time);
 			r = (byte)(render.color.r*255);
 			g = (byte)(render.color.g*255);
 			b = (byte)(render.color.b*255);
 			onCompleteCallbackWithParam = callback;
-			TimerControl.Instance.effects+= FadeAwayUpdate;
+            TimerControl.Instance.effects += FadeAwayUpdate;
 		}
 	}
 
