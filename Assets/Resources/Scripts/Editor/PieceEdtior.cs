@@ -39,6 +39,7 @@ public class PieceEdtior : Editor {
 			{
 				GameObject iceObj = Instantiate(Resources.Load("Prefabs/Ice")) as GameObject;
 				piece.ice = iceObj.GetComponent<Ice>();
+				piece.ice.transform.parent = piece.transform.parent;
 			}
 			piece.ice.Init();
 			piece.ice.SetUp(piece);
@@ -57,6 +58,7 @@ public class PieceEdtior : Editor {
 			{
 				GameObject twineObj = Instantiate(Resources.Load("Prefabs/Twine")) as GameObject;
 				piece.twine = twineObj.GetComponent<Twine>();
+				piece.twine.transform.parent = piece.transform.parent;
 			}
 			piece.twine.Init();
 			piece.twine.SetUp(piece);

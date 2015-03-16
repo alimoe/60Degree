@@ -47,6 +47,7 @@ public class HexagonEditor : Editor
             GameObject pieceObj = Instantiate(Resources.Load("Prefabs/Blue_0")) as GameObject;
             Piece piece = pieceObj.GetComponent<Piece>();
             piece.SetLength(hexagon.length);
+			piece.transform.parent = hexagon.transform.parent;
             hexagon.SetPiece(piece, true);
         }
         else if (!upperPiece && hexagon.upper!=null)
@@ -62,6 +63,7 @@ public class HexagonEditor : Editor
             GameObject pieceObj = Instantiate(Resources.Load("Prefabs/Blue_1")) as GameObject;
             Piece piece = pieceObj.GetComponent<Piece>();
             piece.SetLength(hexagon.length);
+			piece.transform.parent = hexagon.transform.parent;
             hexagon.SetPiece(piece, false);
         }
         else if (!lowerPiece && hexagon.lower != null)
