@@ -8,16 +8,19 @@ public class Ice : Entity {
     private Transform crack;
     void Awake()
     {
-        Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
-        foreach (var child in children)
-        {
-
-            if (child.name.Contains("Crack")) crack = child;
-            
-        }
-        if (crack != null) crack.gameObject.SetActive(false);
+		Init ();
     }
-
+	public void Init()
+	{
+		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
+		foreach (var child in children)
+		{
+			
+			if (child.name.Contains("Crack")) crack = child;
+			
+		}
+		if (crack != null) crack.gameObject.SetActive(false);
+	}
     public void ResetIce()
     {
         if (crack != null) crack.gameObject.SetActive(false);
@@ -39,7 +42,7 @@ public class Ice : Entity {
         {
             this.transform.localEulerAngles = Vector3.zero;
         }
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_FREEZE);
+		if(SoundControl.Instance!=null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_FREEZE);
     }
 
     public override void Reset()

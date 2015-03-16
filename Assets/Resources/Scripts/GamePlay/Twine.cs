@@ -18,21 +18,26 @@ public class Twine : Entity {
     private Piece piece;
     void Awake()
     {
-        Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
-        foreach (var child in children)
-        {
+		Init ();
+    }
+	public void Init()
+	{
 
+		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
+		foreach (var child in children)
+		{
+			
 			if (child.name.Contains("up_left")) up_left = child;
 			if (child.name.Contains("up_right")) up_right = child;
 			if (child.name.Contains("up_verticle")) up_verticle = child;
 			if (child.name.Contains("down_left")) down_left = child;
 			if (child.name.Contains("down_right")) down_right = child;
 			if (child.name.Contains("down_verticle")) down_verticle = child;
-
+			
 			//Debug.Log("up_left "+up_left);
-
-        }
-    }
+			
+		}
+	}
     public override void Reset()
     {
         base.Reset();
@@ -170,7 +175,7 @@ public class Twine : Entity {
 			verticle = up_verticle;
             //this.transform.localEulerAngles = Vector3.zero;
         }
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_TWINE);
+		if(SoundControl.Instance!=null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_TWINE);
 		SetupRope ();
         this.transform.localPosition -= Vector3.forward;
     }

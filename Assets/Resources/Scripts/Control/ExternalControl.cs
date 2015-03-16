@@ -110,9 +110,10 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 			}
 		#endif
 		#if UNITY_ANDROID
+		/*
 			AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 			AndroidJavaObject jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
-			jo.Call("Purchase");
+			jo.Call("Purchase");*/
 		#endif
 	}
 	
