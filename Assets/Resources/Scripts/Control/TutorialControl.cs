@@ -146,7 +146,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 			
 
 			Board.Instance.autoBirth = false;
-			Board.Instance.StartPlay();
+            Board.Instance.InitEnviorment();
 
 			pieces.Add(Board.Instance.GeneratePieceAt(2,1,true,PieceColor.Red,false));
 			pieces.Add(Board.Instance.GeneratePieceAt(5,1,false,PieceColor.Red,false));

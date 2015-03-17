@@ -23,12 +23,36 @@ public class Block : Entity {
         foreach (var child in children)
         {
 
-            if (child.name.Contains("UpLeft")) up_left = child; childs.Add(child);
-            if (child.name.Contains("UpRight")) up_right = child; childs.Add(child);
-            if (child.name.Contains("UpDown")) up_down = child; childs.Add(child);
-            if (child.name.Contains("DownLeft")) down_left = child; childs.Add(child);
-            if (child.name.Contains("DownRight")) down_right = child; childs.Add(child);
-            if (child.name.Contains("DownUp")) down_up = child; childs.Add(child);
+            if (child.name.Contains("UpLeft"))
+            {
+                up_left = child; 
+                childs.Add(child);
+            }
+            if (child.name.Contains("UpRight"))
+            {
+                up_right = child; 
+                childs.Add(child);
+            }
+            if (child.name.Contains("UpDown"))
+            {
+                up_down = child; 
+                childs.Add(child);
+            }
+            if (child.name.Contains("DownLeft"))
+            {
+                down_left = child;
+                childs.Add(child);
+            }
+            if (child.name.Contains("DownRight"))
+            {
+                down_right = child;
+                childs.Add(child);
+            }
+            if (child.name.Contains("DownUp"))
+            {
+                down_up = child;
+                childs.Add(child);
+            }
 
         }
     }
@@ -36,20 +60,25 @@ public class Block : Entity {
 	{
 		this.transform.parent = hexagon.transform.parent;
 		this.transform.localPosition = hexagon.transform.localPosition;
-		
-		if (hexagon.blockState == 0)ShutDown ();
-						
+
+        if (hexagon.blockState == 0)
+        {
+            ShutDown();
+            return;
+        }
+       
 		up_left.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperLeft)!=0);
 		up_right.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperRight)!=0);
 		up_down.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperDown)!=0);
 		down_left.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownLeft)!=0);
 		down_right.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownRight)!=0);
 		down_up.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownUp)!=0);
-
+        //Debug.LogError("childs.Count " + childs.Count);
 		foreach (var child in childs) {
 			if(child.gameObject.activeInHierarchy)
 			{
-				new FadeIn().Init(child.gameObject,.2f,null);
+                
+               new FadeIn().Init(child.gameObject,.2f,null);
 			}
 		}
 

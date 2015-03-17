@@ -1,26 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+// only work in runtime
 public class LevelControl : Core.MonoSingleton<LevelControl> {
     private LevelReader reader;
-    public void LoadLevel(string file)
+    public void LoadLevel(int level)
     {
-
+        reader.Load(Board.Instance, "Assets/Resources/Levels/Level" + level + ".xml");
     }
-    public void ResetLevel()
-    {
-
-    }
-    public void UnloadLevel()
-    {
-
-    }
-	void Start () {
-	    
+    
+	void Awake () {
+        base.Awake();
+        reader = new LevelReader();
 	}
+
+    public void StartPlay()
+    {
+        Board.Instance.autoBirth = false;
+        Board.Instance.autoGenerateObstacle = false;
+        Board.Instance.autoUpdateGrid = false;
+        Board.Instance.autoUpdateWall = false;
+
+        Board.Instance.InitEnviorment();
+        LoadLevel(1);
+    }
 	
-	// Update is called once per frame
-	void Update () {
-	    
-	}
 }

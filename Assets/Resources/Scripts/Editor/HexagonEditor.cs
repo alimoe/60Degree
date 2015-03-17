@@ -157,9 +157,9 @@ public class HexagonEditor : Editor
                 GameObject blockObj = Instantiate(Resources.Load("Prefabs/Block")) as GameObject;
                 hexagon.block = blockObj.GetComponent<Block>();
                 hexagon.block.transform.parent = hexagon.transform.parent;
-                hexagon.block.Init();
+                
             }
-
+            hexagon.block.Init();
             hexagon.block.gameObject.SetActive(true);
             hexagon.block.SetUp(hexagon);
             hexagon.block.transform.localPosition += Vector3.back;

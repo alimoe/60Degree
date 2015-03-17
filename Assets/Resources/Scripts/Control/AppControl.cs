@@ -10,16 +10,27 @@ public enum GameState
 	GameOver
 
 }
+public enum GameMode
+{
+    Classic,
+    Levels,
+    Speed
+    
+}
 public class AppControl : Core.MonoSingleton<AppControl> {
 
 	private List<Skill> skills;
 	private GameState state;
+    private GameMode mode;
 	void Start () {
 		Application.targetFrameRate = 60;
 		UIControl.Instance.Initialize ();
 		skills = new List<Skill> ();
 		state = GameState.GameNotStart;
-        
+
+
+        mode = GameMode.Levels;
+
 		UIControl.Instance.OpenMenu("StartMenu");
 		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);
 
@@ -42,17 +53,22 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.OpenMenu("HudMenu",true);
         Camera3DControl.Instance.direction = Vector3.zero;
 
-		//IOSControl.Instance.Login();
-        if (!PlayerSetting.Instance.tutorialPlayed)
+	    if (!PlayerSetting.Instance.tutorialPlayed)
         {
 			TutorialControl.Instance.InitTutorial ();
         }
         else
         {
-			new DelayCall().Init(.3f, Board.Instance.StartPlay);
+            if (mode == GameMode.Classic) new DelayCall().Init(.3f, this.StartClassicMode);
+            else if (mode == GameMode.Levels) new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
         }
-        //SkyBoxControl.Instance.ChangeColor(SkyColor.Green);
+        
 	}
+    public void StartClassicMode()
+    {
+        Board.Instance.InitEnviorment();
+        Board.Instance.StartPlay();
+    }
 	public void PlayTutorial()
 	{
 		state = GameState.GamePlaying;

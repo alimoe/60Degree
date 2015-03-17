@@ -48,7 +48,64 @@ public class Piece : Entity {
 	private static Color32 BLACK = new Color32(60,60,60,255);
 	private Color32 defaultColor;
 	private Shake shaker;
-    
+    public static BoardDirection sortingDirection;
+
+    public static int ComparePiece(Piece a, Piece b)
+    {
+        switch (sortingDirection)
+        {
+            case BoardDirection.Left:
+
+                if (a.x == b.x && a.isUpper != b.isUpper)
+                {
+                    return a.isUpper ? 1 : -1;
+                }
+                else
+                {
+                    return b.x - a.x;
+                }
+
+                break;
+            case BoardDirection.Right:
+                if (a.x == b.x && a.isUpper != b.isUpper)
+                {
+                    return a.isUpper ? -1 : 1;
+                }
+                else
+                {
+                    return a.x - b.x;
+                }
+                break;
+            case BoardDirection.BottomRight:
+
+            case BoardDirection.BottomLeft:
+                if (a.y == b.y && a.isUpper != b.isUpper)
+                {
+                    return a.isUpper ? -1 : 1;
+                }
+                else
+                {
+                    return b.y - a.y;
+                }
+                break;
+            case BoardDirection.TopLeft:
+            case BoardDirection.TopRight:
+                if (a.y == b.y && a.isUpper != b.isUpper)
+                {
+                    return a.isUpper ? 1 : -1;
+                }
+                else
+                {
+                    return a.y - b.y;
+                }
+
+
+                break;
+        }
+
+        return 0;
+    }
+
 	public Vector3 centerPosition
 	{
 		get{

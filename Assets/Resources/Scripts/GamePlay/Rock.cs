@@ -5,6 +5,7 @@ public class Rock : Entity {
 
     public Rock SetUp(Hexagon hexagon, bool isUpper)
     {
+        
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition: hexagon.lowPosition;
         SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
@@ -19,7 +20,8 @@ public class Rock : Entity {
     }
     public void ShutDown()
     {
-        new FadeAway().Init(this.gameObject, .2f, Dispose);
+       //Debug.LogError("ShutDown");
+       new FadeAway().Init(this.gameObject, .2f, Dispose);
     }
 
     private void Dispose(object obj)

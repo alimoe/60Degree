@@ -111,6 +111,7 @@ public class Hexagon:MonoBehaviour  {
 	}
 	public void Reset()
 	{
+        
 		upper = null;
 		lower = null;
         SetState(true, HexagonState.Normal);
@@ -144,7 +145,7 @@ public class Hexagon:MonoBehaviour  {
     {
         if (isUpper) upperState = state;
         else lowerState = state;
-
+        
         if (upperState == HexagonState.Fire && mazeU == null)
         {
             mazeU = EntityPool.Instance.Use("Maze").GetComponent<Maze>().SetUp(this, true);
@@ -167,31 +168,38 @@ public class Hexagon:MonoBehaviour  {
         {
             if (mazeU!=null) mazeU.ShutDown();
             mazeU = null;
-            if (rockU != null) rockU.ShutDown();
-            rockU = null;
+            //if (rockU != null) rockU.ShutDown();
+            //rockU = null;
         }
         if (lowerState == HexagonState.Normal && mazeD != null || rockD != null)
         {
             if (mazeD!=null) mazeD.ShutDown();
             mazeD = null;
-            if (rockD != null) rockD.ShutDown();
-            rockD = null;
+            //if (rockD != null) rockD.ShutDown();
+            //rockD = null;
         }
 
     }
 
 	public void SetBlock(HexagonEdget side)
 	{
-		if (block == null) {
-			GameObject blockObj = EntityPool.Instance.Use("Block") as GameObject;
-			block = blockObj.GetComponent<Block>();
-        }
+		
 		this.blockState |= (int)side;
-		block.SetUp (this);
+        UpdateBlock();
     }
-    public void SetBlock(int state)
+    private void UpdateBlock()
+    {
+        if (block == null)
+        {
+            GameObject blockObj = EntityPool.Instance.Use("Block") as GameObject;
+            block = blockObj.GetComponent<Block>();
+        }
+        block.SetUp(this);
+    }
+    public void SetBlock(int state, bool update = false)
     {
         this.blockState = state;
+        if (update) UpdateBlock();
     }
 
 
@@ -226,8 +234,8 @@ public class Hexagon:MonoBehaviour  {
 	}
 	public bool IsEmpty(bool up)
 	{
-		if (up)return upper == null;
-		else return !isBoard && lower == null;
+		if (up)return upper == null&&upperState != HexagonState.Rock;
+        else return !isBoard && lower == null && lowerState != HexagonState.Rock;
 							
 	}
 	public Piece GetPiece(bool up)
@@ -287,6 +295,7 @@ public class Hexagon:MonoBehaviour  {
 
 	public bool HasBeBlocked(bool isUpper)
 	{
+
         if (isUpper && upperState == HexagonState.Rock) return true;
         if (!isUpper && lowerState == HexagonState.Rock) return true;
 		if (isUpper)return (blockState & (int)HexagonEdget.UpperDown) != 0 || (blockState & (int)HexagonEdget.UpperLeft) != 0 || (blockState & (int)HexagonEdget.UpperRight) != 0 || (blockState & (int)HexagonEdget.DownUp) != 0;
@@ -296,56 +305,40 @@ public class Hexagon:MonoBehaviour  {
 	public bool HasEmptySlot()
 	{
 		if (isBoard) {
-			return upper==null;
+			return upper==null && upperState != HexagonState.Rock;
 		}
-		return upper == null || lower == null;
+        return (upper == null && upperState != HexagonState.Rock) || (lower == null && lowerState != HexagonState.Rock);
 	}
-	public bool IsPureEmpty()
-	{
-		return upper == null && lower == null;
-	}
-	public bool IsPureEmpty(Piece piece)
-	{
-		if (piece == upper)return lower == null;
-		if (piece == lower)return upper == null;		
-		return upper == null && lower == null;
-	}
+	
 	public bool CanFit(Piece piece)
 	{
 		if (isBoard) {
-			if(piece.isUpper)return upper==piece || upper == null;
+			if(piece.isUpper)return this.upperState!=HexagonState.Rock && (upper==piece || upper == null);
 			return false;
 		}
-		if(piece.isUpper) return upper==piece ||upper == null;
-		else return lower==piece ||lower == null;
+        if (piece.isUpper) return this.upperState != HexagonState.Rock && (upper == piece || upper == null);
+		else return this.lowerState != HexagonState.Rock  && (lower==piece ||lower == null);
 		
 	}
-	public HexagonPosition GetRandomPosition()
-	{
-		HexagonPosition position = HexagonPosition.None;
-		if (!isBoard && lower == null && upper == null) {
-			position = (UnityEngine.Random.Range (0, 1f) < 0.5f) ? HexagonPosition.Lower : HexagonPosition.Upper;
-
-		} 
-		else if (lower == null && !isBoard) {
-			position = HexagonPosition.Lower;
-		}
-		else if (upper == null) {
-			position = HexagonPosition.Upper;
-		}
-		return position;
-	}
+	
 	public HexagonPosition GetRandomPosition( bool needUp)
 	{
 		HexagonPosition position = HexagonPosition.None;
 		if (!isBoard && lower == null && upper == null) {
-			position = (!needUp) ? HexagonPosition.Lower : HexagonPosition.Upper;
-			//needUp = !needUp;
+            if (needUp && upperState != HexagonState.Rock)
+            {
+                position = HexagonPosition.Upper;
+            }
+            else if (!needUp && lowerState != HexagonState.Rock)
+            {
+                position = HexagonPosition.Lower;
+            }
 		} 
-		else if (lower == null && !isBoard) {
+		else if (lower == null && !isBoard && lowerState!=HexagonState.Rock) {
 			position = HexagonPosition.Lower;
 		}
-		else if (upper == null) {
+        else if (upper == null && upperState != HexagonState.Rock)
+        {
 			position = HexagonPosition.Upper;
 		}
 		return position;
