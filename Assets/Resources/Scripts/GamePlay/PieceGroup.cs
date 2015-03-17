@@ -16,7 +16,7 @@ public class PieceGroup  {
         if (!children.Contains(piece)) children.Add(piece);
 		piece.group = this;
     }
-
+    
 	public void AppendChild(Piece piece,Piece beside)
 	{
 		if (children.IndexOf (beside) == 0) {
@@ -73,9 +73,14 @@ public class PieceGroup  {
 				chains.Add(chain);
 			}
 		}
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_LOCK);
+        if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOCK);
     }
-	private bool HasChained(Piece a, Piece b)
+    public void Sort()
+    {
+        Piece.sortingDirection = BoardDirection.TopLeft;
+        this.children.Sort(Piece.ComparePiece);
+    }
+	public bool HasChained(Piece a, Piece b)
 	{
 		bool result = false;
 

@@ -8,8 +8,15 @@ public enum WallFace
 	Right,
 	Bottom,
 	None
-
 }
+
+public enum WallState
+{
+    Normal,
+    Invincible,
+    Broken
+}
+
 public class Wall :MonoBehaviour {
 
 	// Use this for initialization
@@ -38,16 +45,50 @@ public class Wall :MonoBehaviour {
 	private int level = -1;
 	private static Color32 WHITE = new Color32 (255, 255, 255, 255);
 	private SpriteRenderer icon;
+    public WallState state;
+
+    /** for Editor**/
+    public void Broke()
+    {
+        life = 0;
+        state = WallState.Broken;
+        Color32 defaultRGB = render.color;
+        render.color = new Color32(defaultRGB.r, defaultRGB.g, defaultRGB.b, 0);
+        if (icon != null) icon.color = render.color;
+    }
+    /** for Editor**/
+    public void Normal()
+    {
+        life = totalLife;
+        state = WallState.Normal;
+        Color32 defaultRGB = new Color32(255, 255, 255, 255);
+        render.color = new Color32(defaultRGB.r, defaultRGB.g, defaultRGB.b, 255);
+        if (icon != null) icon.color = render.color;
+    }
+
+    /** for Editor**/
+    public void UnBroken()
+    {
+        state = WallState.Invincible;
+        Color32 defaultRGB = levels[(level+1)%5];
+        render.color = new Color32(defaultRGB.r, defaultRGB.g, defaultRGB.b, 255);
+        if (icon != null) icon.color = render.color;
+    }
 
     public void Awake()
+    {
+        Init();
+    }
+    public void Init()
     {
         Transform[] children = this.GetComponentsInChildren<Transform>(true);
         foreach (var child in children)
         {
             if (child.name.Contains("Icon")) icon = child.GetComponent<SpriteRenderer>();
         }
+        state = WallState.Normal;
+        render = this.gameObject.GetComponent<SpriteRenderer>();
     }
-   
 	public void SetLinkHaxegon(Hexagon hexagon)
 	{
 		linkedHexagon = hexagon;
@@ -55,7 +96,6 @@ public class Wall :MonoBehaviour {
 		initPosition = this.transform.localPosition;
 		colorTimer = new Counter (0.2f);
 		currentColor = WHITE;
-		render = this.gameObject.GetComponent<SpriteRenderer> ();
 		UpdateColor ();
         UpdateIcon();
 	}
@@ -124,6 +164,7 @@ public class Wall :MonoBehaviour {
 	{
 		isInvincible = false;
 		life = totalLife;
+        state = WallState.Normal;
 		UpdateColor ();
         UpdateIcon();
 	}
@@ -131,6 +172,7 @@ public class Wall :MonoBehaviour {
 	public void ResetToZero()
 	{
 		level = -1;
+        state = WallState.Normal;
 		Reset ();
 	}
 
@@ -142,10 +184,12 @@ public class Wall :MonoBehaviour {
 	public void Invincible()
 	{
 		isInvincible = true;
+        state = WallState.Invincible;
 		level++;
 		UpdateColor ();
         UpdateIcon();
 	}
+    
 	public void Hit()
 	{
 		if (isInvincible) {
@@ -155,7 +199,11 @@ public class Wall :MonoBehaviour {
 		SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_WALL);
 		life--;
 		life = Math.Min(Math.Max (life, 0),totalLife);
-		if (IsBroken ())repearProcess = 0;
+        if (IsBroken())
+        {
+            repearProcess = 0;
+            state = WallState.Broken;
+        }
 		bouncingState = true;
 		bouncingCounter.Reset ();
 		UpdateColor ();
@@ -170,6 +218,7 @@ public class Wall :MonoBehaviour {
 	}
     public void UpdateIcon()
     {
+        if (WallIcon.Instance == null) return;
         Vector3 position;
         if (level == -1)
         {

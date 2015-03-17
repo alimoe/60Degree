@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 [CustomEditor(typeof(Piece))]
+[CanEditMultipleObjects]
 public class PieceEdtior : Editor {
 	private PieceColor type;
 	private PieceState state;
@@ -16,7 +18,69 @@ public class PieceEdtior : Editor {
         piece.ChangeColor(type, true);
 		state = piece.state;
 		state = (PieceState)EditorGUILayout.EnumPopup("Upper State", state);
+
 		UpdatePieceState ();
+
+        if (this.targets.Length >= 2 && this.targets.Length <= 3)
+        {
+            if (GUILayout.Button("Make Chain"))
+            {
+                
+                PieceGroup pieceGroup = new PieceGroup();
+                for (int i = 0; i < this.targets.Length; i++)
+                {
+                    Piece member = this.targets[i] as Piece;
+                    if (member.group != null) DestoryChain(member.group);
+                    pieceGroup.AddChild(member);
+                }
+                pieceGroup.Sort();
+                MakeChain(pieceGroup);
+            }
+            if (GUILayout.Button("Destory Chain"))
+            {
+                for (int i = 0; i < this.targets.Length; i++)
+                {
+                    Piece member = this.targets[i] as Piece;
+                    if (member.group != null) DestoryChain(member.group);
+                }
+            }
+
+        }
+        
+    }
+    private void DestoryChain(PieceGroup pieceGroup)
+    {
+        if (pieceGroup != null)
+        {
+            if (pieceGroup.chains != null)
+            {
+                foreach (Chain chain in pieceGroup.chains)
+                {
+                    if (chain!=null) GameObject.DestroyImmediate(chain.gameObject);
+                }
+            }
+            pieceGroup = null;
+        }
+    }
+    private void MakeChain(PieceGroup pieceGroup)
+    {
+        List<Chain> chains = new List<Chain>();
+        for (int i = 1; i < pieceGroup.children.Count; i++)
+        {
+            Piece start = pieceGroup.children[i - 1];
+            Piece end = pieceGroup.children[i];
+            
+            int chainIndex = i - 1;
+            if (!pieceGroup.HasChained(start, end))
+            {
+                GameObject chainObj = Instantiate(Resources.Load("Prefabs/Chain")) as GameObject;
+                Chain chain = chainObj.GetComponent<Chain>();
+                chain.transform.parent = start.transform.parent;
+                chain.SetUp(start, end);
+                chains.Add(chain);
+            }
+        }
+        pieceGroup.chains = chains;
     }
 	public void UpdatePieceState()
 	{
