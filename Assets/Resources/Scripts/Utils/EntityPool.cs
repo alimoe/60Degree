@@ -33,6 +33,7 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
         pool.Add("Rock", Resources.Load("Prefabs/Rock"));
 		pool.Add("Block", Resources.Load("Prefabs/Block"));
 		pool.Add("Arrow", Resources.Load("Prefabs/Arrow"));
+		pool.Add("Clock", Resources.Load("Prefabs/Clock"));
         pool.Add("Fragment", Resources.Load("Prefabs/Fragment"));
 
 		inuse = new Dictionary<string,List<GameObject>> ();

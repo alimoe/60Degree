@@ -16,7 +16,7 @@ public enum PieceState
     Freeze,
     Twine,
     Coke,
-    Bomb
+    Clock
 
 }
 
@@ -37,7 +37,7 @@ public class Piece : Entity {
 	public bool isDead;
 	public Twine twine;
     public Ice ice;
-    private Clock bomb;
+	public Clock clock;
 
 	public bool coke;
     private Counter cokeCounter = new Counter(4f);
@@ -141,7 +141,7 @@ public class Piece : Entity {
 	{
 		if (shaker == null)shaker = new Shake ();
 		if (shaker.isRunning)shaker.Stop ();
-		shaker.Init (this, .25f, 3);					
+		shaker.Init (this.transform, .25f, 3);					
 
 	}
 
@@ -165,8 +165,10 @@ public class Piece : Entity {
 		moving = false;
 		twine = null;
 		ice = null;
+		clock = null;
 		coke = false;
 		shaker = null;
+
         colorType = type;
         defaultColor = Wall.GetColor(type);
         this.GetComponent<SpriteRenderer>().color = defaultColor;
@@ -181,7 +183,7 @@ public class Piece : Entity {
 
     public bool CanMove()
     {
-        return state == PieceState.Normal || state == PieceState.Coke;
+		return state == PieceState.Normal || state == PieceState.Coke || state == PieceState.Clock;
     }
     public void ChangeColor(PieceColor color, bool instant = true)
     {
@@ -200,26 +202,38 @@ public class Piece : Entity {
 	{
 		SetState ((PieceState)s);
 	}
+
+	public void ResetBuffer()
+	{
+		if (twine != null)
+		{
+			twine.ShutDown();
+			twine = null;
+		}
+		if (ice != null)
+		{
+			ice.ShutDown();
+			ice = null;
+		}
+		if(coke)
+		{
+			coke = false;
+			new TurnColor().Init(this.gameObject, .2f, defaultColor, null);
+		}
+		if(clock!=null)
+		{
+			clock.ShutDown();
+			clock = null;
+		}
+	}
+
+
     public void SetState(PieceState s)
     {
-        if (s == PieceState.Normal)
-        {
-            if (twine != null)
-            {
-                twine.ShutDown();
-                twine = null;
-            }
-            if (ice != null)
-            {
-                ice.ShutDown();
-                ice = null;
-            }
-			if(coke)
-			{
-				coke = false;
-                new TurnColor().Init(this.gameObject, .2f, defaultColor, null);
-			}
-        }
+		if (s != state) {
+			ResetBuffer();
+		}
+        
         if (s == PieceState.Twine)
         {
             if (twine == null)
@@ -246,6 +260,15 @@ public class Piece : Entity {
 				new TurnColor().Init(this.gameObject,.2f,BLACK,null);
 			}
 		}
+		if (s == PieceState.Clock)
+		{
+			if (clock == null)
+			{
+				GameObject clockObj = EntityPool.Instance.Use("Clock") as GameObject;
+				clock = clockObj.GetComponent<Clock>();
+				clock.SetUp(this);
+			}
+		}
         state = s;
     }
 
@@ -264,12 +287,13 @@ public class Piece : Entity {
            
             return false;
         }
-		if(state == PieceState.Twine)DestoryTwine ();
+		if(state == PieceState.Twine)Normal ();
+		if(state == PieceState.Clock)Normal ();
 		DestoryGroup ();
         return true;
     }
 
-	public void DestoryTwine ()
+	public void Normal ()
 	{
 		SetState (PieceState.Normal);
 	}
@@ -311,9 +335,18 @@ public class Piece : Entity {
 
     public void OnHitPiece(BoardDirection direction, float time)
     {
-
+		if (clock != null) {
+			clock.OnHitClock(direction);
+			if(clock.triggered)new DelayCall().Init(time, OnClock);
+		}
     }
-
+	private void OnClock()
+	{
+		if (clock != null) {
+			clock.Shake();
+			//new DelayCall().Init(.5f, Normal);
+		}
+	}
 	public void CommitChanges()
 	{
 		if (moving) {

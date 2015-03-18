@@ -29,7 +29,7 @@ public class LevelReader  {
                 if (blockState > 0)
                 {
                     
-                    board.GetHexagonAt(x, y).SetBlock(blockState, true);
+                    board.GetHexagonAt(x, y).SetBlock(blockState);
                 }
             }
 
