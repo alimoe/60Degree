@@ -12,7 +12,10 @@ public enum HexagonState
     Normal,
     Fire,
     Rock,
-    SwitchType
+    SwitchType,
+    Teleport,
+    Target,
+    Trigger
 }
 public enum HexagonEdget
 {
@@ -54,10 +57,21 @@ public class Hexagon:MonoBehaviour  {
     public Vector3 upPosition;
     [HideInInspector]
     public Vector3 lowPosition;
+
+    [HideInInspector]
+    public Rock rockU;
+    [HideInInspector]
+    public Rock rockD;
+
     [HideInInspector]
     public Maze mazeU;
     [HideInInspector]
     public Maze mazeD;
+
+    [HideInInspector]
+    public Triggering triggerU;
+    [HideInInspector]
+    public Triggering triggerD;
 
 	public static Mesh sharedMesh;
 	public static Mesh sharedBoardMesh;
@@ -66,12 +80,9 @@ public class Hexagon:MonoBehaviour  {
 	public static int totalSegment;
     [HideInInspector]
 	public int blockState = 0;
-    [HideInInspector]
+    
 	public Block block;
-    [HideInInspector]
-    public Rock rockU;
-    [HideInInspector]
-    public Rock rockD;
+    
     public static float Scale = 1f;
 
 	public float posX
@@ -111,8 +122,7 @@ public class Hexagon:MonoBehaviour  {
 	}
 	public void Reset()
 	{
-        
-		upper = null;
+        upper = null;
 		lower = null;
         SetState(true, HexagonState.Normal);
         SetState(false, HexagonState.Normal);
@@ -164,19 +174,19 @@ public class Hexagon:MonoBehaviour  {
             rockD = EntityPool.Instance.Use("Rock").GetComponent<Rock>().SetUp(this, false);
         }
 
-        if (upperState == HexagonState.Normal && mazeU != null || rockU!=null)
+        if (upperState == HexagonState.Normal && mazeU != null || rockU !=null)
         {
             if (mazeU!=null) mazeU.ShutDown();
             mazeU = null;
-            //if (rockU != null) rockU.ShutDown();
-            //rockU = null;
+            if (rockU != null) rockU.ShutDown();
+            rockU = null;
         }
         if (lowerState == HexagonState.Normal && mazeD != null || rockD != null)
         {
             if (mazeD!=null) mazeD.ShutDown();
             mazeD = null;
-            //if (rockD != null) rockD.ShutDown();
-            //rockD = null;
+            if (rockD != null) rockD.ShutDown();
+            rockD = null;
         }
 
     }
@@ -187,6 +197,13 @@ public class Hexagon:MonoBehaviour  {
 		this.blockState |= (int)side;
         UpdateBlock();
     }
+
+    public void SetBlock(int state)
+    {
+        this.blockState = state;
+        UpdateBlock();
+    }
+
     private void UpdateBlock()
     {
         if (block == null)
@@ -196,11 +213,8 @@ public class Hexagon:MonoBehaviour  {
         }
         block.SetUp(this);
     }
-    public void SetBlock(int state, bool update = false)
-    {
-        this.blockState = state;
-        if (update) UpdateBlock();
-    }
+
+    
 
 
 	public void RemoveBlock(HexagonEdget side)
@@ -359,10 +373,54 @@ public class Hexagon:MonoBehaviour  {
 			if (seed < 2)return  HexagonEdget.DownRight;		
 			if (seed < 3)return  HexagonEdget.DownUp;	
 		}
-		
-		
 		return HexagonEdget.None;
 	}
+
+    public static HexagonEdget GetRandomEdget(bool isUpper)
+    {
+        int seed = UnityEngine.Random.Range(0, 3);
+        if (isUpper)
+        {
+            if (seed < 1)
+                return HexagonEdget.UpperDown;
+            if (seed < 2)
+                return HexagonEdget.UpperLeft;
+            if (seed < 3)
+                return HexagonEdget.UpperRight;
+        }
+        else
+        {
+            if (seed < 1) return HexagonEdget.DownLeft;
+            if (seed < 2) return HexagonEdget.DownRight;
+            if (seed < 3) return HexagonEdget.DownUp;
+        }
+            return HexagonEdget.None;
+    }
+    public static bool IsAgainst(HexagonEdget edget, BoardDirection direction, bool isUpper)
+    {
+        if (isUpper)
+        {
+            
+            if (direction == BoardDirection.Right || direction == BoardDirection.BottomRight)
+                return (edget == HexagonEdget.UpperLeft);
+            if (direction == BoardDirection.Left || direction == BoardDirection.BottomLeft)
+                return (edget == HexagonEdget.UpperRight);
+            if (direction == BoardDirection.TopLeft || direction == BoardDirection.TopRight)
+                return (edget == HexagonEdget.UpperDown);
+        }
+        else
+        {
+            
+            if (direction == BoardDirection.Right || direction == BoardDirection.TopRight)
+                return (edget == HexagonEdget.DownLeft);
+            if (direction == BoardDirection.Left || direction == BoardDirection.TopLeft)
+                return (edget == HexagonEdget.DownRight);
+            if (direction == BoardDirection.BottomLeft || direction == BoardDirection.BottomRight)
+                return (edget == HexagonEdget.DownUp);
+        }
+        return true;
+
+    }
 	public override string ToString ()
 	{
 		return string.Format ("[Hexagon: x={0}, y={1}]", x, y);
@@ -377,7 +435,15 @@ public class Hexagon:MonoBehaviour  {
 		} else {
 			if (piece != null) piece.centerPosition = upPosition;
 		}
+        HandlePress();
 	}
+    
+    public void SetPiece(Piece piece, float delay)
+    {
+        SetPiece(piece);
+        new DelayCall().Init(delay, HandlePress);
+    }
+
 	public void SetPiece(Piece piece )
 	{
 		if (piece != null) {
@@ -390,11 +456,9 @@ public class Hexagon:MonoBehaviour  {
 		}
 		if (!piece.isUpper) {
 			lower = piece;
-				
-
+			
 		} else {
 			upper = piece;
-			
 		}
 	}
 
@@ -407,8 +471,31 @@ public class Hexagon:MonoBehaviour  {
 		{
 			lower = null;
 		}
-
+        HandleRelease();
 	}
+    private void HandlePress()
+    {
+        if (triggerU != null)
+        {
+            if (upper != null) triggerU.Press();
+        }
+        if (triggerD != null)
+        {
+            if (lower != null) triggerD.Press();
+        }
+    }
+    private void HandleRelease()
+    {
+        if (triggerU != null)
+        {
+            if (upper == null) triggerU.Release();
+        }
+        if (triggerD != null)
+        {
+            if (lower == null) triggerD.Release();
+        }
+    }
+
 	public void Render()
 	{
 

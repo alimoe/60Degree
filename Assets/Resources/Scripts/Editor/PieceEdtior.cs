@@ -70,7 +70,6 @@ public class PieceEdtior : Editor {
             Piece start = pieceGroup.children[i - 1];
             Piece end = pieceGroup.children[i];
             
-            int chainIndex = i - 1;
             if (!pieceGroup.HasChained(start, end))
             {
                 GameObject chainObj = Instantiate(Resources.Load("Prefabs/Chain")) as GameObject;

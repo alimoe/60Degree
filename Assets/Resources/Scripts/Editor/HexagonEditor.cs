@@ -149,7 +149,8 @@ public class HexagonEditor : Editor
         }
         
         Hexagon hexagon = this.target as Hexagon;
-        hexagon.SetBlock(state);
+        hexagon.blockState = state;
+        
         if (state != 0)
         {
             if (hexagon.block == null)

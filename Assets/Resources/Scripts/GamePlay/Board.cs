@@ -45,27 +45,27 @@ public class Board : Core.MonoSingleton<Board> {
 	private Transform gemContainer;
 	private Vector3 xAxis;
 	private Vector3 yAxis;
-	private bool lastTimeIsUpper = false;
-
+    
     public Piece selected;
 
     
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
-	public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
-	public delegate void OnDropDonePiece();
-	public delegate void OnTryToGetawayCorePiece();
-	public delegate void OnTryToGetawayOverflowPiece();
-	public delegate void OnHitRound(int round);
+
+    public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
+    public delegate void OnHitRound(int round);
     public delegate void OnWallProgress(Vector3 position);
 
 	public event OnHitRound onHitRoundCallback;
     public event OnEliminatePiece onEliminatePieceCallback;
-    public event OnDropDonePiece onDropDownPieceCallback;
     public event OnWallProgress onWallProgressCallback;
-	public event OnTryToGetawayCorePiece OnTryToGetawayCorePieceCallback;
-	public event OnTryToGetawayOverflowPiece OnTryToGetawayOverflowPieceCallback;
+
+    public event Action onDropDownPieceCallback;
+    public event Action OnTryToGetawayCorePieceCallback;
+    public event Action OnTryToGetawayOverflowPieceCallback;
+    public event Action OnGetawayPieceCallback;
+
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
     private float generateMaxStep = 15f;
@@ -84,6 +84,10 @@ public class Board : Core.MonoSingleton<Board> {
     public bool autoUpdateGrid = true;
     [HideInInspector]
     public bool autoUpdateWall = true;
+    [HideInInspector]
+    public bool autoUpdateScore = true;
+    [HideInInspector]
+    public bool autoUpdateSkillPoint = true;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
 		BoardDirection.BottomLeft,
 		BoardDirection.BottomRight,
@@ -106,6 +110,28 @@ public class Board : Core.MonoSingleton<Board> {
 
 	}
 
+    private void InitAxis()
+    {
+        xAxis = new Vector3(1, 0, 0);
+        yAxis = new Vector3(Mathf.Cos(Mathf.PI / 3f), Mathf.Sin(Mathf.PI / 3f), 0);
+        yAxis = yAxis.normalized;
+    }
+
+    public void ResetColorsPriority()
+    {
+        colors = new List<PieceColor>();
+        colors.Add(PieceColor.Blue);
+        colors.Add(PieceColor.Green);
+        colors.Add(PieceColor.Red);
+    }
+
+    private void ResetWalls()
+    {
+        foreach (var i in walls)
+        {
+            i.Reset();
+        }
+    }
 	public void ResetBoard()
 	{
         if (EntityPool.Instance != null)
@@ -458,26 +484,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 	}
 	
-	private void InitAxis()
-	{
-		xAxis = new Vector3 (1, 0,0);
-		yAxis = new Vector3 (Mathf.Cos (Mathf.PI / 3f), Mathf.Sin (Mathf.PI / 3f), 0);
-		yAxis = yAxis.normalized;
-	}
-	public void ResetColorsPriority()
-	{
-		colors = new List<PieceColor> ();
-		colors.Add (PieceColor.Blue);
-		colors.Add (PieceColor.Green);
-		colors.Add (PieceColor.Red);
-	}
-	private void ResetWalls()
-	{
-
-		foreach (var i in walls) {
-			i.Reset();
-		}
-	}
+	
 
 	public void GenerateHexagon()
 	{
@@ -531,6 +538,34 @@ public class Board : Core.MonoSingleton<Board> {
 		}
     }
 
+    public void GenerateWall()
+    {
+        if (walls.Count > 0) return;
+        
+        foreach (var i in hexagons.Values)
+        {
+
+            if (i.isBoard)
+            {
+                AddWall(i, WallFace.Bottom);
+
+            }
+            if (i.x == 0)
+            {
+                AddWall(i, WallFace.Left);
+
+            }
+            if (i.x == (this.segment - i.y - 1))
+            {
+                AddWall(i, WallFace.Right);
+
+            }
+        }
+        walls.Sort(Wall.CompareWall);
+
+    }
+
+    //Only Render in editor
     public void RenderInEditor()
     {
         foreach (var i in hexagons.Values)
@@ -538,106 +573,16 @@ public class Board : Core.MonoSingleton<Board> {
             i.RenderInEditor();
         }
     }
-    public BoardDirection GetCrossDirection( bool isUpper, BoardDirection direction)
-    {
-		switch (direction) {
-			case BoardDirection.Left:
-			case BoardDirection.Right:
-				if(isUpper)return BoardDirection.BottomLeft;
-				else return BoardDirection.TopLeft;
-			break;
-			case BoardDirection.TopLeft:
-			case BoardDirection.BottomRight:
-				if(isUpper)return BoardDirection.Right;
-				else return BoardDirection.Left;
-			break;
-			case BoardDirection.TopRight:
-			case BoardDirection.BottomLeft:
-				if(isUpper)return BoardDirection.Left;
-				else return BoardDirection.Right;
-			break;
-		}
-		return BoardDirection.None;
-    }
+    
 
-
-	public void GenerateLines()
-	{
-		for (int i = 0; i<segment; i++) {
-			Hexagon ah = GetHexagonAt(i,0);
-			Hexagon bh = GetHexagonAt(0,i);
-			if(ah!=bh)
-			{
-				AddLine(ah.left,bh.left);
-			}
-			if(i == segment -1)
-			{
-				AddLine(ah.right,bh.top);
-			}
-		}
-		for (int i = 0; i<segment; i++) {
-			Hexagon ah = GetHexagonAt(0,i);
-			Hexagon bh = GetHexagonAt(segment-1 - i,i);
-			AddLine(ah.left,bh.right);
-			
-		}
-		for (int i = 0; i<segment; i++) {
-			Hexagon ah = GetHexagonAt(i,0);
-			Hexagon bh = GetHexagonAt(i,segment-1 - i);
-			AddLine(ah.left,bh.top);
-			
-		}
-
-	}
 	public bool IsEdget(Hexagon hexagon)
 	{
 		if (hexagon.isBoard || hexagon.x == 0 || hexagon.x == (this.segment - hexagon.y - 1))return true;
 		return false;			
 	}
-	public void GenerateWall()
-	{
-		if (walls.Count > 0)return;
 
-       
-
-		foreach (var i in hexagons.Values) {
-
-			if(i.isBoard)
-			{
-				AddWall(i,WallFace.Bottom);
-					
-			}
-			if(i.x == 0)
-			{
-				AddWall(i,WallFace.Left);
-					
-			}
-			if( i.x==(this.segment - i.y - 1))
-			{
-				AddWall(i,WallFace.Right);
-				
-			}
-		}
-		walls.Sort (CompareWall);
-		
-	}
-	private int CompareWall(Wall a, Wall b)
-	{
-		if (a.face == WallFace.Left && b.face != WallFace.Left)return -1;
-		if (a.face == WallFace.Left && b.face == WallFace.Left) {
-			return a.linkedHexagon.y - b.linkedHexagon.y;
-		}
-
-		if (a.face!=WallFace.Bottom&& b.face == WallFace.Bottom)return -1;
-
-		if (a.face == WallFace.Right && b.face == WallFace.Right) {
-			return -(a.linkedHexagon.y - b.linkedHexagon.y);
-		}
-		if (a.face == WallFace.Bottom && b.face == WallFace.Bottom) {
-			return -(a.linkedHexagon.x - b.linkedHexagon.x);
-		}
-		return 0;
-	}
+	
+	
 	public bool GetRarityPosition(PieceColor color)
 	{
 		int up = 0;
@@ -767,18 +712,7 @@ public class Board : Core.MonoSingleton<Board> {
 			walls.Add(wall);
 		}
 	}
-	private void AddLine(Vector3 a, Vector3 b)
-	{
-
-		GameObject line = Instantiate (Resources.Load ("Prefabs/Line")) as GameObject;
-		line.transform.parent = this.transform;
-		line.transform.localPosition = Vector3.zero;
-		LineRenderer lineRender = line.GetComponent<LineRenderer> ();
-		lineRender.SetVertexCount (2);
-		lineRender.SetWidth (0.02f, 0.02f);
-		lineRender.SetPosition (0, a);
-		lineRender.SetPosition (1, b);
-	}
+	
 	public bool HasCorePiece()
 	{
 		foreach (var i in pieces) {
@@ -796,18 +730,19 @@ public class Board : Core.MonoSingleton<Board> {
 
     public List<Hexagon> GetHexagons()
     {
-        //Debug.LogWarning("Get hexagons " + hexagons.Values.Count);
         return new List<Hexagon>(hexagons.Values);
     }
     public List<Wall> GetWalls()
     {
         return walls;
     }
+
 	private PieceColor GetRandomColor()
 	{
 		if (colors.Count > 0)return colors [UnityEngine.Random.Range (0, colors.Count)];
 		return PieceColor.None;		
 	}
+
 	private void CheckMovement()
 	{
 
@@ -890,8 +825,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 	}
 
-   
-
+    
 	public void EliminatePieces(List<Piece> eliminate, bool withBlink = true)
 	{
 		
@@ -905,7 +839,7 @@ public class Board : Core.MonoSingleton<Board> {
                 DropDown dropDown = new DropDown();
                 Vector3 targetPosition = SkillControl.Instance.GetSkillIconWorldPosition( );
                 float delay = (float)(eliminate.Count - 1 - i) * .05f;
-                dropDown.Init(piece, targetPosition, RotateVector(UnityEngine.Random.Range(-20f, 60f)), delay, .4f, OnDropDownAnimationPlayed);
+                dropDown.Init(piece, targetPosition, Utility.RotateVector(UnityEngine.Random.Range(-20f, 60f)), delay, .4f, OnDropDownAnimationPlayed);
 
                 if (withBlink) BlinkAt(hexagon, piece.isUpper, delay);
 
@@ -918,10 +852,87 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		if (eliminate.Count > 0) {
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ELIMINATE);
-			if (onEliminatePieceCallback != null)onEliminatePieceCallback (eliminate.Count, eliminate [0].colorType, eliminate [0].transform.position);
+            if (onEliminatePieceCallback != null && autoUpdateScore) onEliminatePieceCallback(eliminate.Count, eliminate[0].colorType, eliminate[0].transform.position);
 		}
 
 	}
+
+
+    private void PopEliminatePieces(List<Piece> eliminate, BoardDirection direction, Vector3 trackingPosition, Hexagon last, int count, Action callback = null)
+    {
+        float delayTime = 0f;
+        Vector3 delta = Vector3.zero;
+        int eliminateCount = 0;
+        if (eliminate.Count > 0 && OnGetawayPieceCallback != null) OnGetawayPieceCallback();
+        for (int i = eliminate.Count - 1; i >= 0; i--)
+        {
+            Piece piece = eliminate[i];
+
+            if (piece.isCore)
+            {
+                if (OnTryToGetawayCorePieceCallback != null) OnTryToGetawayCorePieceCallback();
+                break;
+            }
+            if (eliminateCount >= count)
+            {
+                if (OnTryToGetawayOverflowPieceCallback != null) OnTryToGetawayOverflowPieceCallback();
+                break;
+            }
+
+            eliminateCount++;
+            eliminate.Remove(piece);
+            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
+            hexagon.RemovePiece(piece);
+            pieces.Remove(piece);
+            MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
+            Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition();
+            delayTime += length * 2f / moveSpeed;
+            moveBy.Init(piece, trackingPosition, finalPosition, moveSpeed * .4f, delayTime, OnPopEliminateAnimationDone);
+        }
+        if (eliminate.Count > 0)
+        {
+            Piece piece = eliminate[eliminate.Count - 1];
+            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
+            int step = GetEmptyPieceSlotCount(piece, direction);
+            Hexagon first = GetHexagonByStep(hexagon, direction, piece.isUpper, step);
+            delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY, 0);
+            float time = delta.magnitude / (moveSpeed * .4f);
+            foreach (var i in eliminate)
+            {
+                Hexagon old = GetHexagonAt(i.x, i.y);
+                old.RemovePiece(i);
+                GetHexagonByStep(old, direction, i.isUpper, step).SetPiece(i, time);
+            }
+
+
+            GroupMoveBy groupMoveBy = new GroupMoveBy();
+            groupMoveBy.Init(eliminate, delta, direction, time, callback);
+
+
+        }
+
+        if (eliminateCount > 0) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DISAPPEAR);
+
+
+    }
+
+
+    private void OnPopEliminateAnimationDone(object obj)
+    {
+        MoveByWithAccelerate moveBy = obj as MoveByWithAccelerate;
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DENY);
+        EntityPool.Instance.Reclaim(moveBy.piece.gameObject, moveBy.piece.iditentyType);
+    }
+    private void OnDropDownAnimationPlayed(object obj)
+    {
+        DropDown dropDown = obj as DropDown;
+        if (dropDown != null)
+        {
+            EntityPool.Instance.Reclaim(dropDown.piece.gameObject, dropDown.piece.iditentyType);
+            if (onDropDownPieceCallback != null && autoUpdateSkillPoint) onDropDownPieceCallback();
+        }
+    }
+
 
     private void UpdateGameplayDifficulty()
     {
@@ -1006,7 +1017,8 @@ public class Board : Core.MonoSingleton<Board> {
         UpdateGameplayDifficulty();
 
 	}
-    private int GetTwoPieceDistance(Piece a, Piece b, BoardDirection direction)
+    //not used yet
+    public int GetTwoPieceDistance(Piece a, Piece b, BoardDirection direction)
     {
         int step = 0;
         Hexagon hexagon = GetHexagonAt(a.x, a.y);
@@ -1024,62 +1036,8 @@ public class Board : Core.MonoSingleton<Board> {
         }
         return 0;
     }
-	private void PopEliminatePieces(List<Piece> eliminate,BoardDirection direction,Vector3 trackingPosition ,Hexagon last,int count, Action callback = null)
-	{
-        float delayTime = 0f;
-        Vector3 delta = Vector3.zero;
-        int eliminateCount = 0;
-        for (int i = eliminate.Count - 1; i >= 0; i--)
-        {
-            Piece piece = eliminate[i];
-            
-            if (piece.isCore)
-            {
-                if (OnTryToGetawayCorePieceCallback != null) OnTryToGetawayCorePieceCallback();
-                break;
-            }
-            if (eliminateCount >= count)
-            {
-                if (OnTryToGetawayOverflowPieceCallback != null) OnTryToGetawayOverflowPieceCallback();
-                break;
-            }
 
-            eliminateCount++;
-            eliminate.Remove(piece);
-            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
-            hexagon.RemovePiece(piece);
-            pieces.Remove(piece);
-            MoveByWithAccelerate moveBy = new MoveByWithAccelerate();
-            Vector3 finalPosition = SkillControl.Instance.GetSkillIconWorldPosition();
-            delayTime += length * 2f / moveSpeed;
-            moveBy.Init(piece, trackingPosition, finalPosition, moveSpeed * .4f, delayTime, OnPopEliminateAnimationDone);
-        }
-        if (eliminate.Count > 0)
-        {
-            Piece piece = eliminate[eliminate.Count - 1];
-            Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
-            int step = GetEmptyPieceSlotCount(piece, direction);
-            Hexagon first = GetHexagonByStep(hexagon, direction, piece.isUpper, step);
-            foreach (var i in eliminate)
-            {
-                Hexagon old = GetHexagonAt(i.x, i.y);
-                old.RemovePiece(i);
-                GetHexagonByStep(old, direction, i.isUpper, step).SetPiece(i);
-            }
-
-
-            delta = new Vector3(first.posX - hexagon.posX, first.posY - hexagon.posY, 0);
-            GroupMoveBy groupMoveBy = new GroupMoveBy();
-            groupMoveBy.Init(eliminate, delta, direction, delta.magnitude / (moveSpeed * .4f), callback);
-            
-
-        }
-
-        if (eliminateCount>0)SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DISAPPEAR);
-        
-        
-		
-	}
+	
 	private void OnResetWall(object obj)
 	{
         if (!autoUpdateWall) return;
@@ -1087,25 +1045,13 @@ public class Board : Core.MonoSingleton<Board> {
 		if(!wall.isInvincible)wall.Reset ();
 		
 	}
-	private void OnPopEliminateAnimationDone(object obj)
-	{
-		MoveByWithAccelerate moveBy = obj as MoveByWithAccelerate;
-		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_DENY);
-		EntityPool.Instance.Reclaim (moveBy.piece.gameObject, moveBy.piece.iditentyType);
-	}
-	private void OnDropDownAnimationPlayed(object obj)
-	{
-		DropDown dropDown = obj as DropDown;
-		if (dropDown != null) {
-			EntityPool.Instance.Reclaim (dropDown.piece.gameObject, dropDown.piece.iditentyType);
-			if(onDropDownPieceCallback!=null)onDropDownPieceCallback();
-		}
-	}
-    public void BlinkAt(Hexagon hexagon, bool isUpper, float delay)
+	
+    private void BlinkAt(Hexagon hexagon, bool isUpper, float delay)
     {
         BlinkGrid blinkGrid = new BlinkGrid();
         blinkGrid.Init(hexagon, isUpper, 0.5f, delay, gemContainer);
     }
+
     public void BlinkSurroundPiece(Piece piece)
     {
         Hexagon hexagon = GetHexagonAt(piece.x, piece.y);
@@ -1156,7 +1102,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return neighbour;
 	}
-
+    // for Skill
 	public List<Piece> GetSameColorPieces(Piece piece)
 	{
 		List<Piece> same = new List<Piece> ();
@@ -1165,8 +1111,6 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		return same;
 	}
-
-    
 
 	public List<Piece> GetEdgetPieces()
 	{
@@ -1199,11 +1143,7 @@ public class Board : Core.MonoSingleton<Board> {
 		return neighbour;
 	}
 
-	private Vector3 RotateVector(float angle)
-	{
-		Vector3 vector = new Vector3 (Mathf.Sin (angle*Mathf.PI/180f), Mathf.Cos (angle*Mathf.PI/180f));
-		return vector;
-	}
+	
    
 	public void MovePiece(Piece piece, BoardDirection direction, ref float time, ref int step)
     {
@@ -1232,14 +1172,7 @@ public class Board : Core.MonoSingleton<Board> {
                         {
                             lastGroup = currentPiece.group;
 
-                            if (segment.Count > 0)
-                            {
-                                //time = Mathf.Max(time, MovePieceByStep(segment, direction, step));
-                                //segment = new List<Piece>();// segment for group item;
-                            }
-
-                            
-                            foreach (var l in currentPiece.group.children)
+                           foreach (var l in currentPiece.group.children)
                             {
                                 if (!pieces.Contains(l))
                                 {
@@ -1364,6 +1297,7 @@ public class Board : Core.MonoSingleton<Board> {
 			hexagon.Tick();
 		}
 	}
+
 	private void RepearWalls()
 	{
         if (!autoUpdateWall) return;
@@ -1374,8 +1308,7 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 
 		}
-		//if (result)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_REPEAL);
-						
+	    			
 	}
 	private Hexagon GetHexagonByStep(Hexagon start, BoardDirection direction, bool isUpper ,int step)
 	{
@@ -1435,9 +1368,8 @@ public class Board : Core.MonoSingleton<Board> {
 					if (hexagon != null)
 					{
 						Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
-						//Debug.LogWarning(neighbour+" isUpper"+isUpper);
-
-						Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
+					    
+                        Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
 						if(crossPiece!=null)crossPiece.OnPassByPiece(direction, passedTime);
 					}
 
@@ -1468,7 +1400,7 @@ public class Board : Core.MonoSingleton<Board> {
                 }
 				if(hexagon!=null)
 				{
-					hexagon.SetPiece(currentPiece);
+                    hexagon.SetPiece(currentPiece, passedTime);
 					if(first!=hexagon)delta = new Vector3(hexagon.posX - first.posX, hexagon.posY - first.posY,0);
 					if(i == pieces.Count-1)last = hexagon;
 				}
@@ -1499,14 +1431,17 @@ public class Board : Core.MonoSingleton<Board> {
 				}
 
 			}
+        }
 
-			
-		}
+        
+
 
 		float time = 0;
 		if (delta != Vector3.zero) {
 			GroupMoveBy task = new GroupMoveBy();
 			time = delta.magnitude / moveSpeed;
+
+            
 			if (wall != null) {
 				if (wall.IsBroken ()) {
 						task.Init (pieces, delta, direction, time, OnPiecesReachedBrokenWall);
@@ -1516,9 +1451,9 @@ public class Board : Core.MonoSingleton<Board> {
                         task.Init(pieces, delta, direction, time, callback);
 						GroupBounce bounce = new GroupBounce ();
 						bounce.Init (pieces, delta, .3f, time);
-                        //Debug.Log("HIT WALL");
-                        //Debug.Log("lastPiece" + lastPiece);
-                        //Debug.Log("lastHexagon" + last);
+                        /*Hit Wall*/
+                        lastPiece.OnHitPiece(GetRevertDirection(direction), time);
+                        
 						ConflictAt conflictAt = new ConflictAt();
 						conflictAt.Init(last,lastPiece,direction,.8f);
 
@@ -1532,7 +1467,16 @@ public class Board : Core.MonoSingleton<Board> {
                     task.Init(pieces, delta, direction, time, callback);
 					GroupBounce bounce = new GroupBounce ();
 					bounce.Init (pieces, delta, .3f, time);
-                    //Debug.Log("HIT OBJECT");
+
+                    /*Hit Piece*/
+                    Hexagon next = GetHexagonByStep(last, direction, lastPiece.isUpper, 1);
+                    if (next != null && next.GetPiece(!lastPiece.isUpper) != null)
+                    {
+                        next.GetPiece(!lastPiece.isUpper).OnHitPiece(direction, time);
+                        lastPiece.OnHitPiece(GetRevertDirection(direction), time);
+                    }
+                    
+
                     new DelayCall().Init(time, OnHitPiece);
                     
 					ConflictAt conflictAt = new ConflictAt();
@@ -1569,25 +1513,70 @@ public class Board : Core.MonoSingleton<Board> {
 		switch (direction) {
 			case  BoardDirection.BottomLeft:
 			return new Vector3(length*-Mathf.Cos(Mathf.PI/3f),length*-Mathf.Sin(Mathf.PI/3f));
-			break;
+			    
 			case  BoardDirection.BottomRight:
 			return new Vector3(length*Mathf.Cos(Mathf.PI/3f),length*-Mathf.Sin(Mathf.PI/3f));
-			break;
+			    
 			case  BoardDirection.Left:
 			return Vector3.left*length;
-			break;
+			    
 			case  BoardDirection.Right:
 			return Vector3.right*length;
-			break;
+			    
 			case  BoardDirection.TopLeft:
 			return new Vector3(length*-Mathf.Cos(Mathf.PI/3f),length*Mathf.Sin(Mathf.PI/3f));
-			break;
+			    
 			case  BoardDirection.TopRight:
 			return new Vector3(length*Mathf.Cos(Mathf.PI/3f),length*Mathf.Sin(Mathf.PI/3f));
-			break;
+			    
 		}
 		return Vector3.zero;
 	}
+
+    public BoardDirection GetRevertDirection(  BoardDirection direction)
+    {
+        switch (direction)
+        {
+            case BoardDirection.Left:
+                return BoardDirection.Right;
+            case BoardDirection.Right:
+                return BoardDirection.Left;
+
+            case BoardDirection.TopLeft:
+                return BoardDirection.BottomRight;
+            case BoardDirection.BottomRight:
+                return BoardDirection.TopLeft;
+
+            case BoardDirection.TopRight:
+                return BoardDirection.BottomLeft;
+            case BoardDirection.BottomLeft:
+                return BoardDirection.TopRight;
+
+        }
+        return BoardDirection.None;
+    }
+    public BoardDirection GetCrossDirection(bool isUpper, BoardDirection direction)
+    {
+        switch (direction)
+        {
+            case BoardDirection.Left:
+            case BoardDirection.Right:
+                if (isUpper) return BoardDirection.BottomLeft;
+                else return BoardDirection.TopLeft;
+                
+            case BoardDirection.TopLeft:
+            case BoardDirection.BottomRight:
+                if (isUpper) return BoardDirection.Right;
+                else return BoardDirection.Left;
+                
+            case BoardDirection.TopRight:
+            case BoardDirection.BottomLeft:
+                if (isUpper) return BoardDirection.Left;
+                else return BoardDirection.Right;
+                
+        }
+        return BoardDirection.None;
+    }
 
 	private void OnPiecesReachedBrokenWall(object data)
 	{
@@ -2109,10 +2098,5 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		
 	}
-	void Update () {
-		if (Input.GetMouseButtonUp (0)) {
-
-			//CheckBoard();
-		}
-	}
+	
 }

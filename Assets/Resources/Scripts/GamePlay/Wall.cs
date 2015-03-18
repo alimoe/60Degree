@@ -75,6 +75,27 @@ public class Wall :MonoBehaviour {
         if (icon != null) icon.color = render.color;
     }
 
+    public static int CompareWall(Wall a, Wall b)
+    {
+        if (a.face == WallFace.Left && b.face != WallFace.Left) return -1;
+        if (a.face == WallFace.Left && b.face == WallFace.Left)
+        {
+            return a.linkedHexagon.y - b.linkedHexagon.y;
+        }
+
+        if (a.face != WallFace.Bottom && b.face == WallFace.Bottom) return -1;
+
+        if (a.face == WallFace.Right && b.face == WallFace.Right)
+        {
+            return -(a.linkedHexagon.y - b.linkedHexagon.y);
+        }
+        if (a.face == WallFace.Bottom && b.face == WallFace.Bottom)
+        {
+            return -(a.linkedHexagon.x - b.linkedHexagon.x);
+        }
+        return 0;
+    }
+
     public void Awake()
     {
         Init();

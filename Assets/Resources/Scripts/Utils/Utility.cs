@@ -18,4 +18,9 @@ public class Utility  {
         percent = Mathf.Max(Mathf.Min(percent, 1f), 0f);
 		return (byte)((int)start + (delta * percent));
 	}
+    public static Vector3 RotateVector(float angle)
+    {
+        Vector3 vector = new Vector3(Mathf.Sin(angle * Mathf.PI / 180f), Mathf.Cos(angle * Mathf.PI / 180f));
+        return vector;
+    }
 }

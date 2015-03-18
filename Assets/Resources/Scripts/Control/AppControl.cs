@@ -29,7 +29,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		state = GameState.GameNotStart;
 
 
-        mode = GameMode.Levels;
+        mode = GameMode.Classic;
 
 		UIControl.Instance.OpenMenu("StartMenu");
 		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);

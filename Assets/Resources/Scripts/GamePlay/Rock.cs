@@ -20,7 +20,6 @@ public class Rock : Entity {
     }
     public void ShutDown()
     {
-       //Debug.LogError("ShutDown");
        new FadeAway().Init(this.gameObject, .2f, Dispose);
     }
 

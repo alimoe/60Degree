@@ -293,7 +293,6 @@ public class Piece : Entity {
 
     public void OnPassHexagon(HexagonState hexagonState, float time)
     {
-        //Debug.LogWarning("Pass by Hexagon " + hexagonState);
         if (hexagonState == HexagonState.Fire)
         {
             if (this.state != PieceState.Coke)
@@ -310,7 +309,7 @@ public class Piece : Entity {
         }
     }
 
-    public void OnHitPiece(HexagonEdget edget, float time)
+    public void OnHitPiece(BoardDirection direction, float time)
     {
 
     }
