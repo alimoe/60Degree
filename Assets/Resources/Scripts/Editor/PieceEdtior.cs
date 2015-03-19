@@ -15,7 +15,7 @@ public class PieceEdtior : Editor {
         Piece piece = this.target as Piece;
         type = piece.colorType;
         type = (PieceColor)EditorGUILayout.EnumPopup("Upper Color", type);
-        piece.ChangeColor(type, true);
+        piece.ChangeColor(type);
 		state = piece.state;
 		state = (PieceState)EditorGUILayout.EnumPopup("Upper State", state);
 

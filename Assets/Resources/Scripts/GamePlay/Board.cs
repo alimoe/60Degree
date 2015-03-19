@@ -378,6 +378,21 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 	}
+    public void GenerateSwitcher()
+    {
+        Hexagon hexagon = RandomlyPickEmptyHexagon();
+        if (hexagon != null)
+        {
+            if (hexagon.IsEmpty(true))
+            {
+                hexagon.SetState(true, HexagonState.SwitchType);
+            }
+            else if (hexagon.IsEmpty(false))
+            {
+                hexagon.SetState(false, HexagonState.SwitchType);
+            }
+        }
+    }
 	public void GenerateBlock()
 	{
 
@@ -689,7 +704,8 @@ public class Board : Core.MonoSingleton<Board> {
 
                 if (hexagon.GetState(newPiece.isUpper) != HexagonState.Normal)
                 {
-                    newPiece.OnPassHexagon(hexagon.GetState(newPiece.isUpper), .3f);
+                    newPiece.OnPassHexagon(hexagon, .3f, newPiece.isUpper);
+                    hexagon.OnPassHexagon(newPiece);
                 }
 			}
 		}
@@ -1392,7 +1408,7 @@ public class Board : Core.MonoSingleton<Board> {
                 while (count <= step)
                 {
 					cross = GetCrossDirection(isUpper,direction);
-					passedTime = (float)count*length/moveSpeed;
+					passedTime = (float)count*length*.5f/moveSpeed;
 					if (hexagon != null)
 					{
 						Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
@@ -1408,13 +1424,13 @@ public class Board : Core.MonoSingleton<Board> {
 
                     if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
-						currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), passedTime);
+                        currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
                     }
 
                     count++;
                     isUpper = !isUpper;
                 }
-				passedTime = (float)count*length/moveSpeed;
+                passedTime = (float)count * .5f * length / moveSpeed;
 				cross = GetCrossDirection(isUpper,direction);
 				if (hexagon != null)
 				{
@@ -1424,7 +1440,7 @@ public class Board : Core.MonoSingleton<Board> {
 				}
                 if (isUpper && hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
                 {
-					currentPiece.OnPassHexagon(hexagon.GetState(!isUpper), (float)count*length/moveSpeed);
+                    currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
                 }
 				if(hexagon!=null)
 				{

@@ -185,18 +185,18 @@ public class Piece : Entity {
     {
 		return state == PieceState.Normal || state == PieceState.Coke || state == PieceState.Clock;
     }
-    public void ChangeColor(PieceColor color, bool instant = true)
+    public void ChangeColor(PieceColor color)
     {
         colorType = color;
         defaultColor = Wall.GetColor(color);
-        if (instant)
-        {
-            this.GetComponent<SpriteRenderer>().color = defaultColor;
-        }
-        else
-        {
-            new TurnColor().Init(this.gameObject, .3f, defaultColor, null);
-        }
+        this.GetComponent<SpriteRenderer>().color = defaultColor;
+        
+    }
+    public void ChangeColor(object color)
+    {
+        colorType = (PieceColor)color;
+        defaultColor = Wall.GetColor(colorType);
+        new TurnColor().Init(this.gameObject, .3f, defaultColor, null);
     }
 	public void SetState(object s)
 	{
@@ -315,9 +315,9 @@ public class Piece : Entity {
 		passSessionTime = time;
     }
 
-    public void OnPassHexagon(HexagonState hexagonState, float time)
+    public void OnPassHexagon(Hexagon hexagon, float time, bool upper)
     {
-        if (hexagonState == HexagonState.Fire)
+        if (hexagon.GetState(upper) == HexagonState.Fire)
         {
             if (this.state != PieceState.Coke)
             {
@@ -330,6 +330,14 @@ public class Piece : Entity {
                 cokeCounter.Reset();
             }
 
+        }
+        if (hexagon.GetState(upper) == HexagonState.SwitchType)
+        {
+            Switcher switcher = upper ? hexagon.switchU : hexagon.switchD;
+            if (switcher != null)
+            {
+                new DelayCall().Init(time, switcher.color, ChangeColor);
+            }
         }
     }
 

@@ -69,6 +69,11 @@ public class Hexagon:MonoBehaviour  {
     public Maze mazeD;
 
     [HideInInspector]
+    public Switcher switchU;
+    [HideInInspector]
+    public Switcher switchD;
+
+    [HideInInspector]
     public Triggering triggerU;
     [HideInInspector]
     public Triggering triggerD;
@@ -174,19 +179,32 @@ public class Hexagon:MonoBehaviour  {
             rockD = EntityPool.Instance.Use("Rock").GetComponent<Rock>().SetUp(this, false);
         }
 
-        if (upperState == HexagonState.Normal && mazeU != null || rockU !=null)
+        if (upperState == HexagonState.SwitchType && switchU == null)
+        {
+            switchU = EntityPool.Instance.Use("Switcher").GetComponent<Switcher>().SetUp(this, true);
+        }
+        if (lowerState == HexagonState.SwitchType && switchD == null)
+        {
+            switchD = EntityPool.Instance.Use("Switcher").GetComponent<Switcher>().SetUp(this, false);
+        }
+        
+        if (upperState == HexagonState.Normal )
         {
             if (mazeU!=null) mazeU.ShutDown();
             mazeU = null;
             if (rockU != null) rockU.ShutDown();
             rockU = null;
+            if (switchU != null) switchU.ShutDown();
+            switchU = null;
         }
-        if (lowerState == HexagonState.Normal && mazeD != null || rockD != null)
+        if (lowerState == HexagonState.Normal )
         {
             if (mazeD!=null) mazeD.ShutDown();
             mazeD = null;
             if (rockD != null) rockD.ShutDown();
             rockD = null;
+            if (switchD != null) switchD.ShutDown();
+            switchD = null;
         }
 
     }
@@ -258,6 +276,12 @@ public class Hexagon:MonoBehaviour  {
 		else return lower;			
 
 	}
+
+    public void OnPassHexagon(Piece piece)
+    {
+        Switcher switcher = piece.isUpper ? switchU : switchD;
+        if (switcher != null) switcher.ChangeColor(piece.colorType);
+    }
 
 	public bool CanEnter(bool isUpper, BoardDirection direction)
 	{
