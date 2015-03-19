@@ -71,7 +71,6 @@ public class Switcher : Entity {
     }
     public void ShutDown()
     {
-        Debug.LogError("Shut Down");
         new FadeAway().Init(this.gameObject, .2f, Dispose);
     }
 
