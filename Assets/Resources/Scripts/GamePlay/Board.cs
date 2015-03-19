@@ -308,12 +308,13 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 
 	}
-	public void GenerateRope()
+
+	public void GenerateClock()
 	{
 		int step = 5;
 		Piece piece = RandomlyPickPiece ();
 		while (step>0 ) {
-			if( piece!=null && piece.twine ==null || piece.ice==null || !piece.coke)
+			if( piece!=null && piece.twine ==null || piece.ice==null || !piece.coke || piece.clock==null)
 			{
 				break;
 			}
@@ -322,7 +323,26 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 			step --;
 		}
-		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke) {
+		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke && piece.clock == null) {
+			piece.SetState(PieceState.Clock);
+		}
+	}
+
+	public void GenerateRope()
+	{
+		int step = 5;
+		Piece piece = RandomlyPickPiece ();
+		while (step>0 ) {
+			if( piece!=null && piece.twine ==null || piece.ice==null || !piece.coke || piece.clock==null)
+			{
+				break;
+			}
+			else{
+				piece = RandomlyPickPiece ();
+			}
+			step --;
+		}
+		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke && piece.clock == null) {
 			piece.SetState(PieceState.Twine);
 		}
 	}
@@ -331,7 +351,7 @@ public class Board : Core.MonoSingleton<Board> {
 		int step = 5;
 		Piece piece = RandomlyPickPiece ();
 		while (step>0 ) {
-			if( piece!=null && piece.twine ==null || piece.ice==null || !piece.coke)
+			if( piece!=null && piece.twine ==null || piece.ice==null || !piece.coke || piece.clock==null)
 			{
 				break;
 			}
@@ -340,7 +360,7 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 			step --;
 		}
-		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke) {
+		if (piece!=null && piece.twine == null && piece.ice==null && !piece.coke && piece.clock == null) {
 			piece.SetState(PieceState.Freeze);
 		}
 	}
@@ -1077,7 +1097,15 @@ public class Board : Core.MonoSingleton<Board> {
             }
         }
     }
-
+	public void CokeSurroundPiece(Piece piece)
+	{
+		List<Piece> neighbour = GetSurroundPiece (piece);
+		if (!neighbour.Contains (piece))neighbour.Add (piece);
+						
+		foreach (Piece p in neighbour) {
+			p.SetState(PieceState.Coke);
+		}
+	}
 	public List<Piece> GetSurroundPiece(Piece piece)
 	{
 		List<Piece> neighbour = new List<Piece> ();
@@ -1452,7 +1480,11 @@ public class Board : Core.MonoSingleton<Board> {
 						GroupBounce bounce = new GroupBounce ();
 						bounce.Init (pieces, delta, .3f, time);
                         /*Hit Wall*/
-                        lastPiece.OnHitPiece(GetRevertDirection(direction), time);
+						Hexagon next = GetHexagonByStep(last, direction, lastPiece.isUpper, 1);
+						if (next == null)
+						{
+							lastPiece.OnHitPiece(GetRevertDirection(direction), time);
+						}
                         
 						ConflictAt conflictAt = new ConflictAt();
 						conflictAt.Init(last,lastPiece,direction,.8f);

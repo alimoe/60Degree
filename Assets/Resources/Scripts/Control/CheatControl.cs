@@ -51,20 +51,24 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				Board.Instance.GenerateBlock();
 			}
-			if(GUI.Button(new Rect(0,330,100,30),"Game Over"))
+			if (GUI.Button(new Rect(0, 330, 100, 30), "Add Clock"))
+			{
+				Board.Instance.GenerateClock();
+			}
+			if(GUI.Button(new Rect(0,360,100,30),"Game Over"))
 			{
 				AppControl.Instance.EndGame();
 			}
-			if(GUI.Button(new Rect(0,360,100,30),"Clear Record"))
+			if(GUI.Button(new Rect(0,390,100,30),"Clear Record"))
 			{
 				PlayerSetting.Instance.SetSetting("Score",0);
 				PlayerSetting.Instance.SetSetting("Round",0);
 			}
-			if(GUI.Button(new Rect(0,390,100,30),"Clear Tutorial"))
+			if(GUI.Button(new Rect(0,420,100,30),"Clear Tutorial"))
 			{
 				PlayerSetting.Instance.TutorialComplete(0);
 			}
-			if(GUI.Button(new Rect(0,420,100,30),"Purchase energy"))
+			if(GUI.Button(new Rect(0,450,100,30),"Purchase energy"))
 			{
 				AppControl.Instance.EnergyRefill();
 			}

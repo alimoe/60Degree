@@ -2,21 +2,23 @@
 using System.Collections;
 
 public class Shake : TimeEffect {
-	private static float Distance = 5f;
-	private Piece target;
+	
+	private Transform target;
 	private int count;
 	private int times;
 	public bool isRunning;
 	private float defaultRotation;
 	private float shakeDistance;
-	public void Init(Piece t,float time ,int c)
+	private float ratio;
+	public void Init(Transform t,float time ,int c, float r = .3f, float distance = 5f)
 	{
 		
 		defaultRotation = t.transform.localEulerAngles.z;
 		target = t;
 		count = c;
 		times = 0;
-		shakeDistance = Distance;
+		ratio = r;
+		shakeDistance = distance;
 		progress = new Counter (time / (float)c);
 		TimerControl.Instance.effects += OnShakeUpdate;
 		isRunning = true;
@@ -31,7 +33,7 @@ public class Shake : TimeEffect {
 			if(progress.Expired())
 			{
 				times++;
-				shakeDistance*=.3f;
+				shakeDistance*=ratio;
 				progress.Reset();
 			}
 
