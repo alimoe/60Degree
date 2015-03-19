@@ -1,15 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Teleport : MonoBehaviour {
+public class Teleport : Entity {
 
-	// Use this for initialization
-	void Start () {
+    public BoardDirection entery;
+    public BoardDirection outery;
 	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

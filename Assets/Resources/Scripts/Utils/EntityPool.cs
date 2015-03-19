@@ -34,7 +34,7 @@ public class EntityPool : Core.MonoSingleton<EntityPool> {
 		pool.Add("Block", Resources.Load("Prefabs/Block"));
 		pool.Add("Arrow", Resources.Load("Prefabs/Arrow"));
         pool.Add("Fragment", Resources.Load("Prefabs/Fragment"));
-
+        pool.Add("Switcher", Resources.Load("Prefabs/Switcher"));
 		inuse = new Dictionary<string,List<GameObject>> ();
 		unuse = new Dictionary<string,List<GameObject>> ();
 	}

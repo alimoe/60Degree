@@ -3,18 +3,20 @@ using System.Collections;
 
 public class Maze : Entity {
 
-   
+    private SpriteRenderer render;
 	private Counter life = new Counter(5f);
+    private Counter blink = new Counter(5f);
 	void Awake () {
-        
+        render = this.GetComponent<SpriteRenderer>();
 	}
     public Maze SetUp(Hexagon hexagon, bool isUpper)
     {
         this.transform.parent = hexagon.transform.parent;
-        this.transform.localPosition = isUpper ? hexagon.upPosition-0.1f*Vector3.up : hexagon.lowPosition+0.1f*Vector3.up;
-        this.transform.localScale = new Vector3(Hexagon.Scale * .9f, Hexagon.Scale * .9f, Hexagon.Scale * .9f);
+        this.transform.localPosition = isUpper ? hexagon.upPosition : hexagon.lowPosition;
+        this.transform.localScale = new Vector3(Hexagon.Scale * .85f, Hexagon.Scale * .85f, Hexagon.Scale * .85f);
         this.transform.localPosition += Vector3.forward;
-        this.transform.localEulerAngles = Vector3.zero;
+        this.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
+        render.color = new Color32(255, 255, 255, 255);
 		life.Reset ();
 		new FadeIn ().Init (this.gameObject, .3f, null);
         if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_MAZE);
@@ -22,7 +24,11 @@ public class Maze : Entity {
     }
     void Update()
     {
-        this.transform.localEulerAngles += Vector3.forward * .5f;
+        blink.Tick(Time.deltaTime);
+        if (blink.Expired()) blink.Reset();
+        float ratio = Mathf.Sin(Mathf.PI * blink.percent);
+        int alpha = (byte)128 + (byte)(127f * ratio);
+        render.color = new Color32(255, 255, 255, (byte)alpha);
     }
     public void ShutDown()
     {
