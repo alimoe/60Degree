@@ -6,8 +6,9 @@ public class EnviormentControl : Core.MonoSingleton<EnviormentControl> {
 	public SpriteRenderer board;
 	public List<SpriteRenderer> glows;
 	public Color32 boardDefaultColor;
-	public 
-	void Awake () {
+
+    protected override void Awake()
+    {
 		base.Awake ();
 		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
 		glows = new List<SpriteRenderer> ();

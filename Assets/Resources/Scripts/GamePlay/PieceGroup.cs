@@ -64,7 +64,7 @@ public class PieceGroup  {
 		for (int i = 1; i<children.Count; i++) {
 			Piece start = children[i-1];
 			Piece end = children[i];
-			int chainIndex = i-1;
+		    
 			if(!HasChained(start,end))
 			{
 				GameObject chainObj = EntityPool.Instance.Use("Chain") as GameObject;

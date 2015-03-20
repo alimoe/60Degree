@@ -57,9 +57,17 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
     private bool inTransition;
 	private SkyColor currentColor;
 	private List<LoadTask> tasks;
-	void Awake () {
+    protected override void Awake()
+    {
         base.Awake();
         skyBox = RenderSettings.skybox;
+
+        if (skyBox == null)
+        {
+            skyBox = Resources.Load("Materials/BlendSkyBox") as Material;
+            RenderSettings.skybox = skyBox;
+        }
+
         skyBox.SetFloat("_Blend", 0f);
         direction = 1;
         string folderName = "Textures/Skybox/" + SkyColor.Red.ToString() + "/";

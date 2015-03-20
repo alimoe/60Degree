@@ -10,7 +10,7 @@ public class Ice : Entity {
     {
 		Init ();
     }
-	public void Init()
+    public override void Init()
 	{
 		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
 		foreach (var child in children)

@@ -12,7 +12,7 @@ public class MoveByWithAccelerate :TimeEffect {
 	private bool inTrack;
 	private float currentSpeed;
 	private bool headGravity;
-	private float G = 40f;
+	private float G = 30f;
 	public virtual void Init(Piece p, Vector3 targetPosition,Vector3 eliminatePosition, float speed,float trackTime, Action callback = null)
 	{
 		TimerControl.Instance.effects += MoveByWithAccelerateUpdate;

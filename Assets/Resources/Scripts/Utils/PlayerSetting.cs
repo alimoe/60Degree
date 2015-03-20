@@ -7,7 +7,8 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
 	public bool muteSE;
     public bool muteBGM;
 	public bool tutorialPlayed;
-	void Awake () {
+    protected override void Awake()
+    {
         base.Awake();
 		Refresh ();
 

@@ -53,7 +53,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 	
 	public List<string> Tracks;
 	public int currentTrack;
-    void Awake ()
+    protected override void Awake()
     {
         base.Awake();
         trasitionCounter = new Counter(volume);

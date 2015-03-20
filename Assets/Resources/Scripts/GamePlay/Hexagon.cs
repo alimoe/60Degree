@@ -74,6 +74,12 @@ public class Hexagon:MonoBehaviour  {
     public Switcher switchD;
 
     [HideInInspector]
+    public Teleport teleportU;
+    [HideInInspector]
+    public Teleport teleportD;
+
+
+    [HideInInspector]
     public Triggering triggerU;
     [HideInInspector]
     public Triggering triggerD;
@@ -156,11 +162,9 @@ public class Hexagon:MonoBehaviour  {
 			}
 		}
 	}
-    public void SetState(bool isUpper, HexagonState state)
+
+    private void SetupSpecialItem()
     {
-        if (isUpper) upperState = state;
-        else lowerState = state;
-        
         if (upperState == HexagonState.Fire && mazeU == null)
         {
             mazeU = EntityPool.Instance.Use("Maze").GetComponent<Maze>().SetUp(this, true);
@@ -187,7 +191,24 @@ public class Hexagon:MonoBehaviour  {
         {
             switchD = EntityPool.Instance.Use("Switcher").GetComponent<Switcher>().SetUp(this, false);
         }
-        
+
+        if (upperState == HexagonState.Teleport && teleportU == null)
+        {
+            teleportU = EntityPool.Instance.Use("Teleport").GetComponent<Teleport>().SetUp(this, true);
+        }
+        if (lowerState == HexagonState.Teleport && teleportD == null)
+        {
+            teleportD = EntityPool.Instance.Use("Teleport").GetComponent<Teleport>().SetUp(this, false);
+        }
+    }
+
+    public void SetState(bool isUpper, HexagonState state)
+    {
+        if (isUpper) upperState = state;
+        else lowerState = state;
+
+        SetupSpecialItem();
+
         if (upperState == HexagonState.Normal )
         {
             if (mazeU!=null) mazeU.ShutDown();
@@ -196,6 +217,8 @@ public class Hexagon:MonoBehaviour  {
             rockU = null;
             if (switchU != null) switchU.ShutDown();
             switchU = null;
+            if (teleportU != null) teleportU.ShutDown();
+            teleportU = null;
         }
         if (lowerState == HexagonState.Normal )
         {
@@ -205,13 +228,14 @@ public class Hexagon:MonoBehaviour  {
             rockD = null;
             if (switchD != null) switchD.ShutDown();
             switchD = null;
+            if (teleportD != null) teleportD.ShutDown();
+            teleportD = null;
         }
 
     }
 
 	public void SetBlock(HexagonEdget side)
 	{
-		
 		this.blockState |= (int)side;
         UpdateBlock();
     }

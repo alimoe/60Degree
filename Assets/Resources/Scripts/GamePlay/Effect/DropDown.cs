@@ -8,7 +8,7 @@ public class DropDown : TimeEffect {
 	private float G = 40f;
 	private bool inDropdownState;
 	public Piece piece;
-	private float ratio = 0.8f;
+    
 	private Vector3 initPosition;
 	private Vector3 finalPosition;
 	private Vector3 implusDirection;

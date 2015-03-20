@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Clock : Entity {
-    private Piece piece;
+    public Piece piece;
 	
   	
     public HexagonEdget triggerEdget;
@@ -16,7 +16,7 @@ public class Clock : Entity {
     {
         Init();
     }
-    public void Init()
+    public override void Init()
     {
 		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
 

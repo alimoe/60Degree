@@ -62,6 +62,43 @@ public class LevelReader  {
                 g.MakeChain();
             }
 
+            XElement switchers = level.Element("Switchers");
+            foreach (XElement switcher in switchers.Elements("Switcher"))
+            {
+                int x = (int)switcher.Attribute("X");
+                int y = (int)switcher.Attribute("Y");
+                bool isUpper = (int)switcher.Attribute("Upper") == 1;
+                bool isStatic = (int)switcher.Attribute("Static") == 1;
+                PieceColor color = (PieceColor)((int)switcher.Attribute("Color"));
+                Hexagon hexagon = board.GetHexagonAt(x, y);
+                if (isUpper)
+                {
+                    hexagon.switchU.isStatic = isStatic;
+                    hexagon.switchU.color = color;
+                    hexagon.switchU.UpdateColor();
+                }
+                else
+                {
+                    hexagon.switchD.isStatic = isStatic;
+                    hexagon.switchD.color = color;
+                    hexagon.switchD.UpdateColor();
+                }
+            }
+
+
+            XElement clocks = level.Element("Clocks");
+            foreach (XElement clock in clocks.Elements("Clock"))
+            {
+                int x = (int)clock.Attribute("X");
+                int y = (int)clock.Attribute("Y");
+                bool isUpper = (int)clock.Attribute("Upper") == 1;
+
+                HexagonEdget edget = (HexagonEdget)((int)clock.Attribute("Edget"));
+                Piece piece = board.GetPieceAt(x, y, isUpper);
+                piece.clock.triggerEdget = edget;
+                piece.clock.UpdateTrigger();
+            }
+
 
         }
        

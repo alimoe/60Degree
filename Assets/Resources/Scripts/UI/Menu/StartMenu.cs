@@ -13,7 +13,8 @@ public class StartMenu : MenuSingleton<StartMenu> {
 	private float labelYPosition;
 	private float buttonYPosition;
 	private Transform credit;
-	void Awake () {
+    protected override void Awake()
+    {
 		base.Awake ();
 		Transform[] children = this.GetComponentsInChildren<Transform> (true);
 		letters = new List<UILabel> ();

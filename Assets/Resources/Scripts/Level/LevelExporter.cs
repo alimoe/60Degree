@@ -12,8 +12,10 @@ public class LevelExporter  {
         document.Add(root);
 
         List<PieceGroup> groups = new List<PieceGroup>();
+        List<Switcher> switchers = new List<Switcher>();
+        List<Clock> clocks = new List<Clock>();
 
-        
+
         XAttribute attribute;
         attribute = new XAttribute("Mode", (int)objective);
         root.Add(attribute);
@@ -26,9 +28,9 @@ public class LevelExporter  {
         parent = new XElement("Hexagons");
         root.Add(parent);
 
-        List<Hexagon> hexagons = board.GetHexagons();
-        Debug.LogWarning("Export:: Grid Count " + hexagons.Count);
-        for (int i = 0; i < hexagons.Count; i++)
+        Hexagon[] hexagons = board.GetHexagons();
+        Debug.LogWarning("Export:: Grid Count " + hexagons.Length);
+        for (int i = 0; i < hexagons.Length; i++)
         {
             Hexagon hexagon = hexagons[i];
 
@@ -44,14 +46,22 @@ public class LevelExporter  {
                 element.Add(attribute);
                 attribute = new XAttribute("UpperState", (int)hexagon.upperState);
                 element.Add(attribute);
+                if (hexagon.upperState == HexagonState.SwitchType)
+                {
+                    switchers.Add(hexagon.switchU);
+                }
                 attribute = new XAttribute("LowerState", (int)hexagon.lowerState);
                 element.Add(attribute);
+                if (hexagon.lowerState == HexagonState.SwitchType)
+                {
+                    switchers.Add(hexagon.switchU);
+                }
                 parent.Add(element);
             }
         }
         parent = new XElement("Pieces");
         root.Add(parent);
-        for (int i = 0; i < hexagons.Count; i++)
+        for (int i = 0; i < hexagons.Length; i++)
         {
             Hexagon hexagon = hexagons[i];
             if (hexagon.upper != null || hexagon.lower != null)
@@ -77,6 +87,10 @@ public class LevelExporter  {
                     {
                         if (!groups.Contains(hexagon.upper.group)) groups.Add(hexagon.upper.group);
                     }
+                    if (hexagon.upper.clock != null)
+                    {
+                        clocks.Add(hexagon.upper.clock);
+                    }
                 }
                 if (hexagon.lower != null)
                 {
@@ -99,7 +113,10 @@ public class LevelExporter  {
                     {
                         if (!groups.Contains(hexagon.lower.group)) groups.Add(hexagon.lower.group);
                     }
-
+                    if (hexagon.lower.clock != null)
+                    {
+                        clocks.Add(hexagon.lower.clock);
+                    }
                 }
 
             }
@@ -107,9 +124,9 @@ public class LevelExporter  {
 
         parent = new XElement("Walls");
         root.Add(parent);
-        List<Wall> walls = board.GetWalls();
-        Debug.LogWarning("Export:: Wall Count " + walls.Count);
-        for (int i = 0; i < walls.Count; i++)
+        Wall[] walls = board.GetWalls();
+        Debug.LogWarning("Export:: Wall Count " + walls.Length);
+        for (int i = 0; i < walls.Length; i++)
         {
             Wall wall = walls[i];
             if (wall.state != WallState.Normal)
@@ -153,6 +170,49 @@ public class LevelExporter  {
                     pieceEle.Add(attribute);
 
                 }
+            }
+        }
+
+        parent = new XElement("Switchers");
+        root.Add(parent);
+        if (switchers.Count > 0)
+        {
+            for (int i = 0; i < switchers.Count; i++)
+            {
+                Switcher switcher = switchers[i];
+                XElement element = new XElement("Switcher");
+                parent.Add(element);
+                attribute = new XAttribute("X", switcher.target.x);
+                element.Add(attribute);
+                attribute = new XAttribute("Y", switcher.target.y);
+                element.Add(attribute);
+                attribute = new XAttribute("Upper", switcher.isUpper);
+                element.Add(attribute);
+                attribute = new XAttribute("Static", switcher.isStatic);
+                element.Add(attribute);
+                attribute = new XAttribute("Color", (int)switcher.color);
+                element.Add(attribute);
+            }
+        }
+
+        parent = new XElement("Clocks");
+        root.Add(parent);
+        if (clocks.Count > 0)
+        {
+            for (int i = 0; i < clocks.Count; i++)
+            {
+                Clock clock = clocks[i];
+                XElement element = new XElement("Clock");
+                parent.Add(element);
+
+                attribute = new XAttribute("X", clock.piece.x);
+                element.Add(attribute);
+                attribute = new XAttribute("Y", clock.piece.y);
+                element.Add(attribute);
+                attribute = new XAttribute("Upper", clock.piece.isUpper);
+                element.Add(attribute);
+                attribute = new XAttribute("Edget", (int)clock.triggerEdget);
+                element.Add(attribute);
             }
         }
 

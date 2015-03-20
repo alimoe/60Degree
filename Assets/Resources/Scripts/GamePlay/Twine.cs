@@ -20,7 +20,7 @@ public class Twine : Entity {
     {
 		Init ();
     }
-	public void Init()
+    public override void Init()
 	{
 
 		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
@@ -92,7 +92,7 @@ public class Twine : Entity {
     public void OnPass(BoardDirection direction, float time)
     {
 		//Debug.LogWarning ("OnPass " + direction);
-		int last = life;
+	    
         switch (direction)
         {
             case BoardDirection.BottomLeft:

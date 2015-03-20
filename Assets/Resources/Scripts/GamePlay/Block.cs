@@ -16,7 +16,7 @@ public class Block : Entity {
 	void Awake () {
         Init();
 	}
-    public void Init()
+    public override void Init()
     {
         Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
         childs = new List<Transform>();

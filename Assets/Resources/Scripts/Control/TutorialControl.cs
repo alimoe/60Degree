@@ -31,7 +31,8 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
     private string step17Hint = "[00ff00]Untie[-] the final edget to free the puzzle";
     private string step18Hint = "Tutorial Completed! \n[00ff00]Tap to Start[-]";
 	private string[] hints;
-	void Awake () {
+    protected override void Awake()
+    {
         base.Awake();
         hints = new string[18] { step1Hint, step2Hint, step3Hint, step4Hint, step5Hint, step6Hint, step7Hint, step8Hint, step9Hint, step10Hint, step11Hint, step12Hint, step13Hint, step14Hint, step15Hint, step16Hint, step17Hint, step18Hint };
 	}

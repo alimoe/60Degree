@@ -14,29 +14,40 @@ public enum GameMode
 {
     Classic,
     Levels,
-    Speed
-    
+    Speed,
+    Test
 }
 public class AppControl : Core.MonoSingleton<AppControl> {
 
 	private List<Skill> skills;
 	private GameState state;
     private GameMode mode;
+    protected override void Awake()
+    {
+        base.Awake();
+        InitBoard();
+    }
 	void Start () {
 		Application.targetFrameRate = 60;
 		UIControl.Instance.Initialize ();
 		skills = new List<Skill> ();
 		state = GameState.GameNotStart;
-
+        
 
         mode = GameMode.Classic;
 
 		UIControl.Instance.OpenMenu("StartMenu");
 		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);
-
         WallIcon.Instance.SetUp();
 	}
-
+    public void InitBoard()
+    {
+        if (GameObject.Find("Board") == null)
+        {
+            GameObject board = Instantiate(Resources.Load("Prefabs/Board")) as GameObject;
+            board.transform.localPosition = Vector3.zero;
+        }
+    }
 	public void AddSkill(Skill skill)
 	{
 		if (skills.Count == 0 && skill.OnAdd () == false) {
@@ -53,6 +64,12 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.OpenMenu("HudMenu",true);
         Camera3DControl.Instance.direction = Vector3.zero;
 
+        if (PlayerPrefs.GetInt("TestMode") == 1)
+        {
+            mode = GameMode.Test;
+            PlayerPrefs.SetInt("TestMode", 0);
+            PlayerPrefs.Save();
+        }
 	    if (!PlayerSetting.Instance.tutorialPlayed)
         {
 			TutorialControl.Instance.InitTutorial ();
@@ -61,6 +78,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         {
             if (mode == GameMode.Classic) new DelayCall().Init(.3f, this.StartClassicMode);
             else if (mode == GameMode.Levels) new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
+            else if (mode == GameMode.Test) new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
         }
         
 	}

@@ -6,6 +6,8 @@ public class Switcher : Entity {
     private SpriteRenderer render;
     public PieceColor color;
     public bool isStatic = true;
+    public bool isUpper;
+    public Hexagon target;
     private Color32 defaultColor;
     void Awake()
     {
@@ -13,8 +15,10 @@ public class Switcher : Entity {
         defaultColor = render.color;
     }
 
-    public Switcher SetUp(Hexagon hexagon, bool isUpper)
+    public Switcher SetUp(Hexagon hexagon, bool upper)
     {
+        target = hexagon;
+        isUpper = upper;
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition + Vector3.down * .1f : hexagon.lowPosition + Vector3.up * .1f;
         this.transform.localScale = new Vector3(Hexagon.Scale , Hexagon.Scale  , Hexagon.Scale);
@@ -34,7 +38,7 @@ public class Switcher : Entity {
     }
     public void Random()
     {
-        System.Array colors = System.Enum.GetValues(typeof(PieceColor));
+        
         float seed = UnityEngine.Random.Range(0, 5f);
         if (seed < 1f)
         {
@@ -71,6 +75,7 @@ public class Switcher : Entity {
     }
     public void ShutDown()
     {
+        target = null;
         new FadeAway().Init(this.gameObject, .2f, Dispose);
     }
 

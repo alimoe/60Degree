@@ -81,22 +81,47 @@ public class PieceEdtior : Editor {
         }
         pieceGroup.chains = chains;
     }
+
+    public void DestoryOldState()
+    {
+        Piece piece = this.target as Piece;
+
+        if ((int)(piece.state & PieceState.Freeze) == 0)
+        {
+            if (piece.ice != null)
+            {
+                piece.ice.gameObject.SetActive(false);
+                GameObject.DestroyImmediate(piece.ice.gameObject);
+
+                piece.ice = null;
+            }
+        }
+        if ((int)(piece.state & PieceState.Twine) == 0)
+        {
+            if (piece.twine != null)
+            {
+                piece.twine.gameObject.SetActive(false);
+                GameObject.DestroyImmediate(piece.twine.gameObject);
+                piece.twine = null;
+            }
+        }
+        if ((int)(piece.state & PieceState.Clock) == 0)
+        {
+            if (piece.clock != null)
+            {
+                piece.clock.gameObject.SetActive(false);
+                GameObject.DestroyImmediate(piece.clock.gameObject);
+                piece.clock = null;
+            }
+        }
+    }
+
 	public void UpdatePieceState()
 	{
 		Piece piece = this.target as Piece;
 		piece.state = state;
-		if (piece.state == PieceState.Normal) {
-			if(piece.ice != null)
-			{
-				GameObject.DestroyImmediate(piece.ice.gameObject);
-				piece.ice = null;
-			}
-			if(piece.twine != null)
-			{
-				GameObject.DestroyImmediate(piece.twine.gameObject);
-				piece.twine = null;
-			}
-		}
+        DestoryOldState();
+
 		if (piece.state == PieceState.Freeze) {
 			if(piece.ice == null)
 			{
@@ -108,12 +133,7 @@ public class PieceEdtior : Editor {
 			piece.ice.SetUp(piece);
 
 			piece.ice.gameObject.SetActive(true);
-			if(piece.twine != null)
-			{
-				piece.twine.gameObject.SetActive(false);
-				GameObject.DestroyImmediate(piece.twine.gameObject);
-				piece.twine = null;
-			}
+			
 		}
 
 		if (piece.state == PieceState.Twine) {
@@ -127,13 +147,21 @@ public class PieceEdtior : Editor {
 			piece.twine.SetUp(piece);
 
 			piece.twine.gameObject.SetActive(true);
-			if(piece.ice != null)
-			{
-				piece.ice.gameObject.SetActive(false);
-				GameObject.DestroyImmediate(piece.ice.gameObject);
 			
-				piece.ice = null;
-			}
 		}
+
+        if (piece.state == PieceState.Clock)
+        {
+            if (piece.clock == null)
+            {
+                GameObject twineObj = Instantiate(Resources.Load("Prefabs/Clock")) as GameObject;
+                piece.clock = twineObj.GetComponent<Clock>();
+                piece.clock.transform.parent = piece.transform.parent;
+            }
+            piece.clock.Init();
+            piece.clock.SetUp(piece);
+            piece.clock.gameObject.SetActive(true);
+            
+        }
 	}
 }

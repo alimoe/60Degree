@@ -7,8 +7,12 @@ public class Maze : Entity {
 	private Counter life = new Counter(5f);
     private Counter blink = new Counter(5f);
 	void Awake () {
-        render = this.GetComponent<SpriteRenderer>();
+        Init();
 	}
+    public override void Init()
+    {
+        render = this.GetComponent<SpriteRenderer>();
+    }
     public Maze SetUp(Hexagon hexagon, bool isUpper)
     {
         this.transform.parent = hexagon.transform.parent;

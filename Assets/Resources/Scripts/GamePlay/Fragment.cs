@@ -6,8 +6,8 @@ public class Fragment : Entity {
     private float speed;
     public Vector3 direction;
     private static float G = -2;
-    
-    public virtual void Reset()
+
+    public override void Reset()
     {
         base.Reset();
         this.transform.localScale = new Vector3(UnityEngine.Random.Range(.5f, 1f), UnityEngine.Random.Range(.5f, 1f), 1f);

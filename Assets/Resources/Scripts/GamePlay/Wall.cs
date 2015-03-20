@@ -129,19 +129,19 @@ public class Wall :MonoBehaviour {
 		switch (c) {
 			case PieceColor.Red:
 				return levels[0];
-			break;
+
 			case PieceColor.Blue:
 				return levels[4];
-			break;
+
 			case PieceColor.Green:
 				return levels[1];
-			break;
+
 			case PieceColor.Purple:
 				return levels[3];
-			break;
+
 			case PieceColor.Yellow:
 				return levels[2];
-			break;
+
 		}
 		return levels[0];
 	}
@@ -150,19 +150,19 @@ public class Wall :MonoBehaviour {
         switch (c) {
 			case PieceColor.Red:
 				return levels[4];
-			break;
+
 			case PieceColor.Blue:
 				return levels[2];
-			break;
+
 			case PieceColor.Green:
 				return levels[3];
-			break;
+
 			case PieceColor.Purple:
 				return levels[1];
-			break;
+
 			case PieceColor.Yellow:
 				return levels[0];
-			break;
+
 		}
 		return levels[0];
     }

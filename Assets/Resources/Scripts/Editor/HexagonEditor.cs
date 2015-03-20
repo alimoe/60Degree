@@ -134,6 +134,34 @@ public class HexagonEditor : Editor
             hexagon.rockD.gameObject.SetActive(true);
             hexagon.rockD.SetUp(hexagon, false);
         }
+        if (hexagon.switchU != null) hexagon.switchU.gameObject.SetActive(false);
+        if (upperState == HexagonState.SwitchType)
+        {
+            if (hexagon.switchU == null)
+            {
+                GameObject switchObj = Instantiate(Resources.Load("Prefabs/Switcher")) as GameObject;
+                hexagon.switchU = switchObj.GetComponent<Switcher>();
+                hexagon.switchU.transform.parent = hexagon.transform.parent;
+            }
+
+            hexagon.switchU.gameObject.SetActive(true);
+            hexagon.switchU.SetUp(hexagon, true);
+        }
+
+        if (hexagon.switchD != null) hexagon.switchD.gameObject.SetActive(false);
+        if (lowerState == HexagonState.SwitchType)
+        {
+            if (hexagon.switchD == null)
+            {
+                GameObject switchObj = Instantiate(Resources.Load("Prefabs/Switcher")) as GameObject;
+                hexagon.switchD = switchObj.GetComponent<Switcher>();
+                hexagon.switchD.transform.parent = hexagon.transform.parent;
+            }
+
+            hexagon.switchD.gameObject.SetActive(true);
+            hexagon.switchD.SetUp(hexagon, false);
+        }
+
         hexagon.lowerState = lowerState;
         hexagon.upperState = upperState;
     }

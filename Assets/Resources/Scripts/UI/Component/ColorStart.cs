@@ -8,7 +8,7 @@ public class ColorStart : MonoBehaviour {
 	private Counter idleCounter;
 	private Counter transitionCounter;
 	private UISprite sprite;
-	private Vector3 deltaRotation = new Vector3 (0, 0, 1f);
+	private Vector3 deltaRotation = new Vector3 (0, 0, 30f);
 	private Counter scaleCounter;
 	public static Color32[] colors = new Color32[6]{new Color32(255,255,255,255),new Color32(255,255,0,255),new Color32(0,255,0,255),new Color32(89,255,255,255),new Color32(240,0,243,255),new Color32(255,0,0,255)};
 	void Start () {
@@ -36,7 +36,7 @@ public class ColorStart : MonoBehaviour {
 		} else {
 			idleCounter.Tick (Time.deltaTime);
 		}
-		sprite.transform.localEulerAngles += deltaRotation;
+        sprite.transform.localEulerAngles += deltaRotation * Time.deltaTime;
 		scaleCounter.Tick (Time.deltaTime);
 		float scalar = 1f+(Mathf.Sin (Mathf.PI * 2f * scaleCounter.percent))*.2f;
 		sprite.transform.localScale = new Vector3 (scalar, scalar, scalar);

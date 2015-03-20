@@ -10,6 +10,63 @@ public class BoardEditor : Editor {
     private LevelObjective objective = LevelObjective.Eliminate;
     private string levelName="";
     public int levelStep = -1;
+    private PlayModeState _currentState = PlayModeState.Stopped;
+
+    public BoardEditor()
+    {
+        EditorApplication.playmodeStateChanged = OnUnityPlayModeChanged;
+        
+    }
+
+    public enum PlayModeState
+    {
+        Stopped,
+        Playing,
+        Paused
+    }
+
+    public void OnUnityPlayModeChanged()
+    {
+        var changedState = PlayModeState.Stopped;
+        switch (_currentState)
+        {
+            case PlayModeState.Stopped:
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    changedState = PlayModeState.Playing;
+                }
+                break;
+            case PlayModeState.Playing:
+                if (EditorApplication.isPaused)
+                {
+                    changedState = PlayModeState.Paused;
+                }
+                else
+                {
+                    changedState = PlayModeState.Stopped;
+                }
+                break;
+            case PlayModeState.Paused:
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    changedState = PlayModeState.Playing;
+                }
+                else
+                {
+                    changedState = PlayModeState.Stopped;
+                }
+                break;
+             
+        }
+
+        _currentState = changedState;
+        
+        if (_currentState == PlayModeState.Stopped)
+        {
+            EditorApplication.OpenScene(PlayerPrefs.GetString("TestScene"));
+        }
+    }
+
 	public override void OnInspectorGUI () {
 	    
 		Board board = this.target as Board;
@@ -53,11 +110,23 @@ public class BoardEditor : Editor {
         {
             Save(ref board, levelName, objective, levelStep);
         }
+        if (GUILayout.Button("Test"))
+        {
+            Save(ref board, "Temp", objective, levelStep);
+            EditorApplication.SaveScene();
+
+            PlayerPrefs.SetInt("TestMode", 1);
+            PlayerPrefs.SetString("TestScene", EditorApplication.currentScene);
+            PlayerPrefs.Save();
+            
+            EditorApplication.OpenSceneAdditive("Assets/Resources/Scenes/main.unity");
+            EditorApplication.isPlaying = true;
+        }
 	}
     public void UpdateWalls(int flag)
     {
         Board board = this.target as Board;
-        List<Wall> walls = board.GetWalls();
+        Wall[] walls = board.GetWalls();
         foreach (Wall wall in walls)
         {
             if (flag == 0) wall.Broke();

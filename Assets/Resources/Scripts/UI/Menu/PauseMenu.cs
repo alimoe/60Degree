@@ -13,7 +13,8 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 	private ToggleButton soundBtn;
 	private float line1YPosition;
 	private float line2YPosition;
-	void Awake () {
+    protected override void Awake()
+    {
 		base.Awake ();
 		Transform[] children = this.GetComponentsInChildren<Transform> ();
 		foreach (var child in children) {

@@ -45,7 +45,7 @@ public class HudMenu : MenuSingleton<HudMenu>{
 
 	private string corePieceWarningMessage = "Core Puzzle [00ff00]can't be wiped[-]";
 	private string overFlowWarningMessage = "You can only wipe out [00ff00]4 puzzles[-] through broken wall at a time";
-	void Awake () {
+	protected override void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();
 		nguiCamera = GameObject.Find ("UI Root/Camera").GetComponent<Camera> ();
@@ -369,19 +369,19 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		switch (color) {
 			case PieceColor.Blue:
 			return new Color32(98,255,255,255);
-			break;
+
 			case PieceColor.Red:
 			return new Color32(255,0,0,255);
-			break;
+
 			case PieceColor.Yellow:
 			return new Color32(255,255,0,255);
-			break;
+
 			case PieceColor.Green:
 			return new Color32(0,255,0,255);
-			break;
+
 			case PieceColor.Purple:
 			return new Color32(255,0,212,255);
-			break;
+
 		}
 		return new Color32(255,255,255,255);
 	}

@@ -38,14 +38,17 @@ public class Board : Core.MonoSingleton<Board> {
 	public float halfWidth;
 	[HideInInspector]
 	public float halfHeight;
+
+    public Hexagon[] referenceHexagons;
+    public Wall[] referenceWalls;
+
 	private Dictionary<string,Hexagon> hexagons = new Dictionary<string, Hexagon>();
 	private List<PieceColor> colors;
 	private List<Piece>pieces = new List<Piece>();
 	private List<Wall>walls = new List<Wall>();
 	private Transform gemContainer;
-	private Vector3 xAxis;
-	private Vector3 yAxis;
-    
+
+	
     public Piece selected;
 
     
@@ -97,7 +100,10 @@ public class Board : Core.MonoSingleton<Board> {
 		BoardDirection.TopRight
 	};
 	void Start () {
-		gemContainer = GameObject.Find ("Board/Gems").transform;
+		
+        
+
+
 		Hexagon.totalSegment = this.segment;
         generateCounter = new Counter(generateMaxStep);
 		freezeCoreCounter.percent = 1f;
@@ -105,16 +111,22 @@ public class Board : Core.MonoSingleton<Board> {
 
 		ResetColorsPriority ();
 		GenerateHexagon ();
-
-		InitAxis ();
+        InitContainer();
+		//InitAxis ();
 
 	}
+    private void InitContainer()
+    {
+        Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
 
+        foreach (var child in children)
+        {
+            if (child.name.Contains("Gem")) gemContainer = child;
+        }
+    }
     private void InitAxis()
     {
-        xAxis = new Vector3(1, 0, 0);
-        yAxis = new Vector3(Mathf.Cos(Mathf.PI / 3f), Mathf.Sin(Mathf.PI / 3f), 0);
-        yAxis = yAxis.normalized;
+       
     }
 
     public void ResetColorsPriority()
@@ -309,6 +321,8 @@ public class Board : Core.MonoSingleton<Board> {
 
 	}
 
+   
+
 	public void GenerateClock()
 	{
 		int step = 5;
@@ -378,6 +392,19 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 	}
+    public void GenerateTeleport()
+    {
+        Hexagon hexagon = RandomlyPickEmptyHexagon();
+        if (hexagon != null)
+        {
+            if (hexagon.IsEmpty(true) && hexagon.IsEmpty(false))
+            {
+                bool isUpper = UnityEngine.Random.Range(0, 1f) < .5f ? true : false;
+                hexagon.SetState(isUpper, HexagonState.Teleport);
+            }
+            
+        }
+    }
     public void GenerateSwitcher()
     {
         Hexagon hexagon = RandomlyPickEmptyHexagon();
@@ -571,6 +598,8 @@ public class Board : Core.MonoSingleton<Board> {
 		foreach (var i in hexagons.Values) {
 			i.Render();
 		}
+        referenceHexagons = new List<Hexagon>(hexagons.Values).ToArray();
+        Debug.Log("referenceHexagons"+referenceHexagons);
     }
 
     public void GenerateWall()
@@ -597,7 +626,7 @@ public class Board : Core.MonoSingleton<Board> {
             }
         }
         walls.Sort(Wall.CompareWall);
-
+        referenceWalls = walls.ToArray();
     }
 
     //Only Render in editor
@@ -764,13 +793,13 @@ public class Board : Core.MonoSingleton<Board> {
 		return hexagon;
 	}
 
-    public List<Hexagon> GetHexagons()
+    public Hexagon[] GetHexagons()
     {
-        return new List<Hexagon>(hexagons.Values);
+        return referenceHexagons;
     }
-    public List<Wall> GetWalls()
+    public Wall[] GetWalls()
     {
-        return walls;
+        return referenceWalls;
     }
 
 	private PieceColor GetRandomColor()
@@ -1377,19 +1406,29 @@ public class Board : Core.MonoSingleton<Board> {
         }
         return true;
     }
-   
+
+    private void HandleCrossDirectionPiece(Hexagon hexagon, bool isUpper, BoardDirection direction, int count)
+    {
+        BoardDirection cross;
+        cross = GetCrossDirection(isUpper, direction);
+        float time = (float)count * length * .5f / moveSpeed;
+        if (hexagon != null)
+        {
+            Hexagon neighbour = GetHexagonByStep(hexagon, cross, isUpper, 1);
+            Piece crossPiece = neighbour == null ? null : neighbour.GetPiece(!isUpper);
+            if (crossPiece != null) crossPiece.OnPassByPiece(direction, time);
+        }
+
+    }
     
 	//Only Allowed move by row.
 	private float MovePieceByStep(List<Piece> pieces,BoardDirection direction, int step, Action callback = null )
 	{
         if (pieces.Count == 0) return 0;
 
-        //Debug.Log("MovePieceByStep Called pieces member " + pieces.Count);
-
         Piece.sortingDirection = direction;
         pieces.Sort(Piece.ComparePiece);
 
-		GetDirectionHexagon loopFuc = GetDirectionHexagonDelegate (direction);
 		Vector3 delta = Vector3.zero;
 		Hexagon last =null;
 		for (int i = 0; i<pieces.Count; i++) {
@@ -1398,30 +1437,17 @@ public class Board : Core.MonoSingleton<Board> {
 			Hexagon hexagon = GetHexagonAt(currentPiece.x,currentPiece.y);
 			Hexagon first = hexagon;
             bool isUpper = currentPiece.isUpper;
-			//Debug.LogWarning("CurrentPiece "+ currentPiece);
-			BoardDirection cross;
-			float passedTime = 0;
+		    float passedTime = 0;
 			if(hexagon!=null )
 			{
 				hexagon.RemovePiece(currentPiece);
                 int count = 1;
                 while (count <= step)
                 {
-					cross = GetCrossDirection(isUpper,direction);
-					passedTime = (float)count*length*.5f/moveSpeed;
-					if (hexagon != null)
-					{
-						Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
-					    
-                        Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
-						if(crossPiece!=null)crossPiece.OnPassByPiece(direction, passedTime);
-					}
-
-
+                    HandleCrossDirectionPiece(hexagon, isUpper, direction, count);
+					
                     hexagon = GetHexagonByStep(hexagon,direction,isUpper,1);
                     
-
-
                     if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
                         currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
@@ -1431,13 +1457,9 @@ public class Board : Core.MonoSingleton<Board> {
                     isUpper = !isUpper;
                 }
                 passedTime = (float)count * .5f * length / moveSpeed;
-				cross = GetCrossDirection(isUpper,direction);
-				if (hexagon != null)
-				{
-					Hexagon neighbour = GetHexagonByStep(hexagon,cross,isUpper,1);
-					Piece crossPiece = neighbour == null?null:neighbour.GetPiece(!isUpper);
-					if(crossPiece!=null)crossPiece.OnPassByPiece(direction,passedTime);
-				}
+
+                HandleCrossDirectionPiece(hexagon, isUpper, direction, count);
+				
                 if (isUpper && hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
                 {
                     currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
@@ -1450,31 +1472,17 @@ public class Board : Core.MonoSingleton<Board> {
 				}
 			}
 		}
-		//Debug.LogWarning("Step "+ step);
-     	//Debug.LogWarning("Last "+ last);
-
-
+		
 		Wall wall = null;
 		Piece lastPiece = pieces [pieces.Count - 1];
 		if(last!=null &&   IsAgainstEdget(direction,last,lastPiece))
 		{
-			//if(last.CanLeave(lastPiece.isUpper,direction))
-			{
-				wall = GetAgaistWall (GetLinkedWall(last), direction);
-			}
-
-		}
+            wall = GetAgaistWall(GetLinkedWall(last), direction);
+        }
 		else if(last!=null &&   IsSideBroken(direction,last,lastPiece))
 		{
-			//if(last.CanLeave(lastPiece.isUpper,direction))
-			{
-				Hexagon neighbour = GetHexagonByStep(last,direction,lastPiece.isUpper,1);
-				//if(neighbour != null && neighbour.CanEnter(!lastPiece.isUpper,direction))
-				{
-					wall = GetAgaistWall (GetLinkedWall(neighbour), direction);
-				}
-
-			}
+            Hexagon neighbour = GetHexagonByStep(last, direction, lastPiece.isUpper, 1);
+            wall = GetAgaistWall(GetLinkedWall(neighbour), direction);
         }
 
         
@@ -1811,8 +1819,7 @@ public class Board : Core.MonoSingleton<Board> {
 		while(hexagon!=null)
 		{
 
-			bool isBoard = hexagon.isBoard;
-
+			
 			Hexagon differentType = GetHexagonByStep(hexagon,direction,isUpper,1);
 			Hexagon sameType = GetHexagonByStep(hexagon,direction,isUpper,2);
 

@@ -29,7 +29,7 @@ public class Piece : Entity {
 	public int y;
 	public float length;
 	public float height;
-	private Vector3 heightVector;
+    
 
 	public PieceColor type;
     public PieceColor colorType;
@@ -65,7 +65,7 @@ public class Piece : Entity {
                     return b.x - a.x;
                 }
 
-                break;
+    
             case BoardDirection.Right:
                 if (a.x == b.x && a.isUpper != b.isUpper)
                 {
@@ -75,7 +75,7 @@ public class Piece : Entity {
                 {
                     return a.x - b.x;
                 }
-                break;
+    
             case BoardDirection.BottomRight:
 
             case BoardDirection.BottomLeft:
@@ -87,7 +87,7 @@ public class Piece : Entity {
                 {
                     return b.y - a.y;
                 }
-                break;
+    
             case BoardDirection.TopLeft:
             case BoardDirection.TopRight:
                 if (a.y == b.y && a.isUpper != b.isUpper)
@@ -100,7 +100,7 @@ public class Piece : Entity {
                 }
 
 
-                break;
+    
         }
 
         return 0;
@@ -440,7 +440,7 @@ public class Piece : Entity {
 	{
 		length = l;
 		height = Mathf.Sin (Mathf.PI / 3f) * length;
-		heightVector = Vector3.up * height;
+		
         colorType = this.type;
 		SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
 		float originalLength = spriteRender.sprite.bounds.extents.x*2f;
