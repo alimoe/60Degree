@@ -29,7 +29,7 @@ public class Piece : Entity {
 	public int y;
 	public float length;
 	public float height;
-    
+    public int id;
 
 	public PieceColor type;
     public PieceColor colorType;

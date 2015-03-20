@@ -48,9 +48,7 @@ public class Board : Core.MonoSingleton<Board> {
 	private List<Wall>walls = new List<Wall>();
 	private Transform gemContainer;
 
-	
-    public Piece selected;
-
+	public Piece selected;
     
 	private delegate Piece GetDirectionPiece(Piece piece);
 	private delegate Piece GetDirectionPieceByIndex(int x, int y, bool isUpper);
@@ -102,8 +100,6 @@ public class Board : Core.MonoSingleton<Board> {
 	void Start () {
 		
         
-
-
 		Hexagon.totalSegment = this.segment;
         generateCounter = new Counter(generateMaxStep);
 		freezeCoreCounter.percent = 1f;
@@ -599,9 +595,9 @@ public class Board : Core.MonoSingleton<Board> {
 			i.Render();
 		}
         referenceHexagons = new List<Hexagon>(hexagons.Values).ToArray();
-        Debug.Log("referenceHexagons"+referenceHexagons);
+        
     }
-
+    
     public void GenerateWall()
     {
         if (walls.Count > 0) return;
@@ -1001,9 +997,9 @@ public class Board : Core.MonoSingleton<Board> {
 
     private void UpdateGameplayDifficulty()
     {
-		float level = (float)freezeWallIndex / (float)segment;
-        //Debug.LogWarning("Level" + level);
-		if (level >=0.7f )
+		float progress = (float)freezeWallIndex / (float)segment;
+
+        if (progress >= 0.7f)
 		{
 			if (generateType.Count == 0)
 			{
@@ -1013,18 +1009,18 @@ public class Board : Core.MonoSingleton<Board> {
 			}
 		}
 
-        if (level == 1f && colors.Count < 4)
+        if (progress == 1f && colors.Count < 4)
         {
             colors.Add(PieceColor.Purple);
         }
-        
-		if (level == 2f && colors.Count < 5)
+
+        if (progress == 2f && colors.Count < 5)
         {
 			colors.Add(PieceColor.Yellow);
            
         }
-		
-		if (level >= 2.5f)
+
+        if (progress >= 2.5f)
 		{
 			if (generateType.Count == 1)
 			{
@@ -1033,7 +1029,7 @@ public class Board : Core.MonoSingleton<Board> {
 				GenerateBlock();
 			}
 		}
-		if (level >= 3f)
+        if (progress >= 3f)
         {
             if (generateType.Count == 2)
             {
@@ -1042,7 +1038,7 @@ public class Board : Core.MonoSingleton<Board> {
                 GenerateIce();
             }
         }
-		if (level >= 3.5f)
+        if (progress >= 3.5f)
         {
             if (generateType.Count == 3)
             {
@@ -1051,7 +1047,7 @@ public class Board : Core.MonoSingleton<Board> {
                 GenerateRope();
             }
         }
-        if (level >= 4)
+        if (progress >= 4)
         {
             if (generateType.Count == 4)
             {

@@ -98,6 +98,11 @@ public class BoardEditor : Editor {
             UpdateWalls(2);
         }
 
+        if (GUILayout.Button("Update Pieces Index"))
+        {
+            UpdatePieceID();
+        }
+
         EditorGUILayout.Space();
         EditorGUILayout.Separator();
 
@@ -123,15 +128,36 @@ public class BoardEditor : Editor {
             EditorApplication.isPlaying = true;
         }
 	}
+    public void UpdatePieceID()
+    {
+        Board board = this.target as Board;
+        Hexagon[] hexagons = board.GetHexagons();
+        int index = 0;
+        for (int i = 0;i<hexagons.Length;i++)
+        {
+            if (hexagons[i].upper != null)
+            {
+                hexagons[i].upper.id = index;
+                index++;
+            }
+            if (hexagons[i].lower != null)
+            {
+                hexagons[i].lower.id = index;
+                index++;
+            }
+        }
+
+    }
     public void UpdateWalls(int flag)
     {
         Board board = this.target as Board;
         Wall[] walls = board.GetWalls();
         foreach (Wall wall in walls)
         {
+            wall.Init();
             if (flag == 0) wall.Broke();
             else if (flag == 1) wall.Normal();
-            else if (flag == 2) wall.Invincible();
+            else if (flag == 2) wall.UnBroken();
         }
     }
     public void Save(ref Board board, string levelName, LevelObjective objective, int levelStep)

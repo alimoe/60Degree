@@ -7,7 +7,11 @@ public enum LevelObjective
     Eliminate
 }
 
-public class Level  {
+public class Level:MonoBehaviour  {
 
-	
+    public int step;
+    [HideInInspector]
+    public int id;
+    public int[] pieceIndex;
+    public BoardDirection[] moveDirection;
 }

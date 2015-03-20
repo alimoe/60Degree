@@ -13,6 +13,9 @@ public class PieceEdtior : Editor {
     public override void OnInspectorGUI()
     {
         Piece piece = this.target as Piece;
+        EditorGUILayout.LabelField("ID:", piece.id.ToString());
+        
+
         type = piece.colorType;
         type = (PieceColor)EditorGUILayout.EnumPopup("Upper Color", type);
         piece.ChangeColor(type);
