@@ -32,8 +32,12 @@ public class Teleport : Entity {
     public Teleport SetUp(Hexagon hexagon, bool upper)
     {
         this.transform.parent = hexagon.transform.parent;
+<<<<<<< Updated upstream
         this.transform.localPosition = upper ? hexagon.upPosition : hexagon.lowPosition;
         this.transform.localScale = new Vector3(Hexagon.Scale , Hexagon.Scale , Hexagon.Scale );
+=======
+		this.transform.localPosition = isUpper ? hexagon.upPosition : hexagon.lowPosition;
+>>>>>>> Stashed changes
         this.transform.localPosition += Vector3.forward;
         isUpper = upper;
         target = hexagon;
@@ -137,6 +141,7 @@ public class Teleport : Entity {
         return true;
     }
 
+<<<<<<< Updated upstream
     public BoardDirection GetTeleportedDirection(BoardDirection direction)
     {
         switch (direction)
@@ -158,6 +163,9 @@ public class Teleport : Entity {
     }
 
     public void ShutDown()
+=======
+   	public void ShutDown()
+>>>>>>> Stashed changes
     {
         target = null;
         new FadeAway().Init(this.gameObject, .2f, Dispose);

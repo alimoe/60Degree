@@ -71,7 +71,7 @@ public class Switcher : Entity {
     {
         if (isStatic) return;
         color = c;
-        new TurnColor().Init(this.gameObject, .3f, Wall.GetColor(color), null);
+        new TurnColor().Init(this.gameObject, .1f, Wall.GetColor(color), null);
     }
     public void ShutDown()
     {
