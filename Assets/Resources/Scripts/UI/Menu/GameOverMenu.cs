@@ -55,8 +55,8 @@ public class GameOverMenu : MenuSingleton<GameOverMenu> {
 		inTransitionIn = true;
 
 
-		int userScore = HudMenu.Instance.GetScore ();
-		int userRound = HudMenu.Instance.GetRound ();
+		int userScore = ClassicHudMenu.Instance.GetScore ();
+		int userRound = ClassicHudMenu.Instance.GetRound ();
 		int historyScore = PlayerSetting.Instance.GetSetting ("Score");
 		int historyRound = PlayerSetting.Instance.GetSetting ("Round");
 

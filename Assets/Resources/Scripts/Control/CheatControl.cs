@@ -25,7 +25,7 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			}
 			if(GUI.Button(new Rect(0,120,100,30),"Add Skill Point"))
 			{
-				HudMenu.Instance.AddProgress();
+				ClassicHudMenu.Instance.AddProgress();
 			}
 			if(GUI.Button(new Rect(0,150,100,30),"Enhance Wall"))
 			{

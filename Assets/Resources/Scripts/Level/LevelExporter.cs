@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 public class LevelExporter  {
 
-    public void Save(ref Board board, string name,LevelObjective objective = LevelObjective.Eliminate, int step = -1)
+    public void Save(ref Board board, ref Level level, string name,LevelObjective objective = LevelObjective.Eliminate)
     {
         XDocument document = new XDocument();
         XElement root = new XElement("Level");
@@ -20,6 +20,7 @@ public class LevelExporter  {
         attribute = new XAttribute("Mode", (int)objective);
         root.Add(attribute);
 
+		int step = level == null ? -1 : level.step;
         attribute = new XAttribute("Step", (int)step);
         root.Add(attribute);
 
@@ -215,7 +216,19 @@ public class LevelExporter  {
                 element.Add(attribute);
             }
         }
-
+		parent = new XElement("Steps");
+		if (level != null) {
+			for(int i=0;i<level.pieceIndex.Length;i++)
+			{
+				XElement element = new XElement("Step");
+				parent.Add(element);
+				attribute = new XAttribute("Index", level.pieceIndex[i]);
+				element.Add(attribute);
+				attribute = new XAttribute("Direction", (int)level.moveDirection[i]);
+				element.Add(attribute);
+			}
+		}
+		root.Add(parent);
         document.Save("Assets/Resources/Levels/" + name + ".xml");
     }
 }

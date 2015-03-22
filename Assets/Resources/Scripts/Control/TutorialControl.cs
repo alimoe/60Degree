@@ -254,20 +254,20 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		TutorialStep tutorialStep = steps [currentStep];
 		if(tutorialStep.onEnterCallback!=null)tutorialStep.onEnterCallback();
 		
-		HudMenu.Instance.ShowHint(ref hints[tutorialStep.hint]);
+		ClassicHudMenu.Instance.ShowHint(ref hints[tutorialStep.hint]);
 		if (tutorialStep.direction == BoardDirection.None)arrow.Stop ();
 		else arrow.FocusOn(pieces[tutorialStep.target].transform).FaceTo(Board.Instance.GetPhysicDirection(tutorialStep.direction)).WithDistnace(tutorialStep.arrowDistance).Offset(tutorialStep.offset.x,tutorialStep.offset.y);			
 	}
 	public void FinishTutorial()
 	{
 		pieces.Clear();
-		HudMenu.Instance.HideHint();
+		ClassicHudMenu.Instance.HideHint();
 		PlayerSetting.Instance.TutorialComplete(1);
 		
 		Board.Instance.autoBirth = true;
 		Board.Instance.GeneratePiece();
 		Board.Instance.GeneratePiece();
-		HudMenu.Instance.AddRound (1);
+		ClassicHudMenu.Instance.AddRound (1);
 		isActive = false;
 		if (onTutorialCompleteCallback != null)onTutorialCompleteCallback ();
 	}

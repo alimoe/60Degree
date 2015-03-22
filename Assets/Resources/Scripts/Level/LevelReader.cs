@@ -14,6 +14,9 @@ public class LevelReader  {
             board.ResetBoard();
             XDocument document = XDocument.Load(file);
             XElement level = document.Element("Level");
+			step = (int) level.Attribute("Step");
+			objective = (LevelObjective)((int)level.Attribute("Mode"));
+
             XElement hexagons = level.Element("Hexagons");
             foreach (XElement hexagon in hexagons.Elements("Hexagon"))
             {

@@ -1,20 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
-public class PauseMenu : MenuSingleton<PauseMenu> {
+
+public class OutOfMoveMenu : MenuSingleton<OutOfMoveMenu>{
 
 	private UISprite line1;
 	private UISprite line2;
 	private UISprite line3;
 	private bool inTransitionIn;
-	private Counter transitionInCounter;
-	private UILabel scoreValue;
-	private UILabel maxRoundValue;
-	private ToggleButton soundBtn;
 	private float line1YPosition;
 	private float line2YPosition;
-    protected override void Awake()
-    {
+	private Counter transitionInCounter;
+	private ToggleButton soundBtn;
+	protected override void Awake()
+	{
 		base.Awake ();
 		Transform[] children = this.GetComponentsInChildren<Transform> ();
 		foreach (var child in children) {
@@ -32,14 +30,6 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 			{
 				line3 = child.GetComponent<UISprite>();
 			}
-			if(child.name.Contains("ScoreValue"))
-			{
-				scoreValue = child.GetComponent<UILabel>();
-			}
-			if(child.name.Contains("RoundValue"))
-			{
-				maxRoundValue = child.GetComponent<UILabel>();
-			}
 			if(child.name.Contains("MusicButton"))
 			{
 				soundBtn = child.GetComponent<ToggleButton>();
@@ -53,21 +43,6 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 		base.OnOpenScreen ();
 		transitionInCounter.Reset ();
 		inTransitionIn = true;
-		int userScore = ClassicHudMenu.Instance.GetScore ();
-		int userRound = ClassicHudMenu.Instance.GetRound ();
-		int historyScore = PlayerSetting.Instance.GetSetting ("Score");
-		int historyRound = PlayerSetting.Instance.GetSetting ("Round");
-		
-		maxRoundValue.text = userRound > historyRound ? userRound.ToString () : historyRound.ToString ();
-		scoreValue.text = userScore > historyScore ? userScore.ToString () : historyScore.ToString ();
-
-		if (userScore > historyScore) {
-			PlayerSetting.Instance.SetSetting("Score",userScore);
-			AppControl.Instance.ReportScore(userScore);
-		}
-		if (userRound > historyRound) {
-			PlayerSetting.Instance.SetSetting("Round",userRound);
-		}
 		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);
 		SoundControl.Instance.ToggleMusic ();
@@ -92,4 +67,6 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 			}
 		}
 	}
+
+
 }

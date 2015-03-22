@@ -66,6 +66,7 @@ public class Board : Core.MonoSingleton<Board> {
     public event Action OnTryToGetawayCorePieceCallback;
     public event Action OnTryToGetawayOverflowPieceCallback;
     public event Action OnGetawayPieceCallback;
+	public event Action OnMoveDoneCallback;
 
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
@@ -1692,6 +1693,9 @@ public class Board : Core.MonoSingleton<Board> {
 		new DelayCall ().Init (.42f, EndProcess);
 	    RepearWalls ();
 		GenerateSpecialItem ();
+		if (OnMoveDoneCallback != null) {
+			OnMoveDoneCallback();
+		}
 	}
 
 	private void EndProcess()

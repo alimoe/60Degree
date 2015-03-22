@@ -9,7 +9,7 @@ public class BoardEditor : Editor {
     private LevelExporter export;
     private LevelObjective objective = LevelObjective.Eliminate;
     private string levelName="";
-    public int levelStep = -1;
+
     private PlayModeState _currentState = PlayModeState.Stopped;
 
     public BoardEditor()
@@ -109,15 +109,14 @@ public class BoardEditor : Editor {
         objective = (LevelObjective)EditorGUILayout.EnumPopup("Objective", objective);
         EditorGUILayout.LabelField("Level Name:");
         levelName = EditorGUILayout.TextField(levelName);
-        EditorGUILayout.LabelField("Level Step:");
-        levelStep = EditorGUILayout.IntField(levelStep);
+       	
         if (GUILayout.Button("Save"))
         {
-            Save(ref board, levelName, objective, levelStep);
+            Save(ref board, levelName, objective);
         }
         if (GUILayout.Button("Test"))
         {
-            Save(ref board, "Temp", objective, levelStep);
+            Save(ref board, "Temp", objective);
             EditorApplication.SaveScene();
 
             PlayerPrefs.SetInt("TestMode", 1);
@@ -160,10 +159,18 @@ public class BoardEditor : Editor {
             else if (flag == 2) wall.UnBroken();
         }
     }
-    public void Save(ref Board board, string levelName, LevelObjective objective, int levelStep)
+    public void Save(ref Board board, string levelName, LevelObjective objective)
     {
+
         export = new LevelExporter();
-        export.Save(ref board, levelName, objective, levelStep);
+
+		Level level = null;
+		GameObject levelObj = GameObject.Find("Level");
+		if (levelObj != null) {
+			level = levelObj.GetComponent<Level>();
+		}
+
+		export.Save(ref board, ref level, levelName, objective);
     }
 
 }

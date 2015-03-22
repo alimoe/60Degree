@@ -52,7 +52,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	{
 		if (skills.Count == 0 && skill.OnAdd () == false) {
 				skills.Add (skill);
-				HudMenu.Instance.ShowHint (ref skill.hint);
+				ClassicHudMenu.Instance.ShowHint (ref skill.hint);
 		} else {
 			Board.Instance.GeneratePiece();
 		}
@@ -61,24 +61,38 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	public void StartGame()
 	{
 		state = GameState.GamePlaying;
-		UIControl.Instance.OpenMenu("HudMenu",true);
-        Camera3DControl.Instance.direction = Vector3.zero;
+
+        //Camera3DControl.Instance.direction = Vector3.zero;
 
         if (PlayerPrefs.GetInt("TestMode") == 1)
         {
             mode = GameMode.Test;
+
             PlayerPrefs.SetInt("TestMode", 0);
             PlayerPrefs.Save();
         }
 	    if (!PlayerSetting.Instance.tutorialPlayed)
         {
+			UIControl.Instance.OpenMenu("ClassicHudMenu",true);
 			TutorialControl.Instance.InitTutorial ();
         }
         else
         {
-            if (mode == GameMode.Classic) new DelayCall().Init(.3f, this.StartClassicMode);
-            else if (mode == GameMode.Levels) new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
-            else if (mode == GameMode.Test) new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+            if (mode == GameMode.Classic)
+			{
+				UIControl.Instance.OpenMenu("ClassicHudMenu",true);
+				new DelayCall().Init(.3f, this.StartClassicMode);
+			}
+            else if (mode == GameMode.Levels) 
+			{
+				UIControl.Instance.OpenMenu("LevelHudMenu",true);
+				new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
+			}
+            else if (mode == GameMode.Test) 
+			{
+				UIControl.Instance.OpenMenu("LevelHudMenu",true);
+				new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+			}
         }
         
 	}
@@ -90,7 +104,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	public void PlayTutorial()
 	{
 		state = GameState.GamePlaying;
-		UIControl.Instance.OpenMenu("HudMenu",true);
+		UIControl.Instance.OpenMenu("ClassicHudMenu",true);
 		Camera3DControl.Instance.direction = Vector3.zero;
 		new DelayCall ().Init (.3f, TutorialControl.Instance.InitTutorial);
 		
@@ -113,7 +127,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.CloseMenu ();
 		Board.Instance.ResetBoard ();
         Camera3DControl.Instance.direction = Vector3.zero;
-		HudMenu.Instance.Reset ();
+		ClassicHudMenu.Instance.Reset ();
 		Board.Instance.StartPlay ();
 
 	}
@@ -147,7 +161,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
     public void EnergyRefill()
     {
         ResumeGame();
-        HudMenu.Instance.EnergyRefill();
+		ClassicHudMenu.Instance.EnergyRefill();
     }
 
     public void HandleDrag(Vector3 position)
@@ -177,7 +191,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                     if (result)
 					{
 						skills.RemoveAt(0);
-						HudMenu.Instance.HideHint();
+						ClassicHudMenu.Instance.HideHint();
 						Board.Instance.GeneratePiece();
 					}
 
@@ -185,7 +199,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                 }
 				else
 				{
-					HudMenu.Instance.HideHint();
+					ClassicHudMenu.Instance.HideHint();
 					Board.Instance.SelectFrom(position);
 				}
             }

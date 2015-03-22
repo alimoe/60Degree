@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public class HudMenu : MenuSingleton<HudMenu>{
+public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 
 	private List<UILabel> tips;
 	private UILabel scoreLabel;
@@ -200,6 +200,18 @@ public class HudMenu : MenuSingleton<HudMenu>{
 		historyRound = PlayerSetting.Instance.GetSetting ("Round");
 	}
 
+	public override void OnCloseScreen()
+	{
+		base.OnCloseScreen ();
+		Board.Instance.onEliminatePieceCallback -= AddScore;
+		Board.Instance.onDropDownPieceCallback -= AddProgress;
+		Board.Instance.onHitRoundCallback -= AddRound;
+		Board.Instance.onWallProgressCallback -= ReinforceWall;
+		Board.Instance.OnTryToGetawayCorePieceCallback -= WarnCorePiece;
+		Board.Instance.OnTryToGetawayOverflowPieceCallback -= WarnOverFlow;
+		TutorialControl.Instance.onTutorialCompleteCallback -= EnablePauseMenu;
+		
+	}
 	private void WarnCorePiece ()
 	{
 		ShowHint (ref corePieceWarningMessage);
