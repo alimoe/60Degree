@@ -271,12 +271,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		isActive = false;
 		if (onTutorialCompleteCallback != null)onTutorialCompleteCallback ();
 	}
-
-	public void DisplayCredit()
-	{
-
-
-	}
+	
 
     public void HandleTap(Vector3 position)
     {

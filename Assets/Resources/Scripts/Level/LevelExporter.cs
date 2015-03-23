@@ -220,12 +220,16 @@ public class LevelExporter  {
 		if (level != null) {
 			for(int i=0;i<level.pieceIndex.Length;i++)
 			{
-				XElement element = new XElement("Step");
-				parent.Add(element);
-				attribute = new XAttribute("Index", level.pieceIndex[i]);
-				element.Add(attribute);
-				attribute = new XAttribute("Direction", (int)level.moveDirection[i]);
-				element.Add(attribute);
+				if(i<step)
+				{
+					XElement element = new XElement("Step");
+					parent.Add(element);
+					attribute = new XAttribute("Index", level.pieceIndex[i]);
+					element.Add(attribute);
+					attribute = new XAttribute("Direction", (int)level.moveDirection[i]);
+					element.Add(attribute);
+				}
+
 			}
 		}
 		root.Add(parent);

@@ -789,7 +789,10 @@ public class Board : Core.MonoSingleton<Board> {
 		hexagons.TryGetValue(Utility.Combine(x,"_",y),out hexagon);
 		return hexagon;
 	}
-
+	public Piece[] GetPieces()
+	{
+		return pieces.ToArray ();
+	}
     public Hexagon[] GetHexagons()
     {
         return referenceHexagons;

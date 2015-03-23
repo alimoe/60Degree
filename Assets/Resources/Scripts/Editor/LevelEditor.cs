@@ -14,13 +14,12 @@ public class LevelEditor : Editor {
         EditorGUILayout.BeginHorizontal();
         step = level.step;
         EditorGUILayout.PropertyField(serializedObject.FindProperty("step"), true);
-        
-        
-        serializedObject.FindProperty("moveDirection");
+		serializedObject.ApplyModifiedProperties();
         EditorGUILayout.EndHorizontal();
+		
         if (this.step != level.step)
         {
-            
+			Debug.Log("Change Step Count");
             this.step = level.step;
             int[] newPieceIndex = new int[step];
             BoardDirection[] newDirection = new BoardDirection[step];
@@ -43,8 +42,14 @@ public class LevelEditor : Editor {
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Piece:", EditorStyles.label, GUILayout.Width(60));
-            level.pieceIndex[i] = EditorGUILayout.IntField(level.pieceIndex[i], GUILayout.Width(60));
-            level.moveDirection[i] = (BoardDirection)EditorGUILayout.EnumPopup("Direction:", level.moveDirection[i]);
+			if(i<level.pieceIndex.Length)
+			{
+				level.pieceIndex[i] = EditorGUILayout.IntField(level.pieceIndex[i], GUILayout.Width(60));
+			}
+			if(i<level.moveDirection.Length)
+			{
+				level.moveDirection[i] = (BoardDirection)EditorGUILayout.EnumPopup("Direction:", level.moveDirection[i]);
+			}
             EditorGUILayout.EndHorizontal();
         }
 

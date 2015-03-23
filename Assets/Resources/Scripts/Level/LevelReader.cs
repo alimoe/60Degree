@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Xml.Linq;
+using System.Collections.Generic;
 using System.IO;
 public class LevelReader  {
     public LevelObjective objective;
     public int step;
-
+	public List<LevelGuide> guides;
     public void Load(Board board, string file)
     {
         
@@ -103,6 +104,19 @@ public class LevelReader  {
             }
 
 
+			guides = new List<LevelGuide>();
+			XElement steps = level.Element("Steps");
+
+			foreach (XElement s in steps.Elements("Step"))
+			{
+				int index = (int)s.Attribute("Index");
+				BoardDirection direction = (BoardDirection)((int)s.Attribute("Direction"));
+				LevelGuide guide = new LevelGuide();
+				guide.direction = direction;
+				guide.PieceIndex = index;
+				guides.Add(guide);
+
+			}
         }
        
 

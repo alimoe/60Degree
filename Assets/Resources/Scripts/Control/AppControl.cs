@@ -225,6 +225,10 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             {
                 TutorialControl.Instance.HandleSwipe(position, direction);
             }
+			else if(LevelControl.Instance.inGuide)
+			{
+				LevelControl.Instance.HandleSwipe(position,direction);
+			}
             else
             {
 				Vector3 d = Board.Instance.GetPhysicDirection(direction).normalized;

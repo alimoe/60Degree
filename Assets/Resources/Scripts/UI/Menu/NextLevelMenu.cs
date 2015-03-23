@@ -1,18 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class OutOfMoveMenu : MenuSingleton<OutOfMoveMenu>{
+public class NextLevelMenu : MenuSingleton<NextLevelMenu> {
 
 	private UISprite line1;
 	private UISprite line2;
 	private UISprite line3;
-	private UILabel title;
-	private UILabel failed;
 	private bool inTransitionIn;
 	private float line1YPosition;
 	private float line2YPosition;
 	private Counter transitionInCounter;
-	private ToggleButton soundBtn;
 	
 	protected override void Awake()
 	{
@@ -33,39 +30,27 @@ public class OutOfMoveMenu : MenuSingleton<OutOfMoveMenu>{
 			{
 				line3 = child.GetComponent<UISprite>();
 			}
-			if(child.name.Contains("MusicButton"))
-			{
-				soundBtn = child.GetComponent<ToggleButton>();
-			}
-			if(child.name.Contains("Title"))
-			{
-				title = child.GetComponent<UILabel>();
-			}
-			if(child.name.Contains("Failed"))
-			{
-				failed = child.GetComponent<UILabel>();
-			}
+
 		}
 		transitionInCounter = new Counter (.3f);
 	}
-
+	
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
 		transitionInCounter.Reset ();
 		inTransitionIn = true;
+		/*
 		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);
-		SoundControl.Instance.ToggleMusic ();
-		title.text = LevelControl.Instance.faildIsOutOfMove?"Out Of Move":"Mission Failed";
-		failed.gameObject.SetActive (!LevelControl.Instance.faildIsOutOfMove);
-
+		SoundControl.Instance.ToggleMusic ();*/
 	}
 	public override void OnCloseScreen ()
 	{
 		base.OnCloseScreen ();
+		/*
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_OUT);
-		SoundControl.Instance.ToggleMusic ();
+		SoundControl.Instance.ToggleMusic ();*/
 	}
 	// Update is called once per frame
 	void Update () {
@@ -81,6 +66,4 @@ public class OutOfMoveMenu : MenuSingleton<OutOfMoveMenu>{
 			}
 		}
 	}
-
-
 }
