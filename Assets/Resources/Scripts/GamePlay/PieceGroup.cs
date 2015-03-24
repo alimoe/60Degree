@@ -81,10 +81,60 @@ public class PieceGroup:ScriptableObject  {
     }
     public void Sort()
     {
-        Piece.sortingDirection = BoardDirection.TopLeft;
+		FigureOutDirection ();
         this.children.Sort(Piece.ComparePiece);
-            
+		/*
+       	for (int i = 0; i < children.Count; i++) {
+			Debug.LogError(children[i]);
+		}
+		*/
+		//Debug.LogError("<<<<-------------------->>>>");
     }
+	private void FigureOutDirection()
+	{
+		GameObject boardObj = GameObject.Find("Board");
+		Board board = boardObj.GetComponent<Board> ();
+		board.FixReference ();
+		BoardDirection[] directions = new BoardDirection[6] {
+						BoardDirection.BottomLeft,
+						BoardDirection.BottomRight,
+						BoardDirection.Left,
+						BoardDirection.Right,
+						BoardDirection.TopRight,
+						BoardDirection.TopLeft
+				};
+		int d = 0;
+		while (d < directions.Length) {
+			foreach(var i in children)
+			{
+				List<Piece> pieces = board.GetDirectionPieces(i,directions[d]);
+				List<Piece> others = GetPieceWithout(i,children);
+				bool valide = true;
+				foreach(var j in others)
+				{
+					if(!pieces.Contains(j))valide = false;
+					valide = !valide?valide:true;
+				}
+				if(valide)
+				{
+					Piece.sortingDirection = directions[d];
+					return;
+				}
+				else
+				{
+					d++;
+				}
+			}
+		}
+	}
+	private List<Piece> GetPieceWithout(Piece without, List<Piece> collection)
+	{
+		List<Piece> results = new List<Piece> ();
+		foreach (var i in collection) {
+			if(i!=without)results.Add(i);
+		}
+		return results;
+	}
 	public bool HasChained(Piece a, Piece b)
 	{
 		bool result = false;

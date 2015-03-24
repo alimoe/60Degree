@@ -603,6 +603,13 @@ public class Board : Core.MonoSingleton<Board> {
         referenceHexagons = new List<Hexagon>(hexagons.Values).ToArray();
         
     }
+	public void FixReference()
+	{
+		foreach (var i in referenceHexagons) {
+			string key = i.x+"_"+i.y;
+			if(!hexagons.ContainsKey(key))hexagons.Add(key,i);
+		}
+	}
     public void DestoryWall()
     {
         foreach (var i in walls)
@@ -1866,7 +1873,7 @@ public class Board : Core.MonoSingleton<Board> {
 		return slot;
 	}
 
-	private List<Piece> GetDirectionPieces(Piece piece,BoardDirection direction)
+	public List<Piece> GetDirectionPieces(Piece piece,BoardDirection direction)
 	{
 		GetDirectionPiece loopFuc = null;
 		switch (direction) {
