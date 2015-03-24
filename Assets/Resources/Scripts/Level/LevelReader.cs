@@ -74,6 +74,7 @@ public class LevelReader  {
                 bool isUpper = (int)switcher.Attribute("Upper") == 1;
                 bool isStatic = (int)switcher.Attribute("Static") == 1;
                 PieceColor color = (PieceColor)((int)switcher.Attribute("Color"));
+                //Debug.Log(color);
                 Hexagon hexagon = board.GetHexagonAt(x, y);
                 if (isUpper)
                 {

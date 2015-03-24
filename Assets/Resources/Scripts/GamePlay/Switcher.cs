@@ -11,10 +11,14 @@ public class Switcher : Entity {
     private Color32 defaultColor;
     void Awake()
     {
+        Init();
+    }
+    public override void Init()
+    {
+        base.Init();
         render = this.GetComponent<SpriteRenderer>();
         defaultColor = render.color;
     }
-
     public Switcher SetUp(Hexagon hexagon, bool upper)
     {
         target = hexagon;

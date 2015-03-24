@@ -27,6 +27,11 @@ public class Wave : TimeEffect {
 		target = null;
 		isRunning = false;
 	}
+    public void Reset(Vector3 position)
+    {
+        initPosition = position;
+        progress.Reset();
+    }
 	// Update is called once per frame
 	public void OnWaveUpdate () {
 		progress.Tick (Time.deltaTime);

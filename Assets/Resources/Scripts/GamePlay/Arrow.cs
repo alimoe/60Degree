@@ -20,7 +20,10 @@ public class Arrow : MonoBehaviour {
         if (target != null)
         {
             center = target.transform.position;
-            if (wave != null && wave.initPosition != center) wave.initPosition = center;
+            if (wave != null && wave.initPosition != center)
+            {
+                wave.Reset(center);
+            }
         }
 	}
 	public void UpdatePosition()

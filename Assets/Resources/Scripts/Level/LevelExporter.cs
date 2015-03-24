@@ -191,9 +191,11 @@ public class LevelExporter  {
                 element.Add(attribute);
                 attribute = new XAttribute("Y", switcher.target.y);
                 element.Add(attribute);
-                attribute = new XAttribute("Upper", switcher.isUpper);
+                int upper = switcher.isUpper ? 1 : 0;
+                attribute = new XAttribute("Upper", upper);
                 element.Add(attribute);
-                attribute = new XAttribute("Static", switcher.isStatic);
+                int isStatic = switcher.isStatic ? 1 : 0;
+                attribute = new XAttribute("Static", isStatic);
                 element.Add(attribute);
                 attribute = new XAttribute("Color", (int)switcher.color);
                 element.Add(attribute);
@@ -214,7 +216,8 @@ public class LevelExporter  {
                 element.Add(attribute);
                 attribute = new XAttribute("Y", clock.piece.y);
                 element.Add(attribute);
-                attribute = new XAttribute("Upper", clock.piece.isUpper);
+                int upper = clock.piece.isUpper ? 1 : 0;
+                attribute = new XAttribute("Upper", upper);
                 element.Add(attribute);
                 attribute = new XAttribute("Edget", (int)clock.triggerEdget);
                 element.Add(attribute);

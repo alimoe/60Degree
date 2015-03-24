@@ -26,6 +26,7 @@ public class HexagonEditor : Editor
 
         upperState = hexagon.upperState;
         upperState = (HexagonState)EditorGUILayout.EnumPopup("Upper State", upperState);
+        
         lowerState = hexagon.lowerState;
         lowerState = (HexagonState)EditorGUILayout.EnumPopup("Lower State", lowerState);
         upperPiece = hexagon.upper != null;
@@ -34,9 +35,15 @@ public class HexagonEditor : Editor
         lowerPiece = EditorGUILayout.Toggle("Lower Piece", lowerPiece);
 
         
+        
         UpdateHexagonState();
         UpdateEdgetState();
         UpdatePiece();
+
+        
+
+        this.serializedObject.ApplyModifiedProperties();
+
     }
     public void UpdatePiece()
     {
@@ -91,7 +98,8 @@ public class HexagonEditor : Editor
             }
             
             hexagon.mazeU.gameObject.SetActive(true);
-            hexagon.mazeU.SetUp(hexagon, true);
+            hexagon.mazeU.Init();
+            if(upperState!=hexagon.upperState)hexagon.mazeU.SetUp(hexagon, true);
         }
         if (hexagon.mazeD != null) hexagon.mazeD.gameObject.SetActive(false);
         if (lowerState == HexagonState.Fire)
@@ -102,9 +110,9 @@ public class HexagonEditor : Editor
                 hexagon.mazeD = mazeObj.GetComponent<Maze>();
                 hexagon.mazeD.transform.parent = hexagon.transform.parent;
             }
-
+            hexagon.mazeD.Init();
             hexagon.mazeD.gameObject.SetActive(true);
-            hexagon.mazeD.SetUp(hexagon, false);
+            if (lowerState != hexagon.lowerState) hexagon.mazeD.SetUp(hexagon, false);
         }
 
         if (hexagon.rockU != null) hexagon.rockU.gameObject.SetActive(false);
@@ -114,11 +122,12 @@ public class HexagonEditor : Editor
             {
                 GameObject rockObj = Instantiate(Resources.Load("Prefabs/Rock")) as GameObject;
                 hexagon.rockU = rockObj.GetComponent<Rock>();
+                
                 hexagon.rockU.transform.parent = hexagon.transform.parent;
             }
-
+            hexagon.rockU.Init();
             hexagon.rockU.gameObject.SetActive(true);
-            hexagon.rockU.SetUp(hexagon, true);
+            if (upperState != hexagon.upperState) hexagon.rockU.SetUp(hexagon, true);
         }
 
         if (hexagon.rockD != null) hexagon.rockD.gameObject.SetActive(false);
@@ -130,9 +139,9 @@ public class HexagonEditor : Editor
                 hexagon.rockD = rockObj.GetComponent<Rock>();
                 hexagon.rockD.transform.parent = hexagon.transform.parent;
             }
-
+            hexagon.rockD.Init();
             hexagon.rockD.gameObject.SetActive(true);
-            hexagon.rockD.SetUp(hexagon, false);
+            if (lowerState != hexagon.lowerState) hexagon.rockD.SetUp(hexagon, false);
         }
         if (hexagon.switchU != null) hexagon.switchU.gameObject.SetActive(false);
         if (upperState == HexagonState.SwitchType)
@@ -143,9 +152,9 @@ public class HexagonEditor : Editor
                 hexagon.switchU = switchObj.GetComponent<Switcher>();
                 hexagon.switchU.transform.parent = hexagon.transform.parent;
             }
-
+            hexagon.switchU.Init();
             hexagon.switchU.gameObject.SetActive(true);
-            hexagon.switchU.SetUp(hexagon, true);
+            if (upperState != hexagon.upperState) hexagon.switchU.SetUp(hexagon, true);
         }
 
         if (hexagon.switchD != null) hexagon.switchD.gameObject.SetActive(false);
@@ -157,9 +166,9 @@ public class HexagonEditor : Editor
                 hexagon.switchD = switchObj.GetComponent<Switcher>();
                 hexagon.switchD.transform.parent = hexagon.transform.parent;
             }
-
+            hexagon.switchD.Init();
             hexagon.switchD.gameObject.SetActive(true);
-            hexagon.switchD.SetUp(hexagon, false);
+            if (lowerState != hexagon.lowerState) hexagon.switchD.SetUp(hexagon, false);
         }
 
         hexagon.lowerState = lowerState;

@@ -60,8 +60,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
     }
 	public void ResetLevel()
 	{
+        AppControl.Instance.ResumeGame();
         inGuide = false;
-		UIControl.Instance.CloseAllOverlay ();
 		Board.Instance.ResetBoard ();
 		LoadLevel ();
 	}
@@ -170,11 +170,13 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	}
 	private void DisplayWinMenu()
 	{
-		UIControl.Instance.OpenMenu("NextLevelMenu",false,true);
+        //UIControl.Instance.OpenMenu("NextLevelMenu",false,true);
+        AppControl.Instance.PauseGame("NextLevelMenu");
 	}
 	private void DisplayLoseMenu()
 	{
-		UIControl.Instance.OpenMenu("OutOfMoveMenu",false,true);
+		//UIControl.Instance.OpenMenu("OutOfMoveMenu",false,true);
+        AppControl.Instance.PauseGame("OutOfMoveMenu");
 	}
 
 	private void OnPieceMoveOutTheSpace()

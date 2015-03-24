@@ -16,10 +16,11 @@ public class FadeIn : TimeEffect {
         {
             progress = new Counter(time);
             a = (byte)(render.color.a*255);
-            
-			r = (byte)(render.color.r*255);
-			g = (byte)(render.color.g*255);
-			b = (byte)(render.color.b*255);
+
+            r = (byte)(render.color.r * 255);
+            g = (byte)(render.color.g * 255);
+            b = (byte)(render.color.b * 255);
+
 			render.color = new Color32(r,g,b, 0);
 			onCompleteCallbackWithParam = callback;
 			TimerControl.Instance.effects+= FadeInUpdate;
@@ -37,7 +38,9 @@ public class FadeIn : TimeEffect {
 
 		} else {
             float percent = Mathf.Min(Mathf.Max(0, progress.percent), 1f);
-            
+            r = (byte)(render.color.r * 255);
+            g = (byte)(render.color.g * 255);
+            b = (byte)(render.color.b * 255);
             render.color = new Color32(r, g, b, (byte)(percent * a));
 		}
 	}

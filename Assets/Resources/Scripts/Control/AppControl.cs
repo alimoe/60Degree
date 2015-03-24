@@ -20,7 +20,7 @@ public enum GameMode
 public class AppControl : Core.MonoSingleton<AppControl> {
 
 	private List<Skill> skills;
-	private GameState state;
+	public GameState state;
     private GameMode mode;
     protected override void Awake()
     {
@@ -126,6 +126,11 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		UIControl.Instance.OpenMenu ("PauseMenu", true, true);
 		
 	}
+    public void PauseGame(string menu)
+    {
+        state = GameState.GamePaused;
+        UIControl.Instance.OpenMenu(menu, true, true);
+    }
 	public void ResetGame()
 	{
 		state = GameState.GamePlaying;
