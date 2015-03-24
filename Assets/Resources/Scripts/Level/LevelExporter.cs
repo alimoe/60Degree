@@ -14,7 +14,7 @@ public class LevelExporter  {
         List<PieceGroup> groups = new List<PieceGroup>();
         List<Switcher> switchers = new List<Switcher>();
         List<Clock> clocks = new List<Clock>();
-
+        List<Twine> twines = new List<Twine>();
 
         XAttribute attribute;
         attribute = new XAttribute("Mode", (int)objective);
@@ -55,7 +55,7 @@ public class LevelExporter  {
                 element.Add(attribute);
                 if (hexagon.lowerState == HexagonState.SwitchType)
                 {
-                    switchers.Add(hexagon.switchU);
+                    switchers.Add(hexagon.switchD);
                 }
                 parent.Add(element);
             }
@@ -92,6 +92,10 @@ public class LevelExporter  {
                     {
                         clocks.Add(hexagon.upper.clock);
                     }
+                    if (hexagon.upper.twine != null)
+                    {
+                        twines.Add(hexagon.upper.twine);
+                    }
                 }
                 if (hexagon.lower != null)
                 {
@@ -117,6 +121,10 @@ public class LevelExporter  {
                     if (hexagon.lower.clock != null)
                     {
                         clocks.Add(hexagon.lower.clock);
+                    }
+                    if (hexagon.lower.twine != null)
+                    {
+                        twines.Add(hexagon.lower.twine);
                     }
                 }
 
@@ -223,6 +231,30 @@ public class LevelExporter  {
                 element.Add(attribute);
             }
         }
+
+        parent = new XElement("Twines");
+        root.Add(parent);
+        //Debug.LogWarning("Twine " + twines.Count);
+        if (twines.Count > 0)
+        {
+            for (int i = 0; i < twines.Count; i++)
+            {
+                Twine twine = twines[i];
+                XElement element = new XElement("Twine");
+                parent.Add(element);
+
+                attribute = new XAttribute("X", twine.piece.x);
+                element.Add(attribute);
+                attribute = new XAttribute("Y", twine.piece.y);
+                element.Add(attribute);
+                int upper = twine.piece.isUpper ? 1 : 0;
+                attribute = new XAttribute("Upper", upper);
+                element.Add(attribute);
+                attribute = new XAttribute("State", (int)twine.state);
+                element.Add(attribute);
+            }
+        }
+
 		parent = new XElement("Steps");
 		if (level != null) {
 			for(int i=0;i<level.pieceIndex.Length;i++)

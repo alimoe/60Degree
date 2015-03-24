@@ -135,7 +135,7 @@ public class PieceEdtior : Editor {
 			}
 			piece.ice.Init();
 			piece.ice.SetUp(piece);
-
+            if (piece.twine.state == 0)
 			piece.ice.gameObject.SetActive(true);
 			
 		}
@@ -148,7 +148,7 @@ public class PieceEdtior : Editor {
 				piece.twine.transform.parent = piece.transform.parent;
 			}
 			piece.twine.Init();
-			piece.twine.SetUp(piece);
+            if (piece.twine.state == 0) piece.twine.SetUp(piece);
 
 			piece.twine.gameObject.SetActive(true);
 			

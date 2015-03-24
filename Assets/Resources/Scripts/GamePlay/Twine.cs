@@ -15,7 +15,8 @@ public class Twine : Entity {
 	private Transform down_verticle;
 
     public int life = 3;
-    private Piece piece;
+    public Piece piece;
+    public int state = 0;
     void Awake()
     {
 		Init ();
@@ -44,6 +45,45 @@ public class Twine : Entity {
 		ResetRope ();
         life = 3;
     }
+
+    public void SetState(int s)
+    {
+        state = s;
+        life = 0;
+        ResetRope();
+        if ((state & (int)HexagonEdget.UpperLeft) != 0)
+        {
+            up_left.gameObject.SetActive(true);
+            life++;
+        }
+        if ((state & (int)HexagonEdget.UpperRight) != 0)
+        {
+            up_right.gameObject.SetActive(true);
+            life++;
+        }
+        if ((state & (int)HexagonEdget.UpperDown) != 0)
+        {
+            up_verticle.gameObject.SetActive(true);
+            life++;
+        }
+        if ((state & (int)HexagonEdget.DownLeft) != 0)
+        {
+            down_left.gameObject.SetActive(true);
+            life++;
+        }
+        if ((state & (int)HexagonEdget.DownRight) != 0)
+        {
+            down_right.gameObject.SetActive(true);
+            life++;
+        }
+        if ((state & (int)HexagonEdget.DownUp) != 0)
+        {
+            down_verticle.gameObject.SetActive(true);
+            life++;
+        }
+
+    }
+
 	private void ResetRope()
 	{
 
@@ -57,14 +97,22 @@ public class Twine : Entity {
 			down_left.gameObject.SetActive(false);
 			down_right.gameObject.SetActive(false);
 			down_verticle.gameObject.SetActive(false);
-			
+
+            Color opacity = new Color(1f, 1f, 1f, 1f);
+            up_left.GetComponent<SpriteRenderer>().color = opacity;
+            up_right.GetComponent<SpriteRenderer>().color = opacity;
+            up_verticle.GetComponent<SpriteRenderer>().color = opacity;
+            down_left.GetComponent<SpriteRenderer>().color = opacity;
+            down_right.GetComponent<SpriteRenderer>().color = opacity;
+            down_verticle.GetComponent<SpriteRenderer>().color = opacity;
 		}
 	}
 	private void SetupRope()
 	{
-		if(left!=null)left.gameObject.SetActive(true);
-		if(right!=null)right.gameObject.SetActive(true);
-		if(verticle!=null)verticle.gameObject.SetActive(true);
+        if (left != null) left.gameObject.SetActive(true);
+        if (right != null) right.gameObject.SetActive(true);
+        if (verticle != null) verticle.gameObject.SetActive(true);
+		
 		new FadeIn ().Init (left.gameObject, .3f, null);
 		new FadeIn ().Init (right.gameObject, .3f, null);
 		new FadeIn ().Init (verticle.gameObject, .3f, null);
@@ -161,19 +209,26 @@ public class Twine : Entity {
         this.transform.parent = piece.transform.parent;
         this.transform.localPosition = piece.transform.localPosition;
         this.transform.localScale = new Vector3(piece.scale, piece.scale, piece.scale);
+        state = 0;
         if (!piece.isUpper)
         {
 			left = down_left;
 			right = down_right;
 			verticle = down_verticle;
-            //this.transform.localEulerAngles = new Vector3(0, 0, 180);
+            state |= (int)HexagonEdget.DownLeft;
+            state |= (int)HexagonEdget.DownRight;
+            state |= (int)HexagonEdget.DownUp;
+
         }
         else
         {
 			left = up_left;
 			right = up_right;
 			verticle = up_verticle;
-            //this.transform.localEulerAngles = Vector3.zero;
+            state |= (int)HexagonEdget.UpperLeft;
+            state |= (int)HexagonEdget.UpperRight;
+            state |= (int)HexagonEdget.UpperDown;
+            
         }
 		if(SoundControl.Instance!=null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_TWINE);
 		SetupRope ();

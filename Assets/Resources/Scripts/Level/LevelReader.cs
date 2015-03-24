@@ -104,6 +104,18 @@ public class LevelReader  {
                 piece.clock.UpdateTrigger();
             }
 
+            XElement twines = level.Element("Twines");
+            foreach (XElement twine in twines.Elements("Twine"))
+            {
+                int x = (int)twine.Attribute("X");
+                int y = (int)twine.Attribute("Y");
+                bool isUpper = (int)twine.Attribute("Upper") == 1;
+
+                int state = ((int)twine.Attribute("State"));
+                Piece piece = board.GetPieceAt(x, y, isUpper);
+                piece.twine.SetState(state);
+            }
+
 
 			guides = new List<LevelGuide>();
 			XElement steps = level.Element("Steps");
