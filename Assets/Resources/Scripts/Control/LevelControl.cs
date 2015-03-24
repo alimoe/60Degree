@@ -60,6 +60,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
     }
 	public void ResetLevel()
 	{
+        inGuide = false;
 		UIControl.Instance.CloseAllOverlay ();
 		Board.Instance.ResetBoard ();
 		LoadLevel ();
@@ -68,7 +69,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	public void DisplayGuide()
 	{
 		ResetLevel ();
-		inGuide = true;
+        inGuide = true;
 		currentStep = 0;
 		DisplayArrow ();
 	}

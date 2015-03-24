@@ -154,23 +154,27 @@ public class LevelExporter  {
             for (int i = 0; i < groups.Count; i++)
             {
                 PieceGroup group = groups[i];
-                XElement element = new XElement("Group");
-                parent.Add(element);
-
-                for (int j = 0; j < group.children.Count; j++)
+                if (group.childrenRefrence != null)
                 {
-                    XElement pieceEle = new XElement("Piece");
-                    element.Add(pieceEle);
+                    XElement element = new XElement("Group");
+                    parent.Add(element);
 
-                    attribute = new XAttribute("X", group.children[j].x);
-                    pieceEle.Add(attribute);
-                    attribute = new XAttribute("Y", group.children[j].y);
-                    pieceEle.Add(attribute);
-                    int upper = group.children[j].isUpper ? 1 : 0;
-                    attribute = new XAttribute("Upper", upper);
-                    pieceEle.Add(attribute);
+                    for (int j = 0; j < group.childrenRefrence.Length; j++)
+                    {
+                        XElement pieceEle = new XElement("Piece");
+                        element.Add(pieceEle);
 
+                        attribute = new XAttribute("X", group.childrenRefrence[j].x);
+                        pieceEle.Add(attribute);
+                        attribute = new XAttribute("Y", group.childrenRefrence[j].y);
+                        pieceEle.Add(attribute);
+                        int upper = group.childrenRefrence[j].isUpper ? 1 : 0;
+                        attribute = new XAttribute("Upper", upper);
+                        pieceEle.Add(attribute);
+
+                    }
                 }
+                
             }
         }
 

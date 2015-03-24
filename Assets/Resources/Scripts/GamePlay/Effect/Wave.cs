@@ -4,7 +4,7 @@ using System.Collections;
 public class Wave : TimeEffect {
 	private Transform target;
 	private Vector3 direction;
-	private Vector3 initPosition;
+	public Vector3 initPosition;
 	private bool isRunning;
 	private int count;
 	private int currentStep;

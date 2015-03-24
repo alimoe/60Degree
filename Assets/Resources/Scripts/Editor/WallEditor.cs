@@ -14,7 +14,7 @@ public class WallEditor : Editor
         
         if (wall.state != state)
         {
-            
+            wall.Init();
             wall.state = state;
             if (state == WallState.Broken) wall.Broke();
             if (state == WallState.Normal) wall.Normal();

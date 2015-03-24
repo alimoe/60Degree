@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public class PieceGroup  {
+public class PieceGroup:ScriptableObject  {
 
     public List<Piece> children;
 	public List<Chain> chains;
+    public Piece[] childrenRefrence;
     public PieceGroup()
     {
         children = new List<Piece>();
@@ -15,6 +16,7 @@ public class PieceGroup  {
     {
         if (!children.Contains(piece)) children.Add(piece);
 		piece.group = this;
+        childrenRefrence = children.ToArray();
     }
     
 	public void AppendChild(Piece piece,Piece beside)
@@ -28,6 +30,7 @@ public class PieceGroup  {
 			children.Add(piece);
 			piece.group = this;
 		}
+            
 	}
 
     public void RemoveChild(Piece piece)
@@ -38,6 +41,7 @@ public class PieceGroup  {
         {
             Destory();
         }
+            
     }
 
 	public void RemoveChain(Piece piece)
@@ -79,6 +83,7 @@ public class PieceGroup  {
     {
         Piece.sortingDirection = BoardDirection.TopLeft;
         this.children.Sort(Piece.ComparePiece);
+            
     }
 	public bool HasChained(Piece a, Piece b)
 	{
@@ -104,6 +109,7 @@ public class PieceGroup  {
 		}
 		children.Clear ();
 		chains.Clear ();
+            
     }
     public int childCount
     {

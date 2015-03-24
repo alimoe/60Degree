@@ -45,6 +45,7 @@ public class PieceEdtior : Editor {
                 {
                     Piece member = this.targets[i] as Piece;
                     if (member.group != null) DestoryChain(member.group);
+                    member.group = null;
                 }
             }
 
