@@ -180,6 +180,11 @@ public class Board : Core.MonoSingleton<Board> {
         EnviormentControl.Instance.board.gameObject.SetActive(true);
         GenerateWall();
     }
+    public void HideEnviorment()
+    {
+        EnviormentControl.Instance.board.gameObject.SetActive(false);
+        DestoryWall();
+    }
 	public void StartPlay()
 	{
 		
@@ -598,7 +603,14 @@ public class Board : Core.MonoSingleton<Board> {
         referenceHexagons = new List<Hexagon>(hexagons.Values).ToArray();
         
     }
-    
+    public void DestoryWall()
+    {
+        foreach (var i in walls)
+        {
+            GameObject.DestroyImmediate(i.gameObject);
+        }
+        walls.Clear();
+    }
     public void GenerateWall()
     {
         if (walls.Count > 0) return;

@@ -24,6 +24,23 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		arrow = arrowObj.GetComponent<Arrow>();
 		arrow.gameObject.SetActive(false);
 	}
+
+    public void ExitLevel()
+    {
+        Board.Instance.OnGetawayPieceCallback -= OnPieceMoveOutTheSpace;
+        Board.Instance.OnMoveDoneCallback -= OnOperationDone;
+
+        Board.Instance.autoBirth = true;
+        Board.Instance.autoGenerateObstacle = true;
+        Board.Instance.autoUpdateGrid = true;
+        Board.Instance.autoUpdateWall = true;
+
+        Board.Instance.HideEnviorment();
+        Board.Instance.ResetBoard();
+
+        AppControl.Instance.ExitGame();
+
+    }
 	public void StartPlay()
 	{
 		

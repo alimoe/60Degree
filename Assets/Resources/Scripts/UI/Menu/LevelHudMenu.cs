@@ -31,8 +31,13 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 	{
 		base.OnOpenScreen ();
 
-
 	}
+    public virtual void OnCloseScreen()
+    {
+        base.OnCloseScreen();
+        base.OnCloseTransitionDone();
+    }
+
 
 
 }

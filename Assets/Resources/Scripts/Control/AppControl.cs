@@ -58,6 +58,12 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		}
 	}
 
+    public void ExitGame()
+    {
+        state = GameState.GameNotStart;
+        UIControl.Instance.OpenMenu("StartMenu", true);
+    }
+
 	public void StartGame()
 	{
 		state = GameState.GamePlaying;

@@ -11,7 +11,7 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 	private List<GameObject> overlays;
 
 	private Dictionary<string,GameObject> pool;
-	private string last;
+	private string last="";
 	private string candidate;
 	private bool candidateOverlay;
 	private Transform screenLayer;
@@ -109,6 +109,7 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 				if(overlays.Count>0)CloseAllOverlay();
 				if(stack.Count>0)
 				{
+                    //Debug.LogError("stack[stack.Count-1].name" + stack[stack.Count - 1].name + " candidate " + candidate);
 					if(stack[stack.Count-1].name == candidate) return;
 					last = stack[stack.Count-1].name;
 					if(clearPrevious)

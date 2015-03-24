@@ -10,9 +10,14 @@ public class StartMenu : MenuSingleton<StartMenu> {
 	private UISprite leaderboardButton;
 	private Counter transitionCounter;
 	private bool transitionOutState;
+    private bool transitionInState;
 	private float labelYPosition;
 	private float buttonYPosition;
+    private float footerYPosition;
+    private float fadeAwayDistance = 1200f;
+    private float fadeInDistance = 1200f;
 	private Transform credit;
+    private Transform[] footers;
     protected override void Awake()
     {
 		base.Awake ();
@@ -32,22 +37,32 @@ public class StartMenu : MenuSingleton<StartMenu> {
 		credit.gameObject.SetActive (false);
 		labelYPosition = letters [0].transform.localPosition.y;
 		buttonYPosition = startButton.transform.localPosition.y;
+        footerYPosition = helpButton.transform.localPosition.y;
 		transitionCounter = new Counter (0.4f);
+        footers = new Transform[4] { staffButton.transform, leaderboardButton.transform, credit.transform, helpButton.transform };
+
 	}
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
-
+        
+        
 		staffButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
 		helpButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
-		//leaderboardButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
+		leaderboardButton.gameObject.SetActive (PlayerSetting.Instance.tutorialPlayed);
 		leaderboardButton.gameObject.SetActive (false);
 		transitionOutState = false;
+        transitionInState = UIControl.Instance.GetLastScreen() != "";
+        transitionCounter.Reset();
+        if (!transitionInState)
+        {
+            foreach (var i in letters)
+            {
+                i.transform.localPosition = new Vector3(i.transform.localPosition.x, labelYPosition, i.transform.localPosition.z);
+            }
+            startButton.transform.localPosition = new Vector3(startButton.transform.localPosition.x, buttonYPosition, startButton.transform.localPosition.z);
+        }
 		
-		foreach (var i in letters) {
-			i.transform.localPosition = new Vector3(i.transform.localPosition.x,labelYPosition,i.transform.localPosition.z);
-		}
-		startButton.transform.localPosition = new Vector3 (startButton.transform.localPosition.x, buttonYPosition, startButton.transform.localPosition.z);
 	}
 	public void ShowCredit()
 	{
@@ -57,8 +72,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 	{
 		base.OnCloseScreen ();
 		transitionOutState = true;
-		//Debug.LogWarning("Start Menu Closing");
-
+		
 	}
 
 	// Update is called once per frame
@@ -67,21 +81,44 @@ public class StartMenu : MenuSingleton<StartMenu> {
 			transitionCounter.Tick(Time.deltaTime);
 			if(transitionCounter.Expired())
 			{
+                transitionOutState = false;
 				base.OnCloseTransitionDone();
 			}
 			else
 			{
 				foreach (var i in letters) {
-					i.transform.localPosition += Vector3.up*Time.deltaTime*1200f;
+                    i.transform.localPosition += Vector3.up * Time.deltaTime * fadeAwayDistance;
 				}
-				Vector3 down = Vector3.down*Time.deltaTime*1200f;
-				startButton.transform.localPosition += down;
-				staffButton.transform.localPosition += down;
-				helpButton.transform.localPosition += down;
-				credit.transform.localPosition += down;
-				leaderboardButton.transform.localPosition += down;
+                Vector3 down = Vector3.down * Time.deltaTime * fadeAwayDistance;
+                startButton.transform.localPosition += down;
+                foreach (var t in footers)
+                {
+                    t.localPosition += down;
+                }
+				
 			}
 
 		}
+        if (transitionInState)
+        {
+            transitionCounter.Tick(Time.deltaTime);
+            if (transitionCounter.Expired())
+            {
+                transitionInState = false;
+                base.OnOpenTransitionDone();
+            }
+            else
+            {
+                foreach (var i in letters)
+                {
+                    i.transform.localPosition = new Vector3(i.transform.localPosition.x, labelYPosition + fadeInDistance * (1f - transitionCounter.percent), i.transform.localPosition.z);
+                }
+                startButton.transform.localPosition = new Vector3(startButton.transform.localPosition.x, buttonYPosition - fadeInDistance * (1f - transitionCounter.percent), startButton.transform.localPosition.z);
+                foreach (var t in footers)
+                {
+                    t.localPosition = new Vector3(t.localPosition.x, footerYPosition - fadeInDistance * (1f - transitionCounter.percent), t.localPosition.z);
+                }
+            }
+        }
 	}
 }
