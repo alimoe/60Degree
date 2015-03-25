@@ -25,7 +25,7 @@ public class Switcher : Entity {
         isUpper = upper;
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition + Vector3.down * .1f : hexagon.lowPosition + Vector3.up * .1f;
-        this.transform.localScale = new Vector3(Hexagon.Scale , Hexagon.Scale  , Hexagon.Scale);
+        this.transform.localScale = new Vector3(1f , 1f  , 1f);
         this.transform.localPosition += Vector3.forward;
         this.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
         
@@ -71,9 +71,19 @@ public class Switcher : Entity {
         }
         
     }
+	public void ChangeColor(PieceColor c , float time)
+	{
+		new DelayCall ().Init (time, c, ChangeColor);
+	}
+	public void ChangeColor(object c)
+	{
+		PieceColor color = (PieceColor)c;
+		ChangeColor (color);
+	}
     public void ChangeColor(PieceColor c)
     {
         if (isStatic) return;
+			
         color = c;
         new TurnColor().Init(this.gameObject, .1f, Wall.GetColor(color), null);
     }

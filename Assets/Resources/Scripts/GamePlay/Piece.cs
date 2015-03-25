@@ -175,7 +175,7 @@ public class Piece : Entity {
 		passSession = BoardDirection.None;
 		cokeCounter.Reset ();
 	}
-
+	
     public bool CanEliminate()
     {
         return state != PieceState.Coke;
@@ -189,7 +189,7 @@ public class Piece : Entity {
     {
         colorType = color;
         defaultColor = Wall.GetColor(color);
-        this.GetComponent<SpriteRenderer>().color = defaultColor;
+		this.GetComponent<SpriteRenderer>().color = defaultColor;
         
     }
     public void ChangeColor(object color)

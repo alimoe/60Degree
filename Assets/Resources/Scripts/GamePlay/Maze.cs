@@ -17,7 +17,7 @@ public class Maze : Entity {
     {
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition : hexagon.lowPosition;
-        this.transform.localScale = new Vector3(Hexagon.Scale * .85f, Hexagon.Scale * .85f, Hexagon.Scale * .85f);
+        this.transform.localScale = new Vector3( .85f,  .85f, 1f);
         this.transform.localPosition += Vector3.forward;
         this.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
         render.color = new Color32(255, 255, 255, 255);

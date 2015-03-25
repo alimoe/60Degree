@@ -749,8 +749,9 @@ public class Board : Core.MonoSingleton<Board> {
 
                 if (hexagon.GetState(newPiece.isUpper) != HexagonState.Normal)
                 {
+					hexagon.OnPassHexagon(newPiece,newPiece.isUpper,.3f);
                     newPiece.OnPassHexagon(hexagon, .3f, newPiece.isUpper);
-                    hexagon.OnPassHexagon(newPiece);
+
                 }
 			}
 		}
@@ -891,9 +892,14 @@ public class Board : Core.MonoSingleton<Board> {
 					if(!isCheck.Contains(friend))
 					{
 						isCheck.Add(friend);
-						List<Piece> friends = GetSurroundSameColorPiece(friend,friend.colorType);
+						if(friend.CanEliminate())
+						{
+							List<Piece> friends = GetSurroundSameColorPiece(friend,friend.colorType);
+							eliminateCandidate.AddRange(friends);
+						}
+
 						//Debug.Log("friends surround count "+friends.Count);
-						eliminateCandidate.AddRange(friends);
+
 					}
 				}
 
@@ -1469,10 +1475,16 @@ public class Board : Core.MonoSingleton<Board> {
                     HandleCrossDirectionPiece(hexagon, isUpper, direction, count);
 					
                     hexagon = GetHexagonByStep(hexagon,direction,isUpper,1);
-                    
+					/*
+					Debug.Log(hexagon);
+					Debug.Log(!isUpper);
+					Debug.Log("--------");
+					*/
                     if (hexagon != null && hexagon.GetState(!isUpper)!=HexagonState.Normal)
                     {
+						hexagon.OnPassHexagon(currentPiece,!isUpper,passedTime);
                         currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
+
                     }
 
                     count++;

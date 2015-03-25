@@ -303,10 +303,14 @@ public class Hexagon:MonoBehaviour  {
 
 	}
 
-    public void OnPassHexagon(Piece piece)
+    public void OnPassHexagon(Piece piece,bool upper,float time)
     {
-        Switcher switcher = piece.isUpper ? switchU : switchD;
-        if (switcher != null) switcher.ChangeColor(piece.colorType);
+		Switcher switcher = upper ? switchU : switchD;
+        if (switcher != null && !switcher.isStatic) {
+			//Debug.LogError("Pass");
+			switcher.ChangeColor(piece.colorType,time);
+			
+		}
     }
 
 	public bool CanEnter(bool isUpper, BoardDirection direction)
