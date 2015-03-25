@@ -195,6 +195,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		Board.Instance.onWallProgressCallback += ReinforceWall;
 		Board.Instance.OnTryToGetawayCorePieceCallback += WarnCorePiece;
 		Board.Instance.OnTryToGetawayOverflowPieceCallback += WarnOverFlow;
+        Board.Instance.OnCantMoveCallback += OnCantMove;
 		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
 		historyScore = PlayerSetting.Instance.GetSetting ("Score");
 		historyRound = PlayerSetting.Instance.GetSetting ("Round");
@@ -212,6 +213,10 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		TutorialControl.Instance.onTutorialCompleteCallback -= EnablePauseMenu;
 		
 	}
+    private void OnCantMove()
+    {
+        AppControl.Instance.GameOver();
+    }
 	private void WarnCorePiece ()
 	{
 		ShowHint (ref corePieceWarningMessage);

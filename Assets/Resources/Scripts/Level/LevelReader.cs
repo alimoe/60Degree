@@ -116,6 +116,18 @@ public class LevelReader  {
                 piece.twine.SetState(state);
             }
 
+            XElement ices = level.Element("Ices");
+            foreach (XElement ice in ices.Elements("Ice"))
+            {
+                int x = (int)ice.Attribute("X");
+                int y = (int)ice.Attribute("Y");
+                bool isUpper = (int)ice.Attribute("Upper") == 1;
+
+                int life = ((int)ice.Attribute("Life"));
+                Piece piece = board.GetPieceAt(x, y, isUpper);
+                piece.ice.SetLife(life);
+            }
+
 
 			guides = new List<LevelGuide>();
 			XElement steps = level.Element("Steps");

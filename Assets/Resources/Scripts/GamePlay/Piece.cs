@@ -40,7 +40,7 @@ public class Piece : Entity {
 	public Clock clock;
 
 	public bool coke;
-    private Counter cokeCounter = new Counter(4f);
+    private Counter cokeCounter = new Counter(3f);
 	public bool moving = false;
 	private BoardDirection passSession;
 	private float passSessionTime;
@@ -323,7 +323,6 @@ public class Piece : Entity {
             {
                 state = PieceState.Coke;
                 new DelayCall().Init(time, OnFire);
-
             }
             else
             {

@@ -15,6 +15,7 @@ public class LevelExporter  {
         List<Switcher> switchers = new List<Switcher>();
         List<Clock> clocks = new List<Clock>();
         List<Twine> twines = new List<Twine>();
+        List<Ice> ices = new List<Ice>();
 
         XAttribute attribute;
         attribute = new XAttribute("Mode", (int)objective);
@@ -96,6 +97,10 @@ public class LevelExporter  {
                     {
                         twines.Add(hexagon.upper.twine);
                     }
+                    if (hexagon.upper.ice != null)
+                    {
+                        ices.Add(hexagon.upper.ice);
+                    }
                 }
                 if (hexagon.lower != null)
                 {
@@ -125,6 +130,10 @@ public class LevelExporter  {
                     if (hexagon.lower.twine != null)
                     {
                         twines.Add(hexagon.lower.twine);
+                    }
+                    if (hexagon.lower.ice != null)
+                    {
+                        ices.Add(hexagon.lower.ice);
                     }
                 }
 
@@ -234,7 +243,7 @@ public class LevelExporter  {
 
         parent = new XElement("Twines");
         root.Add(parent);
-        //Debug.LogWarning("Twine " + twines.Count);
+            
         if (twines.Count > 0)
         {
             for (int i = 0; i < twines.Count; i++)
@@ -254,6 +263,30 @@ public class LevelExporter  {
                 element.Add(attribute);
             }
         }
+
+        parent = new XElement("Ices");
+        root.Add(parent);
+
+        if (ices.Count > 0)
+        {
+            for (int i = 0; i < ices.Count; i++)
+            {
+                Ice ice = ices[i];
+                XElement element = new XElement("Ice");
+                parent.Add(element);
+
+                attribute = new XAttribute("X", ice.piece.x);
+                element.Add(attribute);
+                attribute = new XAttribute("Y", ice.piece.y);
+                element.Add(attribute);
+                int upper = ice.piece.isUpper ? 1 : 0;
+                attribute = new XAttribute("Upper", upper);
+                element.Add(attribute);
+                attribute = new XAttribute("Life", (int)ice.life);
+                element.Add(attribute);
+            }
+        }
+
 
 		parent = new XElement("Steps");
 		if (level != null) {

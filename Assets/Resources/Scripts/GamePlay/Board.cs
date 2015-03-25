@@ -67,7 +67,7 @@ public class Board : Core.MonoSingleton<Board> {
     public event Action OnTryToGetawayOverflowPieceCallback;
     public event Action OnGetawayPieceCallback;
 	public event Action OnMoveDoneCallback;
-
+    public event Action OnCantMoveCallback;
 	private Counter freezeCoreCounter = new Counter(3f);
 	private int freezeWallIndex = 0;
     private float generateMaxStep = 15f;
@@ -855,7 +855,8 @@ public class Board : Core.MonoSingleton<Board> {
 			
 		}
 		if (!canMove) {
-			AppControl.Instance.EndGame();
+			//AppControl.Instance.EndGame();
+            if (OnCantMoveCallback != null) OnCantMoveCallback();
 		}
 	}
 	private void CheckBoard()
@@ -1250,6 +1251,7 @@ public class Board : Core.MonoSingleton<Board> {
 			if (CanRowPieceMove(pieces) && pieces.Count> 0)
             {
 				step = GetEmptyPieceSlotCount(pieces[pieces.Count - 1], direction,true);
+                
                 List<Piece> segment = new List<Piece>();
                 PieceGroup lastGroup = null;
                 
@@ -1271,9 +1273,10 @@ public class Board : Core.MonoSingleton<Board> {
                                     Hexagon hexagon = GetHexagonAt(l.x,l.y);
                                     hexagon = GetHexagonByStep(hexagon,direction,l.isUpper,1);
                                     Piece neighbour = hexagon == null?null:hexagon.GetPiece(!l.isUpper);
+                                    step = (!l.CanMove() && step > 0) ? 0 : step;
                                     if (neighbour == null || (neighbour != null && !currentPiece.group.children.Contains(neighbour)))
                                     {
-                                        step = (l.CanMove()) ? Mathf.Min(GetEmptyPieceSlotCount(l, direction, true), step) : 0;
+                                        step =  Mathf.Min(GetEmptyPieceSlotCount(l, direction, true), step) ;
                                     }
                                     //Debug.Log("IsTwoPieceInSameRow(l,currentPiece,direction) " + IsTwoPieceInSameRow(l, currentPiece, direction));
                                     if(IsTwoPieceInSameRow(l,currentPiece,direction))
@@ -1444,7 +1447,7 @@ public class Board : Core.MonoSingleton<Board> {
 	private float MovePieceByStep(List<Piece> pieces,BoardDirection direction, int step, Action callback = null )
 	{
         if (pieces.Count == 0) return 0;
-
+        //Debug.LogError("MovePieceByStep" + step);
         Piece.sortingDirection = direction;
         pieces.Sort(Piece.ComparePiece);
 
@@ -1452,7 +1455,7 @@ public class Board : Core.MonoSingleton<Board> {
 		Hexagon last =null;
 		for (int i = 0; i<pieces.Count; i++) {
 			Piece currentPiece = pieces[i];
-			currentPiece.moving = true;
+            currentPiece.moving = step > 0;
 			Hexagon hexagon = GetHexagonAt(currentPiece.x,currentPiece.y);
 			Hexagon first = hexagon;
             bool isUpper = currentPiece.isUpper;
@@ -1478,11 +1481,11 @@ public class Board : Core.MonoSingleton<Board> {
                 passedTime = (float)count * .5f * length / moveSpeed;
 
                 HandleCrossDirectionPiece(hexagon, isUpper, direction, count);
-				
+				/*
                 if (isUpper && hexagon != null && hexagon.GetState(!isUpper) != HexagonState.Normal)
                 {
                     currentPiece.OnPassHexagon(hexagon, passedTime, !isUpper);
-                }
+                }*/
 				if(hexagon!=null)
 				{
                     hexagon.SetPiece(currentPiece, passedTime);
@@ -1491,7 +1494,8 @@ public class Board : Core.MonoSingleton<Board> {
 				}
 			}
 		}
-		
+        
+
 		Wall wall = null;
 		Piece lastPiece = pieces [pieces.Count - 1];
 		if(last!=null &&   IsAgainstEdget(direction,last,lastPiece))
@@ -1692,7 +1696,8 @@ public class Board : Core.MonoSingleton<Board> {
 		bool isUpper = piece.isUpper;
 		while (count<=step) {
 			Hexagon neightBour = GetHexagonByStep (hexagon, direction, isUpper, count);
-			if (neightBour != null && IsEdget (neightBour)&&neightBour.CanEnter(!isUpper,direction)&&neightBour.CanLeave(!isUpper,direction)  && neightBour.IsEmpty (!isUpper)) {
+            if (neightBour != null && hexagon.CanLeave(isUpper, direction) && IsEdget(neightBour) && neightBour.CanEnter(!isUpper, direction) && neightBour.CanLeave(!isUpper, direction) && neightBour.IsEmpty(!isUpper))
+            {
 				count++;
 				isUpper = !isUpper;
 			}

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Ice : Entity {
 
-    private Piece piece;
+    public Piece piece;
     public int life = 2;
     private Transform crack;
     void Awake()
@@ -20,6 +20,7 @@ public class Ice : Entity {
 			
 		}
 		if (crack != null) crack.gameObject.SetActive(false);
+        
 	}
     public void ResetIce()
     {
@@ -44,31 +45,52 @@ public class Ice : Entity {
         }
 		if(SoundControl.Instance!=null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_FREEZE);
     }
-
+    public void SetLife(int l)
+    {
+        life = l;
+        this.gameObject.SetActive(true);
+        UpdateIce();
+    }
     public override void Reset()
     {
         base.Reset();
         ResetIce();
         life = 2;
     }
-    public void OnHit()
+    private void UpdateIce()
     {
-        life -= 1;
         if (life == 1)
         {
             if (crack != null) crack.gameObject.SetActive(true);
-			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ICE);
-            int count = UnityEngine.Random.Range(6, 8);
-            new Spread().Init(piece, count, 0.7f, 4.5f);
+
         }
-        else if(life == 0)
+        else if (life == 0)
         {
-			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_BROKEN);
-            int count = UnityEngine.Random.Range(8,12);
-            new Spread().Init(piece, count, 0.7f, 4.5f);
-            ShutDown();
+            if (crack != null)crack.gameObject.SetActive(false);
+            this.gameObject.SetActive(false);
         }
     }
+
+    public void OnHit()
+    {
+        life -= 1;
+        UpdateIce();
+        if (life == 0)
+        {
+            int count = UnityEngine.Random.Range(8, 12);
+            new Spread().Init(piece, count, 0.7f, 4.5f);
+            SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_BROKEN);
+            ShutDown();
+        }
+        else
+        {
+            int count = UnityEngine.Random.Range(6, 8);
+            new Spread().Init(piece, count, 0.7f, 4.5f);
+            SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_ICE);
+
+        }
+    }
+
     public void ShutDown()
     {
         EntityPool.Instance.Reclaim(this.gameObject, "Ice");

@@ -65,7 +65,7 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
             }
             if (GUI.Button(new Rect(0, 420, 100, 30), "Game Over"))
 			{
-				AppControl.Instance.EndGame();
+                AppControl.Instance.GameOver();
 			}
             if (GUI.Button(new Rect(0, 450, 100, 30), "Clear Record"))
 			{
@@ -80,6 +80,10 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			{
 				AppControl.Instance.EnergyRefill();
 			}
+            if (GUI.Button(new Rect(0, 540, 100, 30), "Guide"))
+            {
+                LevelControl.Instance.DisplayGuide();
+            }
 		}
 
 	}

@@ -151,7 +151,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
 		
 	}
-	public void EndGame()
+	public void GameOver()
 	{
 		state = GameState.GameOver;
 		UIControl.Instance.OpenMenu ("GameOverMenu", true, true);
