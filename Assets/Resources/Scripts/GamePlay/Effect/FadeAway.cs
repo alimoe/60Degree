@@ -20,7 +20,10 @@ public class FadeAway : TimeEffect {
             TimerControl.Instance.effects += FadeAwayUpdate;
 		}
 	}
-
+	public void Stop()
+	{
+		TimerControl.Instance.effects -= FadeAwayUpdate;
+	}
 	void FadeAwayUpdate ()
 	{
 		progress.Tick (Time.deltaTime);

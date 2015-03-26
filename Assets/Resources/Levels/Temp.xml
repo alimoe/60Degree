@@ -1,32 +1,58 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Level Mode="1" Step="5">
+<Level Mode="1" Step="13">
   <Hexagons>
-    <Hexagon X="4" Y="2" BlockState="4" UpperState="0" LowerState="0" />
-    <Hexagon X="0" Y="3" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="1" Y="3" BlockState="0" UpperState="0" LowerState="3" />
+    <Hexagon X="2" Y="3" BlockState="0" UpperState="3" LowerState="0" />
   </Hexagons>
   <Pieces>
-    <Piece X="6" Y="0" Upper="1" State="0" Type="1" />
-    <Piece X="1" Y="1" Upper="1" State="0" Type="1" />
-    <Piece X="0" Y="2" Upper="0" State="0" Type="0" />
-    <Piece X="1" Y="2" Upper="1" State="4" Type="0" />
-    <Piece X="1" Y="2" Upper="0" State="4" Type="1" />
-    <Piece X="2" Y="4" Upper="0" State="0" Type="1" />
-    <Piece X="1" Y="5" Upper="0" State="0" Type="0" />
+    <Piece X="5" Y="1" Upper="1" State="2" Type="2" />
+    <Piece X="2" Y="2" Upper="0" State="0" Type="1" />
+    <Piece X="4" Y="2" Upper="1" State="2" Type="0" />
+    <Piece X="4" Y="2" Upper="0" State="2" Type="0" />
+    <Piece X="0" Y="4" Upper="1" State="2" Type="0" />
+    <Piece X="0" Y="5" Upper="1" State="2" Type="2" />
+    <Piece X="0" Y="5" Upper="0" State="2" Type="2" />
   </Pieces>
   <Walls />
-  <Groups />
-  <Switchers />
-  <Clocks>
-    <Clock X="1" Y="2" Upper="1" Edget="2" />
-    <Clock X="1" Y="2" Upper="0" Edget="16" />
-  </Clocks>
-  <Twines />
+  <Groups>
+    <Group>
+      <Piece X="5" Y="1" Upper="1" />
+      <Piece X="4" Y="2" Upper="0" />
+      <Piece X="4" Y="2" Upper="1" />
+    </Group>
+    <Group>
+      <Piece X="0" Y="4" Upper="1" />
+      <Piece X="0" Y="5" Upper="0" />
+      <Piece X="0" Y="5" Upper="1" />
+    </Group>
+  </Groups>
+  <Switchers>
+    <Switcher X="1" Y="3" Upper="0" Static="1" Color="0" />
+    <Switcher X="2" Y="3" Upper="1" Static="1" Color="2" />
+  </Switchers>
+  <Clocks />
+  <Twines>
+    <Twine X="5" Y="1" Upper="1" State="4" />
+    <Twine X="4" Y="2" Upper="1" State="1" />
+    <Twine X="4" Y="2" Upper="0" State="8" />
+    <Twine X="0" Y="4" Upper="1" State="4" />
+    <Twine X="0" Y="5" Upper="1" State="2" />
+    <Twine X="0" Y="5" Upper="0" State="16" />
+  </Twines>
   <Ices />
   <Steps>
-    <Step Index="0" Direction="0" />
-    <Step Index="6" Direction="4" />
-    <Step Index="2" Direction="1" />
-    <Step Index="0" Direction="2" />
-    <Step Index="5" Direction="4" />
+    <Step Index="1" Direction="3" />
+    <Step Index="1" Direction="5" />
+    <Step Index="1" Direction="3" />
+    <Step Index="1" Direction="2" />
+    <Step Index="1" Direction="1" />
+    <Step Index="1" Direction="3" />
+    <Step Index="1" Direction="5" />
+    <Step Index="1" Direction="4" />
+    <Step Index="1" Direction="1" />
+    <Step Index="1" Direction="0" />
+    <Step Index="4" Direction="4" />
+    <Step Index="2" Direction="0" />
+    <Step Index="2" Direction="4" />
   </Steps>
 </Level>

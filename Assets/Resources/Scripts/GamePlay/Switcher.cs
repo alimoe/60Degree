@@ -9,6 +9,7 @@ public class Switcher : Entity {
     public bool isUpper;
     public Hexagon target;
     private Color32 defaultColor;
+	private FadeAway fadeAway;
     void Awake()
     {
         Init();
@@ -87,14 +88,24 @@ public class Switcher : Entity {
         color = c;
         new TurnColor().Init(this.gameObject, .1f, Wall.GetColor(color), null);
     }
+	public override void Dead ()
+	{
+		base.Dead ();
+		if (fadeAway != null)fadeAway.Stop ();
+						
+	}
     public void ShutDown()
     {
         target = null;
-        new FadeAway().Init(this.gameObject, .2f, Dispose);
+		if (this.gameObject.activeInHierarchy) {
+			fadeAway = new FadeAway ();
+			fadeAway.Init(this.gameObject, .2f, Dispose);
+		}
+
     }
 
     private void Dispose(object obj)
     {
-        EntityPool.Instance.Reclaim(this.gameObject, "Switcher");
+		EntityPool.Instance.Reclaim(this.gameObject, "Switcher");
     }
 }
