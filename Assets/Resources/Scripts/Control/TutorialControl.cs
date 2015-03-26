@@ -265,8 +265,8 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		PlayerSetting.Instance.TutorialComplete(1);
 		
 		Board.Instance.autoBirth = true;
-		Board.Instance.GeneratePiece();
-		Board.Instance.GeneratePiece();
+		//Board.Instance.GeneratePiece();
+		//Board.Instance.GeneratePiece();
 		ClassicHudMenu.Instance.AddRound (1);
 		isActive = false;
 		if (onTutorialCompleteCallback != null)onTutorialCompleteCallback ();

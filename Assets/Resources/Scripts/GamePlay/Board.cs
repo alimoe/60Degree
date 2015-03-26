@@ -55,39 +55,28 @@ public class Board : Core.MonoSingleton<Board> {
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
 
     public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
-    public delegate void OnHitRound(int round);
-    public delegate void OnWallProgress(Vector3 position);
-
-	public event OnHitRound onHitRoundCallback;
     public event OnEliminatePiece onEliminatePieceCallback;
-    public event OnWallProgress onWallProgressCallback;
-
+    
     public event Action onDropDownPieceCallback;
     public event Action OnTryToGetawayCorePieceCallback;
     public event Action OnTryToGetawayOverflowPieceCallback;
     public event Action OnGetawayPieceCallback;
 	public event Action OnMoveDoneCallback;
     public event Action OnCantMoveCallback;
+    public event Action OnCorePieceEliminateCallback;
 	private Counter freezeCoreCounter = new Counter(3f);
-	private int freezeWallIndex = 0;
-    private float generateMaxStep = 15f;
-    private float generateMinStep = 10f;
-    private Counter generateCounter;
-	private List<GenerateType> generateType ;
+    
 	private bool inProcess = false;
 
 	[HideInInspector]
-	public int round = 1;
-	[HideInInspector]
 	public bool autoBirth = true;
-    [HideInInspector]
-    public bool autoGenerateObstacle = true;
+   
     [HideInInspector]
     public bool autoUpdateGrid = true;
     [HideInInspector]
     public bool autoUpdateWall = true;
-    [HideInInspector]
-    public bool autoUpdateScore = true;
+    
+        
     [HideInInspector]
     public bool autoUpdateSkillPoint = true;
 	private BoardDirection[] allDirection = new BoardDirection[6] {
@@ -102,16 +91,23 @@ public class Board : Core.MonoSingleton<Board> {
 		
         
 		Hexagon.totalSegment = this.segment;
-        generateCounter = new Counter(generateMaxStep);
+        
 		freezeCoreCounter.percent = 1f;
-		generateType = new List<GenerateType>();
-
-		ResetColorsPriority ();
 		GenerateHexagon ();
         InitContainer();
-		//InitAxis ();
-
+	    
 	}
+
+    public void SetColors(List<PieceColor> c)
+    {
+        colors = c;
+    }
+
+    public List<PieceColor> GetColors()
+    {
+        return colors;
+    }
+
     private void InitContainer()
     {
         Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
@@ -121,20 +117,10 @@ public class Board : Core.MonoSingleton<Board> {
             if (child.name.Contains("Gem")) gemContainer = child;
         }
     }
-    private void InitAxis()
-    {
-       
-    }
+  
+    
 
-    public void ResetColorsPriority()
-    {
-        colors = new List<PieceColor>();
-        colors.Add(PieceColor.Blue);
-        colors.Add(PieceColor.Green);
-        colors.Add(PieceColor.Red);
-    }
-
-    private void ResetWalls()
+    public void ResetWalls()
     {
         foreach (var i in walls)
         {
@@ -168,12 +154,9 @@ public class Board : Core.MonoSingleton<Board> {
 		foreach (var i in hexagons.Values) {
 			i.Reset();
 		}
-		round = 1;
-        generateCounter = new Counter(generateMaxStep);
-		freezeWallIndex = 0;
+		
 		inProcess = false;
-		generateType = new List<GenerateType>();
-		ResetColorsPriority ();
+		
 	}
     public void InitEnviorment()
     {
@@ -185,93 +168,7 @@ public class Board : Core.MonoSingleton<Board> {
         EnviormentControl.Instance.board.gameObject.SetActive(false);
         DestoryWall();
     }
-	public void StartPlay()
-	{
-		
-     	if (autoBirth) {
-
-			GeneratePiece ();
-			GeneratePiece ();
-			GeneratePiece ();
-        }
 	
-	}
-
-	private void GenerateSpecialItem()
-	{
-        if (!autoGenerateObstacle) return;
-		generateCounter.Tick(1f);
-		if(generateCounter.Expired())
-		{
-            float difficult = generateMinStep + Mathf.Max(generateMaxStep - generateMinStep -round, 0f);
-            generateCounter.Reset(difficult);
-			if(generateType.Count>0)
-			{
-				GenerateType type = generateType[UnityEngine.Random.Range(0,generateType.Count)];
-                float seed = UnityEngine.Random.Range(0, 1f);
-				switch(type)
-				{
-					case GenerateType.Chain:
-					    new DelayCall().Init(.4f,GenerateGroup);
-					
-					break;
-					case GenerateType.Fire:
-                        if (pieces.Count < 27)
-                        {
-                            GenerateFire();
-                        }
-                        else
-                        {
-                            if (seed < .5f)
-                            {
-                                new DelayCall().Init(.4f, GenerateGroup);
-                            }
-                            else if (seed < .75f)
-                            {
-                                GenerateRope();
-                            }
-                            else
-                            {
-                                GenerateIce();
-                            }
-                        }
-					
-					break;
-					case GenerateType.Rope:
-					    GenerateRope();
-					break;
-					case GenerateType.Ice:
-					    GenerateIce();
-					break;
-					case GenerateType.Block:
-
-                        if (pieces.Count < 32)
-                        {
-                            GenerateBlock();
-                        }
-                        else
-                        {
-                            if (seed < .5f)
-                            {
-                                new DelayCall().Init(.4f, GenerateGroup);
-                            }
-                            else if (seed < .75f)
-                            {
-                                GenerateRope();
-                            }
-                            else
-                            {
-                                GenerateIce();
-                            }
-                        }
-
-					    
-					break;
-				}
-			}
-		}
-	}
-
 	public void GenerateGroup()
 	{
 		int step = 5;
@@ -936,14 +833,15 @@ public class Board : Core.MonoSingleton<Board> {
 
                 if (piece.isCore)
                 {
-                    AddWallProgress();
+                    freezeCoreCounter.Reset();
+                    if (OnCorePieceEliminateCallback != null) OnCorePieceEliminateCallback();
                 }
             }
 			
 		}
 		if (eliminate.Count > 0) {
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ELIMINATE);
-            if (onEliminatePieceCallback != null && autoUpdateScore) onEliminatePieceCallback(eliminate.Count, eliminate[0].colorType, eliminate[0].transform.position);
+            if (onEliminatePieceCallback != null ) onEliminatePieceCallback(eliminate.Count, eliminate[0].colorType, eliminate[0].transform.position);
 		}
 
 	}
@@ -1025,89 +923,9 @@ public class Board : Core.MonoSingleton<Board> {
     }
 
 
-    private void UpdateGameplayDifficulty()
-    {
-		float progress = (float)freezeWallIndex / (float)segment;
+    
 
-        if (progress >= 0.7f)
-		{
-			if (generateType.Count == 0)
-			{
-				generateType.Add(GenerateType.Chain);
-				generateCounter.Reset();
-				GenerateGroup();
-			}
-		}
-
-        if (progress == 1f && colors.Count < 4)
-        {
-            colors.Add(PieceColor.Purple);
-        }
-
-        if (progress == 2f && colors.Count < 5)
-        {
-			colors.Add(PieceColor.Yellow);
-           
-        }
-
-        if (progress >= 2.5f)
-		{
-			if (generateType.Count == 1)
-			{
-				generateType.Add(GenerateType.Block);
-				generateCounter.Reset();
-				GenerateBlock();
-			}
-		}
-        if (progress >= 3f)
-        {
-            if (generateType.Count == 2)
-            {
-                generateType.Add(GenerateType.Ice);
-                generateCounter.Reset();
-                GenerateIce();
-            }
-        }
-        if (progress >= 3.5f)
-        {
-            if (generateType.Count == 3)
-            {
-                generateType.Add(GenerateType.Rope);
-                generateCounter.Reset();
-                GenerateRope();
-            }
-        }
-        if (progress >= 4)
-        {
-            if (generateType.Count == 4)
-            {
-                generateType.Add(GenerateType.Fire);
-                generateCounter.Reset();
-                GenerateFire();
-            }
-        }
-    }
-
-	public void AddWallProgress()
-	{
-
-		freezeCoreCounter.Reset();
-        Wall wall = walls[freezeWallIndex % (3 * segment)];
-        wall.Invincible();
-		freezeWallIndex++;
-		int currentRound = freezeWallIndex/(3*segment) + 1;
-
-		if (onWallProgressCallback != null) onWallProgressCallback(wall.transform.position);
-		if(round!=currentRound)
-		{
-			round = currentRound;
-			if(onHitRoundCallback!=null)onHitRoundCallback(round);
-			ResetWalls();
-		}
-
-        UpdateGameplayDifficulty();
-
-	}
+	
     //not used yet
     public int GetTwoPieceDistance(Piece a, Piece b, BoardDirection direction)
     {
@@ -1731,7 +1549,6 @@ public class Board : Core.MonoSingleton<Board> {
 		new DelayCall ().Init (.42f, CheckMovement);
 		new DelayCall ().Init (.42f, EndProcess);
 	    RepearWalls ();
-		GenerateSpecialItem ();
 		if (OnMoveDoneCallback != null) {
 			OnMoveDoneCallback();
 		}

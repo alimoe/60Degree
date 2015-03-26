@@ -29,7 +29,7 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			}
 			if(GUI.Button(new Rect(0,150,100,30),"Enhance Wall"))
 			{
-				Board.Instance.AddWallProgress();
+                ClassicModeControl.Instance.AddWallProgress();
 			}
             if (GUI.Button(new Rect(0, 180, 100, 30), "Add Rope"))
             {
@@ -59,28 +59,24 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
             {
                 Board.Instance.GenerateSwitcher();
             }
-            if (GUI.Button(new Rect(0, 390, 100, 30), "Add Teleport"))
-            {
-                Board.Instance.GenerateTeleport();
-            }
-            if (GUI.Button(new Rect(0, 420, 100, 30), "Game Over"))
+            if (GUI.Button(new Rect(0, 390, 100, 30), "Game Over"))
 			{
-                AppControl.Instance.GameOver();
+                ClassicModeControl.Instance.GameOver();
 			}
-            if (GUI.Button(new Rect(0, 450, 100, 30), "Clear Record"))
+            if (GUI.Button(new Rect(0, 420, 100, 30), "Clear Record"))
 			{
 				PlayerSetting.Instance.SetSetting("Score",0);
 				PlayerSetting.Instance.SetSetting("Round",0);
 			}
-            if (GUI.Button(new Rect(0, 480, 100, 30), "Clear Tutorial"))
+            if (GUI.Button(new Rect(0, 450, 100, 30), "Clear Tutorial"))
 			{
 				PlayerSetting.Instance.TutorialComplete(0);
 			}
-			if(GUI.Button(new Rect(0,510,100,30),"Purchase energy"))
+			if(GUI.Button(new Rect(0,480,100,30),"Purchase energy"))
 			{
 				AppControl.Instance.EnergyRefill();
 			}
-            if (GUI.Button(new Rect(0, 540, 100, 30), "Guide"))
+            if (GUI.Button(new Rect(0, 510, 100, 30), "Guide"))
             {
                 LevelControl.Instance.DisplayGuide();
             }

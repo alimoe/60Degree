@@ -25,13 +25,13 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		arrow.gameObject.SetActive(false);
 	}
 
-    public void ExitLevel()
+    public void ExitMode()
     {
         Board.Instance.OnGetawayPieceCallback -= OnPieceMoveOutTheSpace;
         Board.Instance.OnMoveDoneCallback -= OnOperationDone;
 
         Board.Instance.autoBirth = true;
-        Board.Instance.autoGenerateObstacle = true;
+        
         Board.Instance.autoUpdateGrid = true;
         Board.Instance.autoUpdateWall = true;
 
@@ -117,7 +117,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 			Board.Instance.MoveFrom(position,direction);
 			arrow.Stop();
 			currentStep++;
-			new DelayCall().Init(.3f,DisplayArrow);
+			new DelayCall().Init(.5f,DisplayArrow);
 			
 		}
 	}
@@ -125,7 +125,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private void InitLevelMode()
 	{
 		Board.Instance.autoBirth = false;
-		Board.Instance.autoGenerateObstacle = false;
+		    
 		Board.Instance.autoUpdateGrid = false;
 		Board.Instance.autoUpdateWall = false;
 

@@ -87,7 +87,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             if (mode == GameMode.Classic)
 			{
 				UIControl.Instance.OpenMenu("ClassicHudMenu",true);
-				new DelayCall().Init(.3f, this.StartClassicMode);
+				new DelayCall().Init(.3f, ClassicModeControl.Instance.StartPlay);
 			}
             else if (mode == GameMode.Levels) 
 			{
@@ -102,14 +102,11 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
         
 	}
-    public void StartClassicMode()
-    {
-        Board.Instance.InitEnviorment();
-        Board.Instance.StartPlay();
-    }
+   
 	public void PlayTutorial()
 	{
 		state = GameState.GamePlaying;
+        mode = GameMode.Classic;
 		UIControl.Instance.OpenMenu("ClassicHudMenu",true);
 		Camera3DControl.Instance.direction = Vector3.zero;
 		new DelayCall ().Init (.3f, TutorialControl.Instance.InitTutorial);
@@ -120,12 +117,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 		StartMenu.Instance.ShowCredit();
 
 	}
-	public void PauseGame()
-	{
-		state = GameState.GamePaused;
-		UIControl.Instance.OpenMenu ("PauseMenu", true, true);
-		
-	}
+	
     public void PauseGame(string menu)
     {
         state = GameState.GamePaused;
@@ -135,11 +127,17 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	{
 		state = GameState.GamePlaying;
         SkyBoxControl.Instance.Reset();
-		UIControl.Instance.CloseMenu ();
+        UIControl.Instance.CloseAllOverlay();
+        if (mode == GameMode.Classic)
+        {
+            ClassicModeControl.Instance.ResetMode();
+        }
+        
+
 		Board.Instance.ResetBoard ();
-        Camera3DControl.Instance.direction = Vector3.zero;
+        
 		ClassicHudMenu.Instance.Reset ();
-		Board.Instance.StartPlay ();
+		
 
 	}
 	public void ResumeGame()
@@ -151,10 +149,10 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
 		
 	}
-	public void GameOver()
+    public void GameOver(string menu)
 	{
 		state = GameState.GameOver;
-		UIControl.Instance.OpenMenu ("GameOverMenu", true, true);
+        UIControl.Instance.OpenMenu(menu, true, true);
 	}
 
 	public void ReportScore(int score)

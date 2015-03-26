@@ -189,13 +189,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		bgmButton.isOn = !PlayerSetting.Instance.muteBGM;
 		pauseButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
 		bgmButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
-		Board.Instance.onEliminatePieceCallback += AddScore;
-		Board.Instance.onDropDownPieceCallback += AddProgress;
-		Board.Instance.onHitRoundCallback += AddRound;
-		Board.Instance.onWallProgressCallback += ReinforceWall;
-		Board.Instance.OnTryToGetawayCorePieceCallback += WarnCorePiece;
-		Board.Instance.OnTryToGetawayOverflowPieceCallback += WarnOverFlow;
-        Board.Instance.OnCantMoveCallback += OnCantMove;
+		
 		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
 		historyScore = PlayerSetting.Instance.GetSetting ("Score");
 		historyRound = PlayerSetting.Instance.GetSetting ("Round");
@@ -204,24 +198,16 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	public override void OnCloseScreen()
 	{
 		base.OnCloseScreen ();
-		Board.Instance.onEliminatePieceCallback -= AddScore;
-		Board.Instance.onDropDownPieceCallback -= AddProgress;
-		Board.Instance.onHitRoundCallback -= AddRound;
-		Board.Instance.onWallProgressCallback -= ReinforceWall;
-		Board.Instance.OnTryToGetawayCorePieceCallback -= WarnCorePiece;
-		Board.Instance.OnTryToGetawayOverflowPieceCallback -= WarnOverFlow;
+		
 		TutorialControl.Instance.onTutorialCompleteCallback -= EnablePauseMenu;
 		
 	}
-    private void OnCantMove()
-    {
-        AppControl.Instance.GameOver();
-    }
-	private void WarnCorePiece ()
+    
+	public void WarnCorePiece ()
 	{
 		ShowHint (ref corePieceWarningMessage);
 	}
-	private void WarnOverFlow()
+    public void WarnOverFlow()
 	{
 		ShowHint (ref overFlowWarningMessage);
 	}
@@ -333,7 +319,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
         label.gameObject.SetActive(true);
         //label.text = "+1";
 
-        label.color = Wall.GetLevelColor(Board.Instance.round);
+        label.color = Wall.GetLevelColor(ClassicModeControl.Instance.round);
         TipAnimateTask task = new TipAnimateTask();
         task.label = label;
         task.speed = .1f;

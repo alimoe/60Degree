@@ -93,8 +93,7 @@ public class SkyBoxControl : Core.MonoSingleton<SkyBoxControl>
 
     void Start()
     {
-        Board.Instance.onHitRoundCallback += OnChangeRound;
-
+        
     }
     public void Reset()
     {
