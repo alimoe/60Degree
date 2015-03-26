@@ -11,6 +11,7 @@ public class ClockEditor : Editor {
     {
         Clock clock = this.target as Clock;
         clock.triggerEdget = (HexagonEdget)EditorGUILayout.EnumPopup("Trigger Side", clock.triggerEdget);
+        this.serializedObject.ApplyModifiedProperties();
         clock.UpdateTrigger();
     }
 }

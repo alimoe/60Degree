@@ -134,9 +134,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
         
 
-		Board.Instance.ResetBoard ();
-        
-		ClassicHudMenu.Instance.Reset ();
+		
 		
 
 	}

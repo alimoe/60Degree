@@ -160,9 +160,10 @@ public class PieceEdtior : Editor {
                 GameObject twineObj = Instantiate(Resources.Load("Prefabs/Clock")) as GameObject;
                 piece.clock = twineObj.GetComponent<Clock>();
                 piece.clock.transform.parent = piece.transform.parent;
+                piece.clock.SetUp(piece);
             }
             piece.clock.Init();
-            piece.clock.SetUp(piece);
+            
             piece.clock.gameObject.SetActive(true);
             
         }

@@ -135,12 +135,19 @@ public class Board : Core.MonoSingleton<Board> {
             {
                 EntityPool.Instance.Reclaim(i.gameObject, i.iditentyType);
             }
+            Entity[] entities = this.transform.GetComponentsInChildren<Entity>(true);
+            for (int i = 0; i < entities.Length; i++)
+            {
+                EntityPool.Instance.Reclaim(entities[i].gameObject, entities[i].GetType().ToString());
+                
+            }
         }
         else
         {
-            Entity[] entities = this.transform.GetComponentsInChildren<Entity>();
+            Entity[] entities = this.transform.GetComponentsInChildren<Entity>(true);
             for (int i = 0; i < entities.Length; i++)
             {
+                
                 GameObject.DestroyImmediate(entities[i].gameObject);
             }
         }
@@ -990,9 +997,10 @@ public class Board : Core.MonoSingleton<Board> {
 	{
 		List<Piece> neighbour = GetSurroundPiece (piece);
 		if (!neighbour.Contains (piece))neighbour.Add (piece);
-						
+	    
 		foreach (Piece p in neighbour) {
-			p.SetState(PieceState.Coke);
+            p.SetState(PieceState.Coke);
+            
 		}
 	}
 	public List<Piece> GetSurroundPiece(Piece piece)

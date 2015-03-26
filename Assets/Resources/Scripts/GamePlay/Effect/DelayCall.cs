@@ -18,6 +18,11 @@ public class DelayCall : TimeEffect {
 		onCompleteCallback = callback;
 		progress = new Counter (delay);
 	}
+    public void Stop()
+    {
+        TimerControl.Instance.effects -= DelayCallUpdate;
+        progress.Reset();
+    }
 	public void DelayCallUpdate()
 	{
 		progress.Tick (Time.deltaTime);

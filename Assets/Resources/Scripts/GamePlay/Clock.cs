@@ -7,7 +7,8 @@ public class Clock : Entity {
   	
     public HexagonEdget triggerEdget;
     private Transform face;
-    
+    private Shake shake;
+    private DelayCall delayCall;
     private Transform trigger;
 	private float radius;
 	public bool triggered;
@@ -37,7 +38,7 @@ public class Clock : Entity {
 		this.transform.parent = piece.transform.parent;
 		this.transform.localPosition = piece.transform.localPosition + offset;
 		this.transform.localScale = new Vector3(piece.scale, piece.scale, piece.scale);
-
+        
 
 		UpdateTrigger ();
 
@@ -68,6 +69,8 @@ public class Clock : Entity {
 			angle = 120f;
 			break;
 		}
+       
+
 		trigger.transform.localEulerAngles = new Vector3 (0, 0, angle);
 		trigger.transform.localPosition = radius * new Vector3 (-Mathf.Sin (Mathf.PI * angle / 180f), Mathf.Cos (Mathf.PI * angle / 180f), 0);
 	}
@@ -76,14 +79,32 @@ public class Clock : Entity {
     {
 		triggerEdget = Hexagon.GetRandomEdget(piece.isUpper);
     }
-    
 
+    public override void Dead()
+    {
+        base.Dead();
+        if (shake != null) shake.Stop();
+        if (delayCall != null) delayCall.Stop();
+    }
     public void ShutDown()
     {
-		piece = null;
+        if (this.triggered)
+        {
+            Dispose();
+        }
+        else
+        {
+            this.triggered = true;
+            Shake();
+            
+        }
+		
+    }
+    public void Dispose()
+    {
+        piece = null;
         EntityPool.Instance.Reclaim(this.gameObject, "Clock");
     }
-
     public void OnHitClock(BoardDirection direction)
     {
      	
@@ -97,16 +118,21 @@ public class Clock : Entity {
 	public void Shake()
 	{
         triggered = true;
-		new Shake ().Init (this.transform, .7f, 10, 1f, 10f);
-		new DelayCall ().Init (.7f, Expolde);
+        shake = new Shake();
+        shake.Init (this.transform, .7f, 10, 1f, 10f);
+        delayCall = new DelayCall();
+        delayCall.Init(.7f, Expolde);
+	    
 	}
     
     public void Expolde()
     {
-
-		
-		Board.Instance.CokeSurroundPiece (piece);
-    }
+        if (this.piece!=null && !this.piece.isDead && !this.piece.isFadeAway)
+        {
+            Board.Instance.CokeSurroundPiece(piece);
+        }
+        Dispose();
+	}
 
     void Update()
     {

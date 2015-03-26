@@ -55,6 +55,7 @@ public class Block : Entity {
             }
 
         }
+            
     }
 	public void SetUp(Hexagon hexagon)
 	{
@@ -89,7 +90,8 @@ public class Block : Entity {
 	public void OnFadeAway(object child)
 	{
 		GameObject childObj = child as GameObject;
-		childObj.SetActive (false);
+        EntityPool.Instance.Reclaim(childObj, "Block");
+
 	}
 	public void ShutDown()
 	{

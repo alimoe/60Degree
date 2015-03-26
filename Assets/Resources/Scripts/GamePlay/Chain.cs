@@ -5,7 +5,7 @@ public class Chain : Entity {
 
 	public Piece start;
 	public Piece end;
-	
+   
 	public void SetUp(Piece s, Piece e)
 	{
 		start = s;

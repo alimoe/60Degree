@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Entity : MonoBehaviour {
 
+    
+
 	public virtual void Init()
 	{
 		
