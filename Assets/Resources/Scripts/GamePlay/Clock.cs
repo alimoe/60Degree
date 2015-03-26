@@ -96,6 +96,7 @@ public class Clock : Entity {
 
 	public void Shake()
 	{
+        triggered = true;
 		new Shake ().Init (this.transform, .7f, 10, 1f, 10f);
 		new DelayCall ().Init (.7f, Expolde);
 	}

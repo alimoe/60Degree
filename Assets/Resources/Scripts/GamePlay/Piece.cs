@@ -203,7 +203,7 @@ public class Piece : Entity {
 		SetState ((PieceState)s);
 	}
 
-	public void ResetBuffer()
+	public void ResetBuffer(PieceState s)
 	{
 		if (twine != null)
 		{
@@ -222,8 +222,16 @@ public class Piece : Entity {
 		}
 		if(clock!=null)
 		{
-			clock.ShutDown();
-			clock = null;
+            if (s == PieceState.Coke && !clock.triggered)
+            {
+                clock.Shake();
+            }
+            else
+            {
+                clock.ShutDown();
+                clock = null;
+            }
+			
 		}
 	}
 
@@ -231,7 +239,7 @@ public class Piece : Entity {
     public void SetState(PieceState s)
     {
 		if (s != state) {
-			ResetBuffer();
+			ResetBuffer(s);
 		}
         
         if (s == PieceState.Twine)
