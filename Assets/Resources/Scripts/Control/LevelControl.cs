@@ -12,17 +12,22 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	public int step = 0;
 	public int totalStep = 0;
 	private int currentStep = 0;
+	public int record;
+	public int currentLevel = 0;
+	public int totalLevel = 40;
 	public bool inGuide;
 	private string currentLevelName;
 	private Arrow arrow;
 	private List<Piece> pieces;
 	private List<LevelGuide> steps;
 	public bool faildIsOutOfMove;
+
 	void Start()
 	{
 		GameObject arrowObj = EntityPool.Instance.Use("Arrow");
 		arrow = arrowObj.GetComponent<Arrow>();
 		arrow.gameObject.SetActive(false);
+		record = PlayerSetting.Instance.GetSetting ("USER_LEVEL_PROGRESS");
 	}
 
     public void ExitMode()
@@ -38,22 +43,38 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
         Board.Instance.HideEnviorment();
         Board.Instance.ResetBoard();
 
-        AppControl.Instance.ExitGame();
+       	AppControl.Instance.ExitGame();
 
     }
+	public void ExitPlay()
+	{
+		Board.Instance.HideEnviorment();
+		Board.Instance.ResetBoard();
+		UIControl.Instance.OpenMenu ("LevelSelectMenu", true, false);
+
+	}
 	public void StartPlay()
 	{
-		
-		InitLevelMode ();
-		currentLevelName = "Level1";
-		LoadLevel();
-		
-		UpdateLevelUI ();
-	}
 
+		UIControl.Instance.OpenMenu ("LevelSelectMenu", true, false);
+		InitLevelMode ();
+	}
+	public void LoadLevel(int level)
+	{
+		UIControl.Instance.OpenMenu ("LevelHudMenu", true, false);
+		Board.Instance.InitEnviorment();
+
+		currentLevel = level;
+		currentLevelName = "Level"+level;
+		LoadLevel ();
+		UpdateLevelUI ();
+
+
+	}
     public void StartTest()
     {
 		InitLevelMode ();
+		Board.Instance.InitEnviorment();
 		currentLevelName = "Temp";
 		LoadLevel();
 		UpdateLevelUI ();
@@ -62,10 +83,21 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	{
         AppControl.Instance.ResumeGame();
         inGuide = false;
+		arrow.Stop ();
 		Board.Instance.ResetBoard ();
 		LoadLevel ();
 	}
-	
+
+	public void LoadNextLevel()
+	{
+		AppControl.Instance.ResumeGame();
+		inGuide = false;
+		Board.Instance.ResetBoard ();
+		if (currentLevel + 1 <= totalLevel) {
+			currentLevel+=1;
+			LoadLevel(currentLevel);
+		}
+	}
 	public void DisplayGuide()
 	{
 		ResetLevel ();
@@ -132,12 +164,13 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		Board.Instance.OnGetawayPieceCallback += OnPieceMoveOutTheSpace;
 		Board.Instance.OnMoveDoneCallback += OnOperationDone;
 
-		Board.Instance.InitEnviorment();
+
 
 	}
 
 	private void LoadLevel()
 	{
+		//Debug.Log ("LoadLevel " + "Assets/Resources/Levels/" + currentLevelName + ".xml");
 		reader.Load(Board.Instance, "Assets/Resources/Levels/" + currentLevelName + ".xml");
 		totalStep = reader.step;
 		step = totalStep;
@@ -170,8 +203,11 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	}
 	private void DisplayWinMenu()
 	{
-        //UIControl.Instance.OpenMenu("NextLevelMenu",false,true);
-        AppControl.Instance.PauseGame("NextLevelMenu");
+		if (currentLevel > record) {
+			record = currentLevel;
+			PlayerSetting.Instance.SetSetting ("USER_LEVEL_PROGRESS",record);
+		}
+		AppControl.Instance.PauseGame("NextLevelMenu");
 	}
 	private void DisplayLoseMenu()
 	{

@@ -92,8 +92,16 @@ public class PieceGroup:ScriptableObject  {
     }
 	private void FigureOutDirection()
 	{
-		GameObject boardObj = GameObject.Find("Board");
-		Board board = boardObj.GetComponent<Board> ();
+		Board board;
+		if (Board.Instance != null) {
+			board = Board.Instance;
+		} else {
+			GameObject boardObj = GameObject.Find("Board");
+			board = boardObj.GetComponent<Board> ();
+		}
+
+		if (board == null)return;
+			
 		board.FixReference ();
 		BoardDirection[] directions = new BoardDirection[6] {
 						BoardDirection.BottomLeft,

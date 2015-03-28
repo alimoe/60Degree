@@ -728,7 +728,7 @@ public class Board : Core.MonoSingleton<Board> {
 
 	private PieceColor GetRandomColor()
 	{
-		if (colors.Count > 0)return colors [UnityEngine.Random.Range (0, colors.Count)];
+		if (colors!=null && colors.Count > 0)return colors [UnityEngine.Random.Range (0, colors.Count)];
 		return PieceColor.None;		
 	}
 

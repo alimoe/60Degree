@@ -62,7 +62,7 @@ public class LevelReader  {
                     bool isUpper = ((int)piece.Attribute("Upper")) == 1;
                     g.AddChild(board.GetPieceAt((int)piece.Attribute("X"), (int)piece.Attribute("Y"), isUpper));
                 }
-                g.Sort();
+                //g.Sort();
                 g.MakeChain();
             }
 

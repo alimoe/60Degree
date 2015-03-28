@@ -36,7 +36,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 
         mode = GameMode.Classic;
 
-		UIControl.Instance.OpenMenu("StartMenu");
+		UIControl.Instance.OpenMenu("StartMenu");//StartMenu // LevelSelectMenu
 		SoundControl.Instance.PlayTrack (SoundControl.Instance.Track1);
         WallIcon.Instance.SetUp();
 	}
@@ -63,20 +63,22 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         state = GameState.GameNotStart;
         UIControl.Instance.OpenMenu("StartMenu", true);
     }
-
-	public void StartGame()
+	private void CheckIsTestMode()
+	{
+		
+		if (PlayerPrefs.GetInt("TestMode") == 1)
+		{
+			mode = GameMode.Test;
+			PlayerPrefs.SetInt("TestMode", 0);
+			PlayerPrefs.Save();
+		}
+	}
+	public void StartClassicGame()
 	{
 		state = GameState.GamePlaying;
-
-        //Camera3DControl.Instance.direction = Vector3.zero;
-
-        if (PlayerPrefs.GetInt("TestMode") == 1)
-        {
-            mode = GameMode.Test;
-
-            PlayerPrefs.SetInt("TestMode", 0);
-            PlayerPrefs.Save();
-        }
+		mode = GameMode.Classic;
+		CheckIsTestMode ();
+       	
 	    if (!PlayerSetting.Instance.tutorialPlayed)
         {
 			UIControl.Instance.OpenMenu("ClassicHudMenu",true);
@@ -89,11 +91,6 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 				UIControl.Instance.OpenMenu("ClassicHudMenu",true);
 				new DelayCall().Init(.3f, ClassicModeControl.Instance.StartPlay);
 			}
-            else if (mode == GameMode.Levels) 
-			{
-				UIControl.Instance.OpenMenu("LevelHudMenu",true);
-				new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
-			}
             else if (mode == GameMode.Test) 
 			{
 				UIControl.Instance.OpenMenu("LevelHudMenu",true);
@@ -102,6 +99,24 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
         
 	}
+
+	public void StartLevelsGame()
+	{
+		state = GameState.GamePlaying;
+		mode = GameMode.Levels;
+		CheckIsTestMode ();
+
+		if (mode == GameMode.Levels)
+		{
+			new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
+		}
+		else if (mode == GameMode.Test) 
+		{
+			UIControl.Instance.OpenMenu("LevelHudMenu",true);
+			new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+		}
+	}
+
    
 	public void PlayTutorial()
 	{

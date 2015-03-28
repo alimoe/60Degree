@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Level Mode="1" Step="9">
+  <Hexagons>
+    <Hexagon X="0" Y="2" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="2" Y="4" BlockState="4" UpperState="0" LowerState="0" />
+  </Hexagons>
+  <Pieces>
+    <Piece X="1" Y="0" Upper="1" State="0" Type="4" />
+    <Piece X="4" Y="0" Upper="1" State="0" Type="3" />
+    <Piece X="1" Y="1" Upper="1" State="0" Type="3" />
+    <Piece X="1" Y="1" Upper="0" State="0" Type="3" />
+    <Piece X="2" Y="2" Upper="1" State="4" Type="4" />
+    <Piece X="1" Y="3" Upper="0" State="0" Type="4" />
+    <Piece X="1" Y="5" Upper="1" State="0" Type="4" />
+  </Pieces>
+  <Walls>
+    <Wall Index="1" State="1" />
+    <Wall Index="4" State="2" />
+    <Wall Index="6" State="1" />
+    <Wall Index="7" State="1" />
+    <Wall Index="9" State="2" />
+    <Wall Index="12" State="1" />
+    <Wall Index="15" State="1" />
+    <Wall Index="17" State="2" />
+    <Wall Index="19" State="1" />
+  </Walls>
+  <Groups>
+    <Group>
+      <Piece X="1" Y="1" Upper="0" />
+      <Piece X="1" Y="1" Upper="1" />
+    </Group>
+  </Groups>
+  <Switchers />
+  <Clocks>
+    <Clock X="2" Y="2" Upper="1" Edget="2" />
+  </Clocks>
+  <Twines />
+  <Ices />
+  <Steps>
+    <Step Index="1" Direction="1" />
+    <Step Index="2" Direction="3" />
+    <Step Index="1" Direction="4" />
+    <Step Index="2" Direction="0" />
+    <Step Index="2" Direction="2" />
+    <Step Index="6" Direction="4" />
+    <Step Index="0" Direction="1" />
+    <Step Index="1" Direction="1" />
+    <Step Index="3" Direction="3" />
+  </Steps>
+</Level>

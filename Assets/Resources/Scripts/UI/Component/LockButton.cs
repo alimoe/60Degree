@@ -3,13 +3,40 @@ using System.Collections;
 
 public class LockButton : MonoBehaviour {
 
-	// Use this for initialization
+	public int index;
+	public int levelIndex;
+	public bool isLocked;
+	private UILabel label;
+	private Transform lockIcon;
+	void Awake()
+	{
+		Init ();
+	}
+
+	public void Init()
+	{
+		
+		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
+		foreach (var child in children)
+		{
+			
+			if (child.name.Contains("Lock")) lockIcon = child.transform;
+			if (child.name.Contains("Label")) label = child.GetComponent<UILabel>();
+
+		}
+		isLocked = false;
+	}
+
 	void Start () {
-	
+		label.text = index.ToString();
+		Lock (isLocked);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public void Lock(bool flag)
+	{
+		isLocked = flag;
+		lockIcon.gameObject.SetActive (isLocked);
+		label.gameObject.SetActive (!isLocked);
 	}
+
 }

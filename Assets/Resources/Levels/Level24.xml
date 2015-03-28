@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Level Mode="1" Step="6">
+  <Hexagons>
+    <Hexagon X="1" Y="4" BlockState="0" UpperState="0" LowerState="2" />
+  </Hexagons>
+  <Pieces>
+    <Piece X="1" Y="0" Upper="1" State="0" Type="4" />
+    <Piece X="5" Y="0" Upper="1" State="0" Type="4" />
+    <Piece X="1" Y="1" Upper="0" State="0" Type="4" />
+    <Piece X="4" Y="1" Upper="0" State="0" Type="4" />
+  </Pieces>
+  <Walls />
+  <Groups />
+  <Switchers />
+  <Clocks />
+  <Twines />
+  <Ices />
+  <Steps>
+    <Step Index="0" Direction="1" />
+    <Step Index="2" Direction="0" />
+    <Step Index="0" Direction="3" />
+    <Step Index="0" Direction="5" />
+    <Step Index="2" Direction="1" />
+    <Step Index="2" Direction="5" />
+  </Steps>
+</Level>
