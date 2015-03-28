@@ -2,10 +2,11 @@
 using System.Collections;
 
 public class Rock : Entity {
-
+	private FadeAway fadeAway;
     public Rock SetUp(Hexagon hexagon, bool isUpper)
     {
-        
+		if (fadeAway != null)fadeAway.Stop ();
+
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition: hexagon.lowPosition;
         SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
@@ -20,11 +21,14 @@ public class Rock : Entity {
     }
     public void ShutDown()
     {
-       new FadeAway().Init(this.gameObject, .2f, Dispose);
+		fadeAway = new FadeAway ();
+		fadeAway.Init(this.gameObject, .2f, Dispose);
     }
 
     private void Dispose(object obj)
     {
+		if (fadeAway != null)fadeAway.Stop ();
+						
         EntityPool.Instance.Reclaim(this.gameObject, "Rock");
     }
 }
