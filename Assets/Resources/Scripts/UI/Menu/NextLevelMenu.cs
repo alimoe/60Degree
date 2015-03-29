@@ -40,6 +40,8 @@ public class NextLevelMenu : MenuSingleton<NextLevelMenu> {
 		base.OnOpenScreen ();
 		transitionInCounter.Reset ();
 		inTransitionIn = true;
+		SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
+		SoundControl.Instance.ToggleMusic ();
 		/*
 		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);
@@ -48,6 +50,9 @@ public class NextLevelMenu : MenuSingleton<NextLevelMenu> {
 	public override void OnCloseScreen ()
 	{
 		base.OnCloseScreen ();
+		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_OUT);
+		SoundControl.Instance.ToggleMusic ();
+
 		/*
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_OUT);
 		SoundControl.Instance.ToggleMusic ();*/

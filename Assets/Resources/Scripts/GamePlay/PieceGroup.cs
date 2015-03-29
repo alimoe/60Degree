@@ -82,6 +82,7 @@ public class PieceGroup:ScriptableObject  {
     public void Sort()
     {
 		FigureOutDirection ();
+		//Debug.LogError ("Piece.sortingDirection " + Piece.sortingDirection);
         this.children.Sort(Piece.ComparePiece);
 		/*
        	for (int i = 0; i < children.Count; i++) {
@@ -93,11 +94,14 @@ public class PieceGroup:ScriptableObject  {
 	private void FigureOutDirection()
 	{
 		Board board;
+
 		if (Board.Instance != null) {
 			board = Board.Instance;
 		} else {
 			GameObject boardObj = GameObject.Find("Board");
 			board = boardObj.GetComponent<Board> ();
+
+
 		}
 
 		if (board == null)return;
@@ -112,27 +116,31 @@ public class PieceGroup:ScriptableObject  {
 						BoardDirection.TopLeft
 				};
 		int d = 0;
-		while (d < directions.Length) {
+		
+		while (d < directions.Length ) {
 			foreach(var i in children)
 			{
 				List<Piece> pieces = board.GetDirectionPieces(i,directions[d]);
-				List<Piece> others = GetPieceWithout(i,children);
-				bool valide = true;
-				foreach(var j in others)
+				if(pieces.Count>0)
 				{
-					if(!pieces.Contains(j))valide = false;
-					valide = !valide?valide:true;
-				}
-				if(valide)
-				{
-					Piece.sortingDirection = directions[d];
-					return;
-				}
-				else
-				{
-					d++;
+					List<Piece> others = GetPieceWithout(i,children);
+					bool valide = true;
+					foreach(var j in others)
+					{
+						if(!pieces.Contains(j))
+						{
+							valide = false;
+							break;
+						}
+					}
+					if(valide)
+					{
+						Piece.sortingDirection = directions[d];
+						return;
+					}
 				}
 			}
+			d++;
 		}
 	}
 	private List<Piece> GetPieceWithout(Piece without, List<Piece> collection)

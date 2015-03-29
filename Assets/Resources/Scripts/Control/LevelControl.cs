@@ -111,19 +111,19 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		{
 			BoardDirection direction = steps[currentStep].direction;
 			Piece piece = pieces[steps[currentStep].PieceIndex];
-			Vector2 offset = Vector2.zero;
+			Vector2 offset =GetOffsetDirection(direction,piece.isUpper);//GetOffsetDirection(direction);
 			arrow.FocusOn(piece.transform).FaceTo(Board.Instance.GetPhysicDirection(direction)).WithDistnace(.5f).Offset(offset.x,offset.y);
 		}
 
 	}
-	private Vector2 GetOffsetDirection(BoardDirection direction)
+	private Vector2 GetOffsetDirection(BoardDirection direction, bool isUpper)
 	{
 		switch (direction) {
 			case BoardDirection.BottomLeft:
-			return Vector2.zero;
+			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
 			
 			case BoardDirection.BottomRight:
-			return Vector2.zero;
+			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
 				
 			case BoardDirection.Left:
 			return Vector2.zero;
@@ -132,10 +132,10 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 			return Vector2.zero;
 			
 			case BoardDirection.TopLeft:
-			return Vector2.zero;
+			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
 			
 			case BoardDirection.TopRight:
-			return Vector2.zero;
+			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
 			
 		}
 		return Vector2.zero;
@@ -145,12 +145,15 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	{
 		Piece piece = Board.Instance.GetPieceFromPosition (position);
 		int index = pieces.IndexOf (piece);
-		if (piece!=null && currentStep<steps.Count && steps [currentStep].PieceIndex == index && direction == steps [currentStep].direction) {
-			Board.Instance.MoveFrom(position,direction);
-			arrow.Stop();
-			currentStep++;
-			new DelayCall().Init(.5f,DisplayArrow);
-			
+		if (piece!=null && currentStep<steps.Count  && direction == steps [currentStep].direction) {
+			Piece targetPiece = pieces[steps [currentStep].PieceIndex];
+			if(targetPiece == piece||Board.Instance.GetDirectionPieces(piece,direction).Contains(targetPiece)||(piece.group!=null&&piece.group.children.Contains(targetPiece)))
+			{
+				Board.Instance.MoveFrom(position,direction);
+				arrow.Stop();
+				currentStep++;
+				new DelayCall().Init(.5f,DisplayArrow);
+			}
 		}
 	}
 
@@ -190,14 +193,16 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		step--;
 		UpdateLevelUI ();
 		if (step <= 0) {
-			if(Board.Instance.GetPieces().Length == 0)
-			{
-				new DelayCall().Init(.5f,DisplayWinMenu);
+			if (Board.Instance.GetPieces ().Length == 0) {
+					new DelayCall ().Init (.5f, DisplayWinMenu);
+			} else {
+					faildIsOutOfMove = true;
+					new DelayCall ().Init (.5f, DisplayLoseMenu);
 			}
-			else
+		} else {
+			if(Board.Instance.GetPieces ().Length == 0)
 			{
-				faildIsOutOfMove = true;
-				new DelayCall().Init(.5f,DisplayLoseMenu);
+				new DelayCall ().Init (.5f, DisplayWinMenu);
 			}
 		}
 	}

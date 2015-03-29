@@ -19,10 +19,10 @@ public class Arrow : MonoBehaviour {
 	void Update () {
         if (target != null)
         {
-            center = target.transform.position;
-            if (wave != null && wave.initPosition != center)
+			Vector3 position = center + direction * distance + new Vector3 (offsetX, offsetY, -2);
+			if (wave != null && wave.initPosition != position)
             {
-                wave.Reset(center);
+				wave.Reset(position);
             }
         }
 	}

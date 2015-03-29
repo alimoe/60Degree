@@ -55,7 +55,7 @@ public class OutOfMoveMenu : MenuSingleton<OutOfMoveMenu>{
 		transitionInCounter.Reset ();
 		inTransitionIn = true;
 		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
-		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);
+		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_LOSE);
 		SoundControl.Instance.ToggleMusic ();
 		title.text = LevelControl.Instance.faildIsOutOfMove?"Out Of Move":"Mission Failed";
 		failed.gameObject.SetActive (!LevelControl.Instance.faildIsOutOfMove);

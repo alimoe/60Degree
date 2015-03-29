@@ -29,7 +29,7 @@ public class PieceEdtior : Editor {
             if (GUILayout.Button("Make Chain"))
             {
                 
-                PieceGroup pieceGroup = new PieceGroup();
+				PieceGroup pieceGroup = PieceGroup.CreateInstance<PieceGroup>();
                 for (int i = 0; i < this.targets.Length; i++)
                 {
                     Piece member = this.targets[i] as Piece;
@@ -160,9 +160,11 @@ public class PieceEdtior : Editor {
                 GameObject twineObj = Instantiate(Resources.Load("Prefabs/Clock")) as GameObject;
                 piece.clock = twineObj.GetComponent<Clock>();
                 piece.clock.transform.parent = piece.transform.parent;
+				piece.clock.Init();
                 piece.clock.SetUp(piece);
             }
-            piece.clock.Init();
+			piece.clock.Init();
+            
             
             piece.clock.gameObject.SetActive(true);
             
