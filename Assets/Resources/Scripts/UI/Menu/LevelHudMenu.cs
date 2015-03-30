@@ -4,7 +4,7 @@ using System.Collections;
 public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 	private UILabel stepValue;
 	private UILabel hintLabel;
-	private int step = 0;
+    private int step = 0;
 	protected override void Awake () {
 		base.Awake ();
 		Transform[] children = this.GetComponentsInChildren<Transform> ();
@@ -26,6 +26,7 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 	{
 		step = LevelControl.Instance.step;
 		stepValue.text = step.ToString ();
+
 	}
 	public override void OnOpenScreen ()
 	{

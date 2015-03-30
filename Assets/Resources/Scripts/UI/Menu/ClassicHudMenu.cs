@@ -16,7 +16,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	private UILabel roundValue;
 	private UILabel recordLabel;
 	private UILabel hintLabel;
-	private UILabel achivementLabel;
+    
 	private SkillButton skillButton;
 	private Counter progressCounter;
 	private Counter threholdCounter;
@@ -111,8 +111,8 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 			}
 			if (child.name.Contains("Achivement"))
 			{
-				achivementLabel = child.GetComponent<UILabel>();
-				achivementLabel.gameObject.SetActive(false);
+				//achivementLabel = child.GetComponent<UILabel>();
+				//achivementLabel.gameObject.SetActive(false);
 				
 			}
 		}
@@ -230,7 +230,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
         return label;
     }
 
-	void EnablePauseMenu ()
+    public void EnablePauseMenu()
 	{
 		pauseButton.gameObject.SetActive (true);
 		bgmButton.gameObject.SetActive(true);
@@ -250,9 +250,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		task.birthPosition = nguiCamera.ScreenToWorldPoint (Camera.main.WorldToScreenPoint(worldPosition));
 	    
 		animateTips.Add (task);
-
-
-
+        
 		totalScore += add;
 		scoreLabel.text = totalScore.ToString ();
 		totalScoreCounter.Reset ();
@@ -308,7 +306,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	}
 	public void HideAchivement()
 	{
-		achivementLabel.gameObject.SetActive(false);
+		//achivementLabel.gameObject.SetActive(false);
 	}
     public void ReinforceWall(Vector3 worldPosition)
     {

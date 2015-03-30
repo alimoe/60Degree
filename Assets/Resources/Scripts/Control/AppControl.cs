@@ -48,6 +48,10 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             board.transform.localPosition = Vector3.zero;
         }
     }
+    public bool IsPlaying()
+    {
+        return state == GameState.GamePlaying;
+    }
 	public void AddSkill(Skill skill)
 	{
 		if (skills.Count == 0 && skill.OnAdd () == false) {
@@ -99,7 +103,21 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
         
 	}
-
+    public void StartSpeedGame()
+    {
+        state = GameState.GamePlaying;
+        mode = GameMode.Speed;
+        CheckIsTestMode();
+        if (mode == GameMode.Speed)
+        {
+            new DelayCall().Init(.3f, SpeedModeControl.Instance.StartPlay);
+        }
+        else if (mode == GameMode.Test)
+        {
+            UIControl.Instance.OpenMenu("LevelHudMenu", true);
+            new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+        }
+    }
 	public void StartLevelsGame()
 	{
 		state = GameState.GamePlaying;
@@ -205,25 +223,32 @@ public class AppControl : Core.MonoSingleton<AppControl> {
             }
             else
             {
-
-                if (skills.Count > 0)
+                if (mode == GameMode.Classic)
                 {
-                    Skill skill = skills[0];
-                    bool result = skill.Excute(position);
-                    if (result)
-					{
-						skills.RemoveAt(0);
-						ClassicHudMenu.Instance.HideHint();
-						Board.Instance.GeneratePiece();
-					}
+                    if (skills.Count > 0)
+                    {
+                        Skill skill = skills[0];
+                        bool result = skill.Excute(position);
+                        if (result)
+                        {
+                            skills.RemoveAt(0);
+                            ClassicHudMenu.Instance.HideHint();
+                            Board.Instance.GeneratePiece();
+                        }
 
-					
+
+                    }
+                    else
+                    {
+                        ClassicHudMenu.Instance.HideHint();
+                        Board.Instance.SelectFrom(position);
+                    }
                 }
-				else
-				{
-					ClassicHudMenu.Instance.HideHint();
-					Board.Instance.SelectFrom(position);
-				}
+                else if (mode == GameMode.Speed)
+                {
+                    SpeedHudMenu.Instance.HideHint();
+                    Board.Instance.SelectFrom(position);
+                }
             }
 			
 		}

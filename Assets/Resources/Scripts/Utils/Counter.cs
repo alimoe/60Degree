@@ -28,6 +28,10 @@ public class Counter  {
 		set{ _time = _target*value;}
 
 	}
+    public float target
+    {
+        get { return _target; }
+    }
     public float time
     {
         get { return _time ; }

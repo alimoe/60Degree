@@ -166,9 +166,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 
 		Board.Instance.OnGetawayPieceCallback += OnPieceMoveOutTheSpace;
 		Board.Instance.OnMoveDoneCallback += OnOperationDone;
-
-
-
+        
 	}
 
 	private void LoadLevel()

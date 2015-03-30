@@ -26,6 +26,7 @@ public enum GenerateType
 	Ice,
 	Fire,
 	Block,
+    Clock,
 	Any
 }
 public class Board : Core.MonoSingleton<Board> {
@@ -55,9 +56,9 @@ public class Board : Core.MonoSingleton<Board> {
 	private delegate Hexagon GetDirectionHexagon(int x, int y, bool isUpper);
 
     public delegate void OnEliminatePiece(int count, PieceColor pieceColor, Vector3 position);
-    public event OnEliminatePiece onEliminatePieceCallback;
+    public event OnEliminatePiece OnEliminatePieceCallback;
     
-    public event Action onDropDownPieceCallback;
+    public event Action OnDropDownPieceCallback;
     public event Action OnTryToGetawayCorePieceCallback;
     public event Action OnTryToGetawayOverflowPieceCallback;
     public event Action OnGetawayPieceCallback;
@@ -848,7 +849,7 @@ public class Board : Core.MonoSingleton<Board> {
 		}
 		if (eliminate.Count > 0) {
 			SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ELIMINATE);
-            if (onEliminatePieceCallback != null ) onEliminatePieceCallback(eliminate.Count, eliminate[0].colorType, eliminate[0].transform.position);
+            if (OnEliminatePieceCallback != null) OnEliminatePieceCallback(eliminate.Count, eliminate[0].colorType, eliminate[0].transform.position);
 		}
 
 	}
@@ -925,7 +926,7 @@ public class Board : Core.MonoSingleton<Board> {
         if (dropDown != null)
         {
             EntityPool.Instance.Reclaim(dropDown.piece.gameObject, dropDown.piece.iditentyType);
-            if (onDropDownPieceCallback != null && autoUpdateSkillPoint) onDropDownPieceCallback();
+            if (OnDropDownPieceCallback != null && autoUpdateSkillPoint) OnDropDownPieceCallback();
         }
     }
 

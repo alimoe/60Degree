@@ -12,6 +12,13 @@ public class Utility  {
         builder.Append(c);
         return builder.ToString();
     }
+    public static string FormatSeconds(float seconds)
+    {
+        builder.Remove(0, builder.Length);
+        builder.Append(seconds.ToString("f2"));
+        builder.Append(seconds.ToString("'"));
+        return builder.ToString();
+    }
 	public static byte LerpColorChannel(byte start, byte end, float percent)
 	{
 		int delta = (int)end - (int)start;
