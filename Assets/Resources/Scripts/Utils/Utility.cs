@@ -15,7 +15,7 @@ public class Utility  {
     public static string FormatSeconds(float seconds)
     {
         builder.Remove(0, builder.Length);
-        builder.Append(seconds.ToString("f2"));
+        builder.Append(seconds.ToString("f1"));
         builder.Append(seconds.ToString("'"));
         return builder.ToString();
     }
