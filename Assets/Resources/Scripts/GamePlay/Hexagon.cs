@@ -255,7 +255,7 @@ public class Hexagon:MonoBehaviour  {
             GameObject blockObj = EntityPool.Instance.Use("Block") as GameObject;
             block = blockObj.GetComponent<Block>();
         }
-        block.SetUp(this);
+        if (block!=null) block.SetUp(this);
     }
 
     

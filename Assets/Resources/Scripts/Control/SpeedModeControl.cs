@@ -60,9 +60,11 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         Board.Instance.autoBirth = true;
         Board.Instance.autoUpdateGrid = true;
         Board.Instance.autoUpdateWall = true;
+        Board.Instance.autoGenerateCore = false;
         Board.Instance.OnEliminatePieceCallback += OnElimininate;
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
-        generateCounter = new Counter(10);
+        Board.Instance.SetWallLevel(0);
+        generateCounter = new Counter(15);
         remainingTimer = new Counter(initialTimer);
         maxLevel = PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
 
@@ -142,9 +144,9 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     }
     public void ExitMode()
     {
+        Board.Instance.autoGenerateCore = true;
         Board.Instance.ResetBoard();
         Board.Instance.HideEnviorment();
-
         Board.Instance.OnEliminatePieceCallback -= OnElimininate;
         Board.Instance.OnMoveDoneCallback -= GenerateSpecialItem;
         generateType.Clear();
@@ -158,8 +160,8 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         remainingTimer = new Counter(initialTimer);
         targetEliminateCount = 10;
         generateCounter.Reset();
+        Board.Instance.SetWallLevel(0);
         SpeedHudMenu.Instance.ShowRecord(false);
-
         Board.Instance.ResetBoard();
         Board.Instance.GeneratePiece();
         Board.Instance.GeneratePiece();
@@ -203,10 +205,11 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         if (eliminateCount >= targetEliminateCount)
         {
             eliminateCount = 0;
-            remainingTimer.Reset(remainingTimer.target - remainingTimer.time + level * 10f);
-            SpeedHudMenu.Instance.AddTime(level * 10f);
-            SpeedHudMenu.Instance.ShowLevel();
+            remainingTimer.Reset(remainingTimer.target - remainingTimer.time +this.initialTimer+ level * 10f);
+            SpeedHudMenu.Instance.AddTime(this.initialTimer + level * 10f);
+            
             targetEliminateCount += 5;
+            Board.Instance.SetWallLevel(level);
             level++;
             if (level > maxLevel)
             {

@@ -10,7 +10,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public int round = 1;
     private List<GenerateType> generateType;
     private int freezeWallIndex = 0;
-    
+    private LevelReader reader;
+    private LevelExporter exporter;
+
     private List<PieceColor> colors;
 
     public void StartPlay()
@@ -27,9 +29,12 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.OnTryToGetawayOverflowPieceCallback += ClassicHudMenu.Instance.WarnOverFlow;
         Board.Instance.OnCantMoveCallback += GameOver;
 
-
+       
         ResetColorsPriority();
-        
+        Board.Instance.autoGenerateCore = true;
+        Board.Instance.autoUpdateWall = true;
+        Board.Instance.autoUpdateGrid = true;
+        Board.Instance.autoUpdateSkillPoint = true;
         Board.Instance.GeneratePiece();
         Board.Instance.GeneratePiece();
         Board.Instance.GeneratePiece();

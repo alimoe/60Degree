@@ -76,7 +76,9 @@ public class Board : Core.MonoSingleton<Board> {
     public bool autoUpdateGrid = true;
     [HideInInspector]
     public bool autoUpdateWall = true;
-    
+
+    [HideInInspector]
+    public bool autoGenerateCore = true;
         
     [HideInInspector]
     public bool autoUpdateSkillPoint = true;
@@ -648,7 +650,7 @@ public class Board : Core.MonoSingleton<Board> {
                 Piece newPiece = entity.GetComponent<Piece>();
 				pieces.Add(newPiece);
 				newPiece.SetLength(length);
-				if(!HasCorePiece()&&pieces.Count>3&&freezeCoreCounter.Expired())
+				if(autoGenerateCore && !HasCorePiece()&&pieces.Count>3&&freezeCoreCounter.Expired())
 				{
 					newPiece.SetAsCore();
 				}

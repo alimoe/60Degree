@@ -41,7 +41,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
         
         Board.Instance.autoUpdateGrid = true;
         Board.Instance.autoUpdateWall = true;
-
+        Board.Instance.autoGenerateCore = true;
         Board.Instance.HideEnviorment();
         Board.Instance.ResetBoard();
 
@@ -164,7 +164,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private void InitLevelMode()
 	{
 		Board.Instance.autoBirth = false;
-		    
+        Board.Instance.autoGenerateCore = false;
 		Board.Instance.autoUpdateGrid = false;
 		Board.Instance.autoUpdateWall = false;
 
