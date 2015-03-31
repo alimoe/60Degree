@@ -25,7 +25,7 @@ public class OutOfTimeMenu : OverlayMenu<OutOfMoveMenu>
         base.OnOpenScreen();
        
          failed.text = "MAX LEVEL:" + PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
-
+         SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
     }
    
     // Update is called once per frame

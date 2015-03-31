@@ -46,7 +46,7 @@ public class Popup : Menu {
         transitionInCounter.Reset();
         inTransitionIn = true;
         soundBtn.isOn = !PlayerSetting.Instance.muteSE;
-        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
+       
         SoundControl.Instance.ToggleMusic();
 
     }

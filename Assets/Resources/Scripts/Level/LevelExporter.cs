@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 public class LevelExporter  {
 
-    public void Save(ref Board board, ref Level level, string name,LevelObjective objective = LevelObjective.Eliminate)
+    public void Save(ref Board board, ref Level level, string name, int progress,LevelObjective objective = LevelObjective.Eliminate)
     {
         XDocument document = new XDocument();
         XElement root = new XElement("Level");
@@ -21,7 +21,7 @@ public class LevelExporter  {
         attribute = new XAttribute("Mode", (int)objective);
         root.Add(attribute);
 
-		int step = level == null ? -1 : level.step;
+        int step = level == null ? progress : level.step;
         attribute = new XAttribute("Step", (int)step);
         root.Add(attribute);
 
@@ -31,7 +31,7 @@ public class LevelExporter  {
         root.Add(parent);
 
         Hexagon[] hexagons = board.GetHexagons();
-        Debug.LogWarning("Export:: Grid Count " + hexagons.Length);
+        //Debug.LogWarning("Export:: Grid Count " + hexagons.Length);
         for (int i = 0; i < hexagons.Length; i++)
         {
             Hexagon hexagon = hexagons[i];
@@ -83,6 +83,9 @@ public class LevelExporter  {
                     element.Add(attribute);
                     attribute = new XAttribute("Type", (int)hexagon.upper.colorType);
                     element.Add(attribute);
+                    int core = hexagon.upper.isCore ? 1 : 0;
+                    attribute = new XAttribute("Core", core);
+                    element.Add(attribute);
                     parent.Add(element);
 
                     if (hexagon.upper.group != null)
@@ -117,6 +120,10 @@ public class LevelExporter  {
                     attribute = new XAttribute("Type", (int)hexagon.lower.colorType);
                     element.Add(attribute);
 
+                    int core = hexagon.lower.isCore ? 1 : 0;
+                    attribute = new XAttribute("Core", core);
+                    element.Add(attribute);
+
                     parent.Add(element);
 
                     if (hexagon.lower.group != null)
@@ -143,7 +150,7 @@ public class LevelExporter  {
         parent = new XElement("Walls");
         root.Add(parent);
         Wall[] walls = board.GetWalls();
-        Debug.LogWarning("Export:: Wall Count " + walls.Length);
+        //Debug.LogWarning("Export:: Wall Count " + walls.Length);
         for (int i = 0; i < walls.Length; i++)
         {
             Wall wall = walls[i];
@@ -156,6 +163,9 @@ public class LevelExporter  {
                 element.Add(attribute);
 
                 attribute = new XAttribute("State", (int)wall.state);
+                element.Add(attribute);
+
+                attribute = new XAttribute("Level", (int)wall.level);
                 element.Add(attribute);
 
                 parent.Add(element);
@@ -307,4 +317,6 @@ public class LevelExporter  {
 		root.Add(parent);
         document.Save("Assets/Resources/Levels/" + name + ".xml");
     }
+
+    
 }

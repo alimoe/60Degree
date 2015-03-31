@@ -12,14 +12,40 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     private int freezeWallIndex = 0;
     private LevelReader reader;
     private LevelExporter exporter;
-
     private List<PieceColor> colors;
 
     public void StartPlay()
     {
+        exporter = new LevelExporter();
+        reader = new LevelReader();
         generateCounter = new Counter(generateMaxStep);
         generateType = new List<GenerateType>();
         Board.Instance.InitEnviorment();
+        
+
+       
+        
+        Board.Instance.autoGenerateCore = true;
+        Board.Instance.autoUpdateWall = true;
+        Board.Instance.autoUpdateGrid = true;
+        Board.Instance.autoUpdateSkillPoint = true;
+
+        if (reader.Exist("UserBoard"))
+        {
+            LoadBoard();
+        }
+        else
+        {
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicColor, 3);
+            PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicSpecialItem, 0);
+        }
+
+        ResetColorsPriority();
+        ResetSpecialItemLevel();
+
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
         Board.Instance.OnCorePieceEliminateCallback += AddWallProgress;
         Board.Instance.OnEliminatePieceCallback += AddScore;
@@ -29,17 +55,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.OnTryToGetawayOverflowPieceCallback += OnTryToGetawayOverflowPiece;
         Board.Instance.OnCantMoveCallback += GameOver;
 
-       
-        ResetColorsPriority();
-        Board.Instance.autoGenerateCore = true;
-        Board.Instance.autoUpdateWall = true;
-        Board.Instance.autoUpdateGrid = true;
-        Board.Instance.autoUpdateSkillPoint = true;
-        Board.Instance.GeneratePiece();
-        Board.Instance.GeneratePiece();
-        Board.Instance.GeneratePiece();
-
     }
+
+   
 
     public void AddScore(int score, PieceColor color, Vector3 worldPosition)
     {
@@ -63,20 +81,42 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.ResetBoard();
         ClassicHudMenu.Instance.Reset();
         generateType.Clear();
-        ResetColorsPriority();
+        if (colors.Count > 3) colors.RemoveRange(3, colors.Count - 3);
         freezeWallIndex = 0;
         round = 1;
         generateCounter = new Counter(generateMaxStep);
-        Board.Instance.ResetBoard();
+
+        Board.Instance.GeneratePiece();
+        Board.Instance.GeneratePiece();
+        Board.Instance.GeneratePiece();
+
+        SaveBoard();
+    }
+
+
+    public void LoadBoard()
+    {
+        Board board = Board.Instance;
+        reader.Load(ref board, "UserBoard");
+        freezeWallIndex = reader.step;
+    }
+
+    public void SaveBoard()
+    {
+        Level level = null;
+        Board board = Board.Instance;
+        exporter.Save(ref board, ref level, "UserBoard", freezeWallIndex, LevelObjective.Eliminate);
+        PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicColor, colors.Count);
+        PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicSpecialItem, generateType.Count);
     }
 
     public void AddWallProgress()
     {
-
         
         int index = freezeWallIndex % (3 * Board.Instance.segment);
         Wall wall = Board.Instance.GetWall(index);
-        wall.Invincible();
+        if (wall) wall.Invincible();
+        
         freezeWallIndex++;
         int currentRound = freezeWallIndex / (3 * Board.Instance.segment) + 1;
         ClassicHudMenu.Instance.ReinforceWall(wall.transform.position);
@@ -96,12 +136,50 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public void ResetColorsPriority()
     {
         colors = new List<PieceColor>();
+        int thehold = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicColor);
+        
         colors.Add(PieceColor.Blue);
         colors.Add(PieceColor.Green);
         colors.Add(PieceColor.Red);
+        if (thehold > 3)
+        {
+            colors.Add(PieceColor.Purple);
+        }
+        if (thehold > 4)
+        {
+            colors.Add(PieceColor.Yellow);
+        }
         Board.Instance.SetColors(colors);
     }
-
+    public void ResetSpecialItemLevel()
+    {
+        int thehold = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicSpecialItem);
+        generateType.Clear();
+        if (thehold>0)
+        {
+            generateType.Add(GenerateType.Chain);
+        }
+        if (thehold > 1)
+        {
+            generateType.Add(GenerateType.Block);
+        }
+        if (thehold > 2)
+        {
+            generateType.Add(GenerateType.Ice);
+        }
+        if (thehold > 3)
+        {
+            generateType.Add(GenerateType.Rope);
+        }
+        if (thehold > 4)
+        {
+            generateType.Add(GenerateType.Fire);
+        }
+        if (thehold > 5)
+        {
+            generateType.Add(GenerateType.Clock);
+        }
+    }
     private void UpdateGameplayDifficulty()
     {
         float progress = (float)freezeWallIndex / (float)Board.Instance.segment;
@@ -243,6 +321,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public void PauseGame()
     {
         AppControl.Instance.PauseGame("PauseMenu");
+        SaveBoard();
         
     }
     public void GameOver()
@@ -252,7 +331,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
 
     public void ExitMode()
     {
-        
+        SaveBoard();
         //store board data
         Board.Instance.ResetBoard();
         Board.Instance.HideEnviorment();

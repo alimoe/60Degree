@@ -47,7 +47,7 @@ public class PauseMenu : OverlayMenu<PauseMenu>
 		if (userRound > historyRound) {
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, userRound);
 		}
-		
+        SoundControl.Instance.PlaySound(SoundControl.Instance.UI_TRANSITION_IN);
 	}
 	
 	// Update is called once per frame

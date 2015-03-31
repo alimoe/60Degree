@@ -61,7 +61,17 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 			Board.Instance.GeneratePiece();
 		}
 	}
-
+    void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            if (mode == GameMode.Classic && state == GameState.GamePlaying)
+            {
+                PauseGame("PauseMenu");
+                ClassicModeControl.Instance.SaveBoard();
+            }
+        }
+    }
     public void ExitGame()
     {
         state = GameState.GameNotStart;

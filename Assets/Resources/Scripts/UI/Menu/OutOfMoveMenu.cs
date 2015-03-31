@@ -34,7 +34,7 @@ public class OutOfMoveMenu : OverlayMenu<OutOfMoveMenu>
 		
 		title.text = LevelControl.Instance.faildIsOutOfMove?"Out Of Move":"Mission Failed";
 		failed.gameObject.SetActive (!LevelControl.Instance.faildIsOutOfMove);
-
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
 	}
 	void Update () {
         Transition();

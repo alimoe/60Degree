@@ -11,6 +11,9 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
     public static string ClassicRound = "ClassicRound";
     public static string MAX_SPEED_LEVEL = "MAX_SPEED_LEVEL";
     public static string USER_LEVEL_PROGRESS = "USER_LEVEL_PROGRESS";
+    public static string ClassicColor = "ClassicColor";
+    public static string ClassicSpecialItem = "ClassicSpecialItem";
+
     protected override void Awake()
     {
         base.Awake();

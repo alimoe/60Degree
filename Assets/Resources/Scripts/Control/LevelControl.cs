@@ -175,8 +175,9 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 
 	private void LoadLevel()
 	{
-		//Debug.Log ("LoadLevel " + "Assets/Resources/Levels/" + currentLevelName + ".xml");
-		reader.Load(Board.Instance, "Assets/Resources/Levels/" + currentLevelName + ".xml");
+	    
+        Board board = Board.Instance;
+        reader.Load(ref board, currentLevelName);
 		totalStep = reader.step;
 		step = totalStep;
 		steps = reader.guides;

@@ -42,7 +42,7 @@ public class Wall :MonoBehaviour {
 	private Vector3 initPosition;
 	[HideInInspector]
 	public bool isInvincible = false;
-	private int level = -1;
+	public int level = -1;
 	private static Color32 WHITE = new Color32 (255, 255, 255, 255);
 	private SpriteRenderer icon;
     public WallState state;

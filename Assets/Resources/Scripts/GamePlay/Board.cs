@@ -600,6 +600,15 @@ public class Board : Core.MonoSingleton<Board> {
             hexagon.SetState(upper, state);
         }
     }
+    public void SetWallLevel(int index, int level)
+    {
+        Wall wall = GetWall(index);
+        if (wall != null)
+        {
+            wall.SetLevel(level);
+        }
+    }
+
     public void SetWallState(int index, WallState state)
     {
         Wall wall = GetWall(index);
@@ -1629,7 +1638,7 @@ public class Board : Core.MonoSingleton<Board> {
 
     public Wall GetWall(int index)
     {
-        if (index < walls.Count) return walls[index];
+        if (index < walls.Count && index>= 0) return walls[index];
         return null;
     }
 

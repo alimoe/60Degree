@@ -170,7 +170,7 @@ public class BoardEditor : Editor {
 			level = levelObj.GetComponent<Level>();
 		}
 
-		export.Save(ref board, ref level, levelName, objective);
+		export.Save(ref board, ref level, levelName, -1, objective);
     }
 
 }

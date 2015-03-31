@@ -54,7 +54,7 @@ public class GameOverMenu : OverlayMenu<GameOverMenu>
 		if (userRound > historyRound) {
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, userRound);
 		}
-		
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
 	}
 	
 	// Update is called once per frame

@@ -7,9 +7,14 @@ public class LevelReader  {
     public LevelObjective objective;
     public int step;
 	public List<LevelGuide> guides;
-    public void Load(Board board, string file)
+    public bool Exist(string name)
     {
-        
+        string file = "Assets/Resources/Levels/" + name + ".xml";
+        return (File.Exists(file));
+    }
+    public void Load(ref Board board, string name)
+    {
+        string file = "Assets/Resources/Levels/" + name + ".xml";
         if (File.Exists(file))
         {
             board.ResetBoard();
@@ -41,16 +46,22 @@ public class LevelReader  {
             foreach (XElement piece in pieces.Elements("Piece"))
             {
                 bool isUpper = ((int)piece.Attribute("Upper")) == 1;
+                bool core = piece.Attribute("Core") == null ? false : (((int)piece.Attribute("Core")) == 1);
                 PieceState state = (PieceState)((int)piece.Attribute("State"));
                 PieceColor color = (PieceColor)((int)piece.Attribute("Type"));
-                Piece p = board.GeneratePieceAt((int)piece.Attribute("X"), (int)piece.Attribute("Y"), isUpper, color, false);
+                Piece p = board.GeneratePieceAt((int)piece.Attribute("X"), (int)piece.Attribute("Y"), isUpper, color, core);
                 p.SetState(state);
             }
 
             XElement walls = level.Element("Walls");
             foreach (XElement wall in walls.Elements("Wall"))
             {
-                board.SetWallState((int)wall.Attribute("Index"), (WallState)((int)wall.Attribute("State")));
+                int index = (int)wall.Attribute("Index");
+                board.SetWallState(index, (WallState)((int)wall.Attribute("State")));
+                if (wall.Attribute("Level") != null)
+                {
+                    board.GetWall(index).SetLevel((int)wall.Attribute("Level"));
+                }
             }
 
             XElement groups = level.Element("Groups");
