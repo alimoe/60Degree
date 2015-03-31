@@ -211,6 +211,13 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
             targetEliminateCount += 5;
             Board.Instance.SetWallLevel(level);
             level++;
+            Board.Instance.ResetBoard();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
+            Board.Instance.GeneratePiece();
             if (level > maxLevel)
             {
                 maxLevel = level;

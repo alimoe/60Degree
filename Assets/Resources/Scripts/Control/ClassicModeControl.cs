@@ -22,11 +22,11 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.InitEnviorment();
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
         Board.Instance.OnCorePieceEliminateCallback += AddWallProgress;
-        Board.Instance.OnEliminatePieceCallback += ClassicHudMenu.Instance.AddScore;
-        Board.Instance.OnDropDownPieceCallback += ClassicHudMenu.Instance.AddProgress;
+        Board.Instance.OnEliminatePieceCallback += AddScore;
+        Board.Instance.OnDropDownPieceCallback += AddProgress;
 
-        Board.Instance.OnTryToGetawayCorePieceCallback += ClassicHudMenu.Instance.WarnCorePiece;
-        Board.Instance.OnTryToGetawayOverflowPieceCallback += ClassicHudMenu.Instance.WarnOverFlow;
+        Board.Instance.OnTryToGetawayCorePieceCallback += OnTryToGetawayCorePiece;
+        Board.Instance.OnTryToGetawayOverflowPieceCallback += OnTryToGetawayOverflowPiece;
         Board.Instance.OnCantMoveCallback += GameOver;
 
        
@@ -41,8 +41,23 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
 
     }
 
-    
+    public void AddScore(int score, PieceColor color, Vector3 worldPosition)
+    {
+        ClassicHudMenu.Instance.AddScore(score, color, worldPosition);
+    }
 
+    public void AddProgress()
+    {
+        ClassicHudMenu.Instance.AddProgress();
+    }
+    public void OnTryToGetawayCorePiece()
+    {
+        ClassicHudMenu.Instance.WarnCorePiece();
+    }
+    public void OnTryToGetawayOverflowPiece()
+    {
+        ClassicHudMenu.Instance.WarnOverFlow();
+    }
     public void ResetMode()
     {
         Board.Instance.ResetBoard();
@@ -237,19 +252,20 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
 
     public void ExitMode()
     {
-        AppControl.Instance.ExitGame();
+        
         //store board data
         Board.Instance.ResetBoard();
         Board.Instance.HideEnviorment();
         Board.Instance.OnMoveDoneCallback -= GenerateSpecialItem;
         Board.Instance.OnCorePieceEliminateCallback -= AddWallProgress;
 
-        Board.Instance.OnEliminatePieceCallback -= ClassicHudMenu.Instance.AddScore;
-        Board.Instance.OnDropDownPieceCallback -= ClassicHudMenu.Instance.AddProgress;
+        Board.Instance.OnEliminatePieceCallback -= AddScore;
+        Board.Instance.OnDropDownPieceCallback -= AddProgress;
 
-        Board.Instance.OnTryToGetawayCorePieceCallback -= ClassicHudMenu.Instance.WarnCorePiece;
-        Board.Instance.OnTryToGetawayOverflowPieceCallback -= ClassicHudMenu.Instance.WarnOverFlow;
+        Board.Instance.OnTryToGetawayCorePieceCallback -= OnTryToGetawayCorePiece;
+        Board.Instance.OnTryToGetawayOverflowPieceCallback -= OnTryToGetawayOverflowPiece;
         Board.Instance.OnCantMoveCallback -= GameOver;
 
+        AppControl.Instance.ExitGame();
     }
 }

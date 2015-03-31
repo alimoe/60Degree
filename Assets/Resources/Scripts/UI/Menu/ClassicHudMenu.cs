@@ -109,12 +109,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 				bgmButton = child.GetComponent<ToggleButton>();
 				
 			}
-			if (child.name.Contains("Achivement"))
-			{
-				//achivementLabel = child.GetComponent<UILabel>();
-				//achivementLabel.gameObject.SetActive(false);
-				
-			}
+			
 		}
 		inusedTips = new List<UILabel> ();
 		unusedTips = new List<UILabel> (tips.ToArray());
@@ -125,7 +120,6 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		totalScoreCounter = new Counter (.5f);
 		resetSkillButtonPositionCounter = new Counter (5f);
         initPosition = scoreLabel.transform.localPosition;
-		//Debug.LogWarning (scoreLabel.transform.localPosition);
 		totalScore = 0;
 		totalRound = 1;
 		totalScoreCounter.percent = 1;
@@ -133,7 +127,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		roundFadeInCounter = new Counter (.2f);
 		roundIdleCounter = new Counter (1.3f);
 
-		this.gameObject.SetActive (false);
+	    
 	}
 	public int GetScore()
 	{
@@ -183,7 +177,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
-		//inTransitionIn = true;
+        OnOpenTransitionDone();
 		transitionInCounter.Reset ();
 		InitLayout ();
 		bgmButton.isOn = !PlayerSetting.Instance.muteBGM;
@@ -198,7 +192,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	public override void OnCloseScreen()
 	{
 		base.OnCloseScreen ();
-		
+        OnCloseTransitionDone();
 		TutorialControl.Instance.onTutorialCompleteCallback -= EnablePauseMenu;
 		
 	}
