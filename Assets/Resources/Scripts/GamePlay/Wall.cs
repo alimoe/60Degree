@@ -122,7 +122,7 @@ public class Wall :MonoBehaviour {
 	}
 	public static Color32 GetLevelColor(int round)
 	{
-		return levels [(round - 1) % 5];
+		return levels [(round - 1) % 4];
 	}
 	public static Color32 GetRevertColor(PieceColor c)
 	{
@@ -212,7 +212,7 @@ public class Wall :MonoBehaviour {
 	}
     public void SetLevel(int l)
     {
-        level = l;
+        level = (l < 0) ? 5 : l;
         UpdateColor();
         UpdateIcon();
     }

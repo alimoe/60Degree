@@ -2,14 +2,21 @@
 <Level Mode="1" Step="3">
   <Hexagons />
   <Pieces>
-    <Piece X="1" Y="1" Upper="0" State="0" Type="1" />
-    <Piece X="2" Y="2" Upper="1" State="0" Type="1" />
-    <Piece X="2" Y="3" Upper="1" State="0" Type="2" />
-    <Piece X="2" Y="3" Upper="0" State="0" Type="1" />
-    <Piece X="0" Y="4" Upper="0" State="0" Type="2" />
-    <Piece X="0" Y="5" Upper="1" State="0" Type="2" />
+    <Piece X="1" Y="1" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="2" Y="2" Upper="1" State="0" Type="1" Core="0" />
+    <Piece X="2" Y="3" Upper="1" State="0" Type="2" Core="0" />
+    <Piece X="2" Y="3" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="0" Y="4" Upper="0" State="0" Type="2" Core="0" />
+    <Piece X="0" Y="5" Upper="1" State="0" Type="2" Core="0" />
   </Pieces>
-  <Walls />
+  <Walls>
+    <Wall Index="1" State="2" Level="-1" />
+    <Wall Index="4" State="2" Level="-1" />
+    <Wall Index="8" State="2" Level="-1" />
+    <Wall Index="11" State="2" Level="-1" />
+    <Wall Index="15" State="2" Level="-1" />
+    <Wall Index="18" State="2" Level="-1" />
+  </Walls>
   <Groups />
   <Switchers />
   <Clocks />

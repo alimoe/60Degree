@@ -5,7 +5,7 @@ public class Rock : Entity {
 	private FadeAway fadeAway;
     public Rock SetUp(Hexagon hexagon, bool isUpper)
     {
-		if (fadeAway != null)fadeAway.Stop ();
+		if (fadeAway != null)fadeAway.Cancel ();
 
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition: hexagon.lowPosition;

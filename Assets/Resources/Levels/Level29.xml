@@ -5,17 +5,27 @@
     <Hexagon X="4" Y="2" BlockState="16" UpperState="0" LowerState="0" />
   </Hexagons>
   <Pieces>
-    <Piece X="0" Y="2" Upper="1" State="0" Type="4" />
-    <Piece X="1" Y="2" Upper="1" State="0" Type="4" />
-    <Piece X="2" Y="2" Upper="1" State="0" Type="2" />
-    <Piece X="3" Y="2" Upper="1" State="0" Type="4" />
-    <Piece X="4" Y="2" Upper="1" State="0" Type="4" />
-    <Piece X="0" Y="3" Upper="0" State="0" Type="2" />
-    <Piece X="1" Y="3" Upper="0" State="0" Type="4" />
-    <Piece X="2" Y="3" Upper="0" State="0" Type="4" />
-    <Piece X="3" Y="3" Upper="0" State="0" Type="2" />
+    <Piece X="0" Y="2" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="1" Y="2" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="2" Y="2" Upper="1" State="0" Type="2" Core="0" />
+    <Piece X="3" Y="2" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="4" Y="2" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="0" Y="3" Upper="0" State="0" Type="2" Core="0" />
+    <Piece X="1" Y="3" Upper="0" State="0" Type="4" Core="0" />
+    <Piece X="2" Y="3" Upper="0" State="0" Type="4" Core="0" />
+    <Piece X="3" Y="3" Upper="0" State="0" Type="2" Core="0" />
   </Pieces>
-  <Walls />
+  <Walls>
+    <Wall Index="1" State="1" Level="-1" />
+    <Wall Index="3" State="1" Level="-1" />
+    <Wall Index="5" State="1" Level="-1" />
+    <Wall Index="8" State="1" Level="-1" />
+    <Wall Index="10" State="1" Level="-1" />
+    <Wall Index="12" State="1" Level="-1" />
+    <Wall Index="15" State="1" Level="-1" />
+    <Wall Index="17" State="1" Level="-1" />
+    <Wall Index="19" State="1" Level="-1" />
+  </Walls>
   <Groups>
     <Group>
       <Piece X="1" Y="2" Upper="1" />

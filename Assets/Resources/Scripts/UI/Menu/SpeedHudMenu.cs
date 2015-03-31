@@ -21,12 +21,11 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
             if (child.name.Contains("LevelValue"))
             {
                 levelInfo = child.GetComponent<UILabel>();
-                levelInfo.gameObject.SetActive(false);
+                //levelInfo.gameObject.SetActive(false);
             }
             if (child.name.Contains("TimeRemain"))
             {
                 timeRemain = child.GetComponent<UILabel>();
-                
             }
             if (child.name.Contains("ProgressValue"))
             {
@@ -50,7 +49,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
                 recordLabel.gameObject.SetActive(false);
             }
         }
-        this.gameObject.SetActive(false);
+        //this.gameObject.SetActive(false);
     }
 
     public void UpdateInfo()
@@ -61,6 +60,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
         {
             count = SpeedModeControl.Instance.eliminateCount;
             progressInfo.text = count + "/" + SpeedModeControl.Instance.targetEliminateCount;
+            levelInfo.text = SpeedModeControl.Instance.level.ToString();
         }
         //levelInfo.text = SpeedModeControl.Instance.level.ToString();
     }
@@ -75,13 +75,10 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     {
         hintLabel.gameObject.SetActive(false);
     }
+    
     public void ShowRecord(bool flag)
     {
         recordLabel.gameObject.SetActive(flag);
-    }
-    public void ShowLevel()
-    {
-        levelInfo.gameObject.SetActive(true);
     }
     public void AddTime(float seconds)
     {
@@ -99,7 +96,6 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
             if (tipsCounter.Expired())
             {
                 tips.gameObject.SetActive(false);
-                levelInfo.gameObject.SetActive(false);
                 showTips = false;
             }
 
@@ -113,6 +109,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     public override void OnOpenScreen()
     {
         base.OnOpenScreen();
+        base.OnOpenTransitionDone();
 
     }
     public virtual void OnCloseScreen()

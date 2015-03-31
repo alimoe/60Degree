@@ -1425,7 +1425,7 @@ public class Board : Core.MonoSingleton<Board> {
 					delta = GetPhysicDirection(direction);
 					Piece piece = pieces[pieces.Count-1];
 					Hexagon hexagon = GetHexagonAt (piece.x, piece.y);
-					if(hexagon!=null)
+                    if (hexagon != null && piece.group == null)
 					{
 						PopEliminatePieces (pieces, direction,piece.transform.localPosition+delta,hexagon,4);
 					}

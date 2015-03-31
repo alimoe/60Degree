@@ -69,9 +69,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		currentLevel = level;
 		currentLevelName = "Level"+level;
 		LoadLevel ();
-        int index = (int)(((currentLevel-1) / 4 )) % 5;
-        Board.Instance.SetWallLevel(maps[index]);
-		UpdateLevelUI ();
+        
+        UpdateLevelUI();
 
 
 	}
@@ -182,8 +181,21 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		step = totalStep;
 		steps = reader.guides;
 		pieces = new List<Piece>(Board.Instance.GetPieces ());
+        int index = (int)(((currentLevel - 1) / 4)) % 5;
+        board.SetWallLevel(maps[index]);
+        UpdateWall();
 	}
-
+    private void UpdateWall()
+    {
+        Wall[] walls = Board.Instance.GetWalls();
+        foreach (var i in walls)
+        {
+            if (i.isInvincible)
+            {
+                i.SetLevel(i.level - 1);
+            }
+        }
+    }
 	private void UpdateLevelUI()
 	{
         if (LevelHudMenu.Instance!=null) LevelHudMenu.Instance.Update();

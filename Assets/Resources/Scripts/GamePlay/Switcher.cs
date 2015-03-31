@@ -91,7 +91,7 @@ public class Switcher : Entity {
 	public override void Dead ()
 	{
 		base.Dead ();
-		if (fadeAway != null)fadeAway.Stop ();
+		if (fadeAway != null)fadeAway.Cancel ();
 						
 	}
     public void ShutDown()

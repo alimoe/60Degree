@@ -22,8 +22,13 @@ public class FadeAway : TimeEffect {
 	}
 	public void Stop()
 	{
-		TimerControl.Instance.effects -= FadeAwayUpdate;
+        TimerControl.Instance.effects -= FadeAwayUpdate;
 	}
+    public void Cancel()
+    {
+        if (render!=null) render.color = new Color32(r, g, b, 255);
+        Stop();
+    }
 	void FadeAwayUpdate ()
 	{
 		progress.Tick (Time.deltaTime);
