@@ -65,8 +65,10 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
 			}
             if (GUI.Button(new Rect(0, 420, 100, 30), "Clear Record"))
 			{
-				PlayerSetting.Instance.SetSetting("Score",0);
-				PlayerSetting.Instance.SetSetting("Round",0);
+                PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicScore, 0);
+                PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, 0);
+                PlayerSetting.Instance.SetSetting(PlayerSetting.MAX_SPEED_LEVEL, 0);
+                PlayerSetting.Instance.SetSetting(PlayerSetting.USER_LEVEL_PROGRESS, 0);
 			}
             if (GUI.Button(new Rect(0, 450, 100, 30), "Clear Tutorial"))
 			{
@@ -79,6 +81,10 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
             if (GUI.Button(new Rect(0, 510, 100, 30), "Guide"))
             {
                 LevelControl.Instance.DisplayGuide();
+            }
+            if (GUI.Button(new Rect(0, 540, 100, 30), "Unlock All Level"))
+            {
+                PlayerSetting.Instance.SetSetting(PlayerSetting.USER_LEVEL_PROGRESS, 40);
             }
 		}
 

@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
 	private List<LockButton> buttons;
-
+    private UIScrollView scollBody;
+    private int level = -1;
 	protected override void Awake()
 	{
 		base.Awake ();
@@ -17,6 +18,10 @@ public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
 				UIButton button = child.GetComponent<UIButton>();
 				UIEventListener.Get(button.gameObject).onClick+=OnClick;
 			}
+            if (child.name.Contains("ScrollView"))
+            {
+                scollBody = child.GetComponent<UIScrollView>();
+            }
 		}
 		buttons.Sort (CompareLockButton);
 
@@ -25,6 +30,7 @@ public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
 	{
 		LockButton button = obj.GetComponent<LockButton> ();
 		if (button.isLocked)return;
+        level = button.levelIndex;
 		LevelControl.Instance.LoadLevel (button.levelIndex);
 
 	}
@@ -35,10 +41,22 @@ public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
-		int level = PlayerSetting.Instance.GetSetting ("USER_LEVEL_PROGRESS");
-		for (int i = 0; i < buttons.Count; i++) {
-			buttons[i].Lock(i>level);
-		}
+        int recond = PlayerSetting.Instance.GetSetting(PlayerSetting.USER_LEVEL_PROGRESS);
+        if (level < 0) level = recond;
+	    
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            buttons[i].Lock(i > recond);
+        }
+	    
+        if (level >= 20)
+        {
+            scollBody.SetDragAmount(1f, 0f, false);
+        }
+        else
+        {
+            scollBody.SetDragAmount(0f, 0f, false);
+        }
 	}
 	public virtual void OnCloseScreen()
 	{

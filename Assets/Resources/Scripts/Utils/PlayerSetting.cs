@@ -7,6 +7,10 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
 	public bool muteSE;
     public bool muteBGM;
 	public bool tutorialPlayed;
+    public static string ClassicScore = "ClassicScore";
+    public static string ClassicRound = "ClassicRound";
+    public static string MAX_SPEED_LEVEL = "MAX_SPEED_LEVEL";
+    public static string USER_LEVEL_PROGRESS = "USER_LEVEL_PROGRESS";
     protected override void Awake()
     {
         base.Awake();

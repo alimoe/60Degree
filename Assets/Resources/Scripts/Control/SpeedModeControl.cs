@@ -64,7 +64,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
         generateCounter = new Counter(10);
         remainingTimer = new Counter(initialTimer);
-        maxLevel = PlayerSetting.Instance.GetSetting("MAX_SPEED_LEVEL");
+        maxLevel = PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
 
     }
 
@@ -140,13 +140,17 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
             }
         }
     }
-    private void ExitMode()
+    public void ExitMode()
     {
+        Board.Instance.ResetBoard();
+        Board.Instance.HideEnviorment();
+
         Board.Instance.OnEliminatePieceCallback -= OnElimininate;
         Board.Instance.OnMoveDoneCallback -= GenerateSpecialItem;
         generateType.Clear();
         colors.Clear();
         started = false;
+        AppControl.Instance.ExitGame();
     }
     public void ResetMode()
     {
@@ -175,12 +179,17 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     {
         if (started && AppControl.Instance.IsPlaying())
         {
-            remainingTimer.Tick(Time.deltaTime);
-            SpeedHudMenu.Instance.UpdateInfo();
-            if (remainingTimer.Expired())
+            
+            if (SpeedHudMenu.Instance != null)
             {
-                AppControl.Instance.PauseGame("OutOfTimeMenu");
+                remainingTimer.Tick(Time.deltaTime);
+                SpeedHudMenu.Instance.UpdateInfo();
+                if (remainingTimer.Expired())
+                {
+                    AppControl.Instance.PauseGame("OutOfTimeMenu");
+                }
             }
+            
         }
         else
         {
@@ -203,7 +212,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
             {
                 maxLevel = level;
                 SpeedHudMenu.Instance.ShowRecord(true);
-                PlayerSetting.Instance.SetSetting("MAX_SPEED_LEVEL", level);
+                PlayerSetting.Instance.SetSetting(PlayerSetting.MAX_SPEED_LEVEL, level);
             }
             
         }

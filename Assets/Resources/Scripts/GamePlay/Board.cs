@@ -103,7 +103,13 @@ public class Board : Core.MonoSingleton<Board> {
     {
         colors = c;
     }
-
+    public void SetWallLevel(int level)
+    {
+        foreach (var i in walls)
+        {
+            i.SetLevel(level);
+        }
+    }
     public List<PieceColor> GetColors()
     {
         return colors;

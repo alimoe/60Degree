@@ -20,6 +20,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private Arrow arrow;
 	private List<Piece> pieces;
 	private List<LevelGuide> steps;
+    private int[] maps = new int[5] { 4, 3, 2, 1, 0 };
+
 	public bool faildIsOutOfMove;
 
 	void Start()
@@ -27,7 +29,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		GameObject arrowObj = EntityPool.Instance.Use("Arrow");
 		arrow = arrowObj.GetComponent<Arrow>();
 		arrow.gameObject.SetActive(false);
-		record = PlayerSetting.Instance.GetSetting ("USER_LEVEL_PROGRESS");
+		record = PlayerSetting.Instance.GetSetting (PlayerSetting.USER_LEVEL_PROGRESS);
 	}
 
     public void ExitMode()
@@ -67,6 +69,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		currentLevel = level;
 		currentLevelName = "Level"+level;
 		LoadLevel ();
+        int index = (int)(((currentLevel-1) / 4 )) % 5;
+        Board.Instance.SetWallLevel(maps[index]);
 		UpdateLevelUI ();
 
 
@@ -181,7 +185,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 
 	private void UpdateLevelUI()
 	{
-		LevelHudMenu.Instance.Update ();
+        if (LevelHudMenu.Instance!=null) LevelHudMenu.Instance.Update();
 	}
 
 
@@ -208,7 +212,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	{
 		if (currentLevel > record) {
 			record = currentLevel;
-			PlayerSetting.Instance.SetSetting ("USER_LEVEL_PROGRESS",record);
+			PlayerSetting.Instance.SetSetting (PlayerSetting.USER_LEVEL_PROGRESS,record);
 		}
 		AppControl.Instance.PauseGame("NextLevelMenu");
 	}

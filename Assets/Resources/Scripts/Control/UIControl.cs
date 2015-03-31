@@ -77,12 +77,14 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 	}
 	public void OpenCandidate()
 	{
+        
 		GameObject menu;
 		menu = pool[candidate] as GameObject;
 		menu.SetActive(true);
 
 		if (!candidateOverlay) {
 			menu.transform.parent = screenLayer;
+            //Debug.LogError("OpenCandidate" + candidate);
 			menu.SendMessage ("OnOpenScreen", SendMessageOptions.DontRequireReceiver);
 			stack.Add (menu);
 		} else {
@@ -98,7 +100,7 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 	}
 	public void OpenMenu(string name, bool clearPrevious = false, bool overlay = false)
 	{
-		//Debug.LogError ("OpenMenu" + name + " stack.Count "+stack.Count);
+        //Debug.LogError("OpenMenu" + name + " pool.ContainsKey (name) " + pool.ContainsKey(name));
 		if (pool.ContainsKey (name)) {
 			candidate = name;
 			candidateOverlay = overlay;

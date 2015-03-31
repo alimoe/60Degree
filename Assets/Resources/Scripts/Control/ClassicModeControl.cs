@@ -233,6 +233,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public void ExitMode()
     {
         AppControl.Instance.ExitGame();
+        //store board data
+        Board.Instance.ResetBoard();
+        Board.Instance.HideEnviorment();
         Board.Instance.OnMoveDoneCallback -= GenerateSpecialItem;
         Board.Instance.OnCorePieceEliminateCallback -= AddWallProgress;
 

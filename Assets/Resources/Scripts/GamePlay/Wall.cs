@@ -210,7 +210,12 @@ public class Wall :MonoBehaviour {
 		UpdateColor ();
         UpdateIcon();
 	}
-    
+    public void SetLevel(int l)
+    {
+        level = l;
+        UpdateColor();
+        UpdateIcon();
+    }
 	public void Hit()
 	{
 		if (isInvincible) {

@@ -55,7 +55,7 @@ public class OutOfTimeMenu : MenuSingleton<OutOfMoveMenu>
         SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
         SoundControl.Instance.ToggleMusic();
 
-        failed.text = "MAX LEVEL:" + PlayerSetting.Instance.GetSetting("MAX_SPEED_LEVEL");
+        failed.text = "MAX LEVEL:" + PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
 
     }
     public override void OnCloseScreen()

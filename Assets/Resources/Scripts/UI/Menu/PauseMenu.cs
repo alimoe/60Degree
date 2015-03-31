@@ -55,18 +55,18 @@ public class PauseMenu : MenuSingleton<PauseMenu> {
 		inTransitionIn = true;
 		int userScore = ClassicHudMenu.Instance.GetScore ();
 		int userRound = ClassicHudMenu.Instance.GetRound ();
-		int historyScore = PlayerSetting.Instance.GetSetting ("Score");
-		int historyRound = PlayerSetting.Instance.GetSetting ("Round");
+        int historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
+        int historyRound = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound);
 		
 		maxRoundValue.text = userRound > historyRound ? userRound.ToString () : historyRound.ToString ();
 		scoreValue.text = userScore > historyScore ? userScore.ToString () : historyScore.ToString ();
 
 		if (userScore > historyScore) {
-			PlayerSetting.Instance.SetSetting("Score",userScore);
+            PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicScore, userScore);
 			AppControl.Instance.ReportScore(userScore);
 		}
 		if (userRound > historyRound) {
-			PlayerSetting.Instance.SetSetting("Round",userRound);
+            PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, userRound);
 		}
 		soundBtn.isOn = !PlayerSetting.Instance.muteSE;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.UI_TRANSITION_IN);

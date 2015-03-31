@@ -149,7 +149,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		totalRound = 1;
 		roundStep = 0;
 		level = 1;
-		historyScore = PlayerSetting.Instance.GetSetting ("Score");
+        historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
 		recordLabel.gameObject.SetActive (false);
 		skillButton.CostProgress ();
 		scoreLabel.text = totalScore.ToString ();
@@ -191,8 +191,8 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		bgmButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
 		
 		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
-		historyScore = PlayerSetting.Instance.GetSetting ("Score");
-		historyRound = PlayerSetting.Instance.GetSetting ("Round");
+        historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
+        historyRound = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound);
 	}
 
 	public override void OnCloseScreen()
@@ -240,7 +240,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	{
         UILabel label = GetAvailableLabel();
 
-		int add = (score - 2) * 100 * totalRound;
+		int add = (score - 2) * 100;
 		
 		label.text = "+" + add;
 		label.color = convertColor(color);
@@ -264,7 +264,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 
 		}
 		if (totalScore > historyScore) {
-			PlayerSetting.Instance.SetSetting("Score",totalScore);
+			PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicScore,totalScore);
 		}
 		/*
 		DelayCall delayCall = new DelayCall ();
@@ -289,7 +289,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		roundTipLabel.gameObject.SetActive (true);
 
 		if (totalRound > historyRound) {
-			PlayerSetting.Instance.SetSetting("Round",totalRound);
+            PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, totalRound);
 			/*
 			achivementLabel.gameObject.SetActive(true);
 			new DelayCall().Init(4f,HideAchivement);

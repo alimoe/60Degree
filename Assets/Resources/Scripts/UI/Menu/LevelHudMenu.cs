@@ -20,7 +20,7 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 				hintLabel.gameObject.SetActive(false);
 			}
 		}
-		this.gameObject.SetActive (false);
+		//this.gameObject.SetActive (false);
 	}
 	public void Update()
 	{
@@ -31,6 +31,7 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
+        base.OnOpenTransitionDone();
 
 	}
     public virtual void OnCloseScreen()
