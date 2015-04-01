@@ -8,7 +8,7 @@ public class ColorStart : MonoBehaviour {
 	private Counter idleCounter;
 	private Counter transitionCounter;
 	private UISprite sprite;
-	//private Vector3 deltaRotation = new Vector3 (0, 0, 30f);
+	//
 	private Counter scaleCounter;
 	public static Color32[] colors = new Color32[6]{new Color32(255,255,255,255),new Color32(255,255,0,255),new Color32(0,255,0,255),new Color32(89,255,255,255),new Color32(240,0,243,255),new Color32(255,0,0,255)};
 	void Start () {

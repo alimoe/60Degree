@@ -1,26 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Level Mode="1" Step="4">
+<Level Mode="1" Step="14">
   <Hexagons />
   <Pieces>
-    <Piece X="0" Y="0" Upper="1" State="0" Type="3" Core="0" />
-    <Piece X="3" Y="0" Upper="1" State="0" Type="0" Core="0" />
-    <Piece X="5" Y="0" Upper="1" State="0" Type="3" Core="1" />
-    <Piece X="0" Y="1" Upper="1" State="0" Type="3" Core="0" />
-    <Piece X="2" Y="1" Upper="0" State="0" Type="3" Core="0" />
-    <Piece X="5" Y="1" Upper="0" State="0" Type="3" Core="0" />
-    <Piece X="0" Y="2" Upper="1" State="0" Type="0" Core="0" />
-    <Piece X="0" Y="2" Upper="0" State="0" Type="3" Core="0" />
-    <Piece X="0" Y="5" Upper="1" State="0" Type="0" Core="0" />
-    <Piece X="1" Y="5" Upper="0" State="0" Type="0" Core="0" />
-    <Piece X="0" Y="6" Upper="0" State="0" Type="4" Core="0" />
+    <Piece X="6" Y="0" Upper="1" State="0" Type="3" Core="0" />
+    <Piece X="4" Y="1" Upper="1" State="0" Type="3" Core="0" />
+    <Piece X="1" Y="2" Upper="1" State="0" Type="1" Core="0" />
+    <Piece X="1" Y="2" Upper="0" State="0" Type="0" Core="0" />
+    <Piece X="3" Y="2" Upper="0" State="0" Type="3" Core="0" />
+    <Piece X="1" Y="3" Upper="0" State="0" Type="3" Core="0" />
+    <Piece X="2" Y="3" Upper="1" State="0" Type="3" Core="0" />
+    <Piece X="2" Y="3" Upper="0" State="0" Type="4" Core="0" />
   </Pieces>
   <Walls>
     <Wall Index="0" State="1" Level="0" />
     <Wall Index="1" State="1" Level="0" />
     <Wall Index="2" State="1" Level="0" />
     <Wall Index="3" State="1" Level="0" />
+    <Wall Index="4" State="1" Level="0" />
+    <Wall Index="5" State="1" Level="0" />
+    <Wall Index="6" State="1" Level="0" />
+    <Wall Index="7" State="1" Level="0" />
+    <Wall Index="8" State="1" Level="0" />
+    <Wall Index="9" State="1" Level="0" />
+    <Wall Index="10" State="1" Level="0" />
+    <Wall Index="11" State="1" Level="0" />
+    <Wall Index="12" State="1" Level="0" />
+    <Wall Index="13" State="1" Level="0" />
   </Walls>
-  <Groups />
+  <Groups>
+    <Group>
+      <Piece X="2" Y="3" Upper="0" />
+      <Piece X="2" Y="3" Upper="1" />
+    </Group>
+  </Groups>
   <Switchers />
   <Clocks />
   <Twines />

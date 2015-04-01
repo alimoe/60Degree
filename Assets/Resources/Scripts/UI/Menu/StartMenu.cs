@@ -25,8 +25,9 @@ public class StartMenu : MenuSingleton<StartMenu> {
     private float fadeInDistance = 1200f;
 	private Transform credit;
     private Transform[] footers;
-	private Transform[] centers;
-	private float[]centerYPosition;
+		
+	private float centerYPosition;
+	private Transform center;
     protected override void Awake()
     {
 		base.Awake ();
@@ -45,7 +46,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 			if(i.name.Contains("ClassicMode"))classicMode = i.GetComponent<UILabel>();
 			if(i.name.Contains("LevelMode"))levelMode = i.GetComponent<UILabel>();
 			if(i.name.Contains("SpeedMode"))speedMode = i.GetComponent<UILabel>();
-
+			if(i.name.Contains("Center"))center = i;
 
 		}
 		helpButton.gameObject.SetActive (false);
@@ -53,29 +54,15 @@ public class StartMenu : MenuSingleton<StartMenu> {
 		leaderboardButton.gameObject.SetActive (false);
 		credit.gameObject.SetActive (false);
 
-			
+		footerYPosition = helpButton.transform.localPosition.y;
+		labelYPosition = letters [0].transform.localPosition.y;
+		centerYPosition = center.transform.localPosition.y;
        
 		transitionCounter = new Counter (0.4f);
 		footers = new Transform[4] { staffButton.transform, leaderboardButton.transform, credit.transform, helpButton.transform };
-		centers = new Transform[6] {
-						startButton.transform,
-						speedButton.transform,
-						levelButton.transform,
-						speedMode.transform,
-						classicMode.transform,
-						levelMode.transform
-				};
-	}
-	public void OnEnable()
-	{
-		if (centerYPosition == null) {
-			footerYPosition = helpButton.transform.localPosition.y;
-			labelYPosition = letters [0].transform.localPosition.y;
-			centerYPosition = new float[6]{startButton.transform.localPosition.y,speedButton.transform.localPosition.y,levelButton.transform.localPosition.y,speedMode.transform.localPosition.y,classicMode.transform.localPosition.y,levelMode.transform.localPosition.y};
-
-		}
 
 	}
+	
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
@@ -102,10 +89,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 		{
 			i.transform.localPosition = new Vector3(i.transform.localPosition.x, labelYPosition, i.transform.localPosition.z);
 		}
-		for(int j = 0;j<centers.Length;j++)
-		{
-			centers[j].transform.localPosition = new Vector3(centers[j].transform.localPosition.x,centerYPosition[j],centers[j].transform.localPosition.z);
-		}
+		center.transform.localPosition = new Vector3(center.transform.localPosition.x, centerYPosition, center.transform.localPosition.z);
 		foreach (var t in footers)
 		{
 			t.localPosition = new Vector3(t.localPosition.x, footerYPosition, t.localPosition.z);
@@ -143,10 +127,7 @@ public class StartMenu : MenuSingleton<StartMenu> {
 				}
                 Vector3 down = Vector3.down * Time.deltaTime * fadeAwayDistance;
                 
-				foreach (var c in centers)
-				{
-					c.localPosition += down;
-				}
+				center.localPosition+=down;
                 foreach (var t in footers)
                 {
                     t.localPosition += down;
@@ -170,11 +151,8 @@ public class StartMenu : MenuSingleton<StartMenu> {
                 {
                     i.transform.localPosition = new Vector3(i.transform.localPosition.x, labelYPosition + fadeInDistance * (1f - transitionCounter.percent), i.transform.localPosition.z);
                 }
+				center.transform.localPosition = new Vector3(center.transform.localPosition.x,centerYPosition - fadeInDistance * (1f - transitionCounter.percent),center.transform.localPosition.z);
 
-				for(int j = 0;j<centers.Length;j++)
-				{
-					centers[j].transform.localPosition = new Vector3(centers[j].transform.localPosition.x,centerYPosition[j]- fadeInDistance * (1f - transitionCounter.percent),centers[j].transform.localPosition.z);
-				}
 
                 //startButton.transform.localPosition = new Vector3(startButton.transform.localPosition.x, buttonYPosition - fadeInDistance * (1f - transitionCounter.percent), startButton.transform.localPosition.z);
                 foreach (var t in footers)

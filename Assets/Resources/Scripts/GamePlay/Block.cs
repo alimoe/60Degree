@@ -12,7 +12,7 @@ public class Block : Entity {
 	private Transform down_up;
 	private Counter life = new Counter(5f);
 	private List<Transform> childs;
-
+	private List<FadeAway> fadeAways;
 	void Awake () {
         Init();
 	}
@@ -20,6 +20,7 @@ public class Block : Entity {
     {
         Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
         childs = new List<Transform>();
+		fadeAways = new List<FadeAway> ();
         foreach (var child in children)
         {
 
@@ -62,19 +63,21 @@ public class Block : Entity {
 		this.transform.parent = hexagon.transform.parent;
 		this.transform.localPosition = hexagon.transform.localPosition;
 
+
         if (hexagon.blockState == 0)
         {
             ShutDown();
             return;
         }
-       
+
+
 		up_left.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperLeft)!=0);
 		up_right.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperRight)!=0);
 		up_down.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.UpperDown)!=0);
 		down_left.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownLeft)!=0);
 		down_right.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownRight)!=0);
 		down_up.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownUp)!=0);
-        //Debug.LogError("childs.Count " + childs.Count);
+      	
 		foreach (var child in childs) {
 			if(child.gameObject.activeInHierarchy)
 			{
@@ -93,12 +96,24 @@ public class Block : Entity {
         EntityPool.Instance.Reclaim(childObj, "Block");
 
 	}
+	public override void Dead ()
+	{
+		while (fadeAways.Count>0) {
+			FadeAway fadeAway = fadeAways[0];
+			fadeAway.Cancel();
+			fadeAways.RemoveAt(0);
+		}
+		base.Dead ();
+
+	}
 	public void ShutDown()
 	{
 		foreach (var child in childs) {
 			if(child.gameObject.activeInHierarchy)
 			{
-				new FadeAway().Init(child.gameObject,.2f,OnFadeAway);
+				FadeAway fadeAway = new FadeAway();
+				fadeAway.Init(child.gameObject,.2f,OnFadeAway);
+				fadeAways.Add(fadeAway);
 			}
 		}
 	}

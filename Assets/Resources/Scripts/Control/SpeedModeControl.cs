@@ -9,6 +9,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     public Counter remainingTimer;
     private float initialTimer = 60f;
     public int level = 1;
+	public int round = 1;
     public int maxLevel = 1;
     private List<GenerateType> generateType;
     private List<PieceColor> colors;
@@ -157,6 +158,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     public void ResetMode()
     {
         level = 1;
+		round = 1;
         remainingTimer = new Counter(initialTimer);
         targetEliminateCount = 10;
         generateCounter.Reset();
@@ -211,6 +213,12 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
             targetEliminateCount += 5;
             Board.Instance.SetWallLevel(level);
             level++;
+			if(round!=(int)((level-1)/5) + 1)
+			{
+				round = (int)((level-1)/5) + 1;
+				SkyBoxControl.Instance.OnChangeRound (round);
+			}
+
             Board.Instance.ResetBoard();
             Board.Instance.GeneratePiece();
             Board.Instance.GeneratePiece();

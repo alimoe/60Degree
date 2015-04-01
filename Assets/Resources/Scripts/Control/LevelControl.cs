@@ -76,7 +76,13 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
         
         UpdateLevelUI();
 
+		UpdateSkybox ();
         
+	}
+	private void UpdateSkybox()
+	{
+		int index = (int)(((currentLevel - 1) / 4)) % 5;
+		SkyBoxControl.Instance.OnChangeRound (maps [index] + 1);
 	}
     public void StartTest()
     {

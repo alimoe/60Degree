@@ -78,6 +78,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     }
     public void ResetMode()
     {
+		SkyBoxControl.Instance.Reset();
         Board.Instance.ResetBoard();
         ClassicHudMenu.Instance.Reset();
         generateType.Clear();
@@ -99,7 +100,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board board = Board.Instance;
         reader.Load(ref board, "UserBoard");
         freezeWallIndex = reader.step;
-
+		round = PlayerSetting.Instance.GetSetting (PlayerSetting.ClassicRound);
+		if (round > 1)SkyBoxControl.Instance.OnChangeRound (round);
+		else SkyBoxControl.Instance.Reset ();
     }
 
     public void SaveBoard()
@@ -130,7 +133,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
             round = currentRound;
             ClassicHudMenu.Instance.AddRound(round);
             Board.Instance.ResetWalls();
-            SkyBoxControl.Instance.ChangeColor(this.round);
+            SkyBoxControl.Instance.OnChangeRound(this.round);
         }
 
         UpdateGameplayDifficulty();
