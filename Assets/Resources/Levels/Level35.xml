@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Level Mode="1" Step="16">
+<Level Mode="1" Step="14">
   <Hexagons>
     <Hexagon X="1" Y="1" BlockState="0" UpperState="3" LowerState="0" />
     <Hexagon X="1" Y="5" BlockState="0" UpperState="0" LowerState="3" />
@@ -66,7 +66,5 @@
     <Step Index="5" Direction="5" />
     <Step Index="7" Direction="3" />
     <Step Index="7" Direction="0" />
-    <Step Index="0" Direction="0" />
-    <Step Index="0" Direction="0" />
   </Steps>
 </Level>
