@@ -52,10 +52,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
                 }
             }
         }
-       
-	    
-
-	}
+    }
 	void Start()
 	{
 		GameObject arrowObj = EntityPool.Instance.Use("Arrow");

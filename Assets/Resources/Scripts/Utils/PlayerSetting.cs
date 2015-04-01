@@ -13,7 +13,8 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
     public static string USER_LEVEL_PROGRESS = "USER_LEVEL_PROGRESS";
     public static string ClassicColor = "ClassicColor";
     public static string ClassicSpecialItem = "ClassicSpecialItem";
-
+    public static string UserScore = "UserScore";
+    public static string UserRound = "UserRound";
     protected override void Awake()
     {
         base.Awake();

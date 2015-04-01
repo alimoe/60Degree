@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 
 	private List<UILabel> tips;
@@ -120,15 +121,23 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		totalScoreCounter = new Counter (.5f);
 		resetSkillButtonPositionCounter = new Counter (5f);
         initPosition = scoreLabel.transform.localPosition;
-		totalScore = 0;
-		totalRound = 1;
-		totalScoreCounter.percent = 1;
+        totalScore = PlayerSetting.Instance.GetSetting(PlayerSetting.UserScore);
+        totalRound = Math.Max(PlayerSetting.Instance.GetSetting(PlayerSetting.UserRound), 1);
+        totalScoreCounter.percent = 1;
 		transitionInCounter = new Counter (.3f);
 		roundFadeInCounter = new Counter (.2f);
 		roundIdleCounter = new Counter (1.3f);
 
 	    
 	}
+    public void SetScore(int value)
+    {
+        totalScore = value;
+    }
+    public void SetRound(int value)
+    {
+        totalRound = value;
+    }
 	public int GetScore()
 	{
 		return totalScore;
@@ -147,7 +156,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		recordLabel.gameObject.SetActive (false);
 		skillButton.CostProgress ();
 		scoreLabel.text = totalScore.ToString ();
-		roundValue.text = level.ToString ();
+        roundValue.text = totalRound.ToString();
 	}
 	public void InitLayout()
 	{
@@ -178,7 +187,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	{
 		base.OnOpenScreen ();
         OnOpenTransitionDone();
-		transitionInCounter.Reset ();
+		transitionInCounter.Reset();
 		InitLayout ();
 		bgmButton.isOn = !PlayerSetting.Instance.muteBGM;
 		pauseButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
@@ -187,6 +196,10 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
         historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
         historyRound = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound);
+
+        scoreLabel.text = totalScore.ToString();
+        roundValue.text = totalRound.ToString();
+
 	}
 
 	public override void OnCloseScreen()

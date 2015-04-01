@@ -67,7 +67,7 @@ public class LevelReader  {
             XElement groups = level.Element("Groups");
             foreach (XElement group in groups.Elements("Group"))
             {
-                PieceGroup g = new PieceGroup();
+                PieceGroup g = PieceGroup.CreateInstance<PieceGroup>();
                 foreach (XElement piece in group.Elements("Piece"))
                 {
                     bool isUpper = ((int)piece.Attribute("Upper")) == 1;

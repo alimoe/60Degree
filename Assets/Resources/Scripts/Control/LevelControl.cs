@@ -20,6 +20,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private Arrow arrow;
 	private List<Piece> pieces;
 	private List<LevelGuide> steps;
+    private Counter idleCount = new Counter(3f);
+    
     private int[] maps = new int[5] { 4, 3, 2, 1, 0 };
 
 	public bool faildIsOutOfMove;
@@ -44,7 +46,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
         Board.Instance.autoGenerateCore = true;
         Board.Instance.HideEnviorment();
         Board.Instance.ResetBoard();
-
+        
        	AppControl.Instance.ExitGame();
 
     }
@@ -53,7 +55,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		Board.Instance.HideEnviorment();
 		Board.Instance.ResetBoard();
 		UIControl.Instance.OpenMenu ("LevelSelectMenu", true, false);
-
+        arrow.Stop();
+        inGuide = false;
 	}
 	public void StartPlay()
 	{
@@ -64,6 +67,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	public void LoadLevel(int level)
 	{
 		UIControl.Instance.OpenMenu ("LevelHudMenu", true, false);
+
 		Board.Instance.InitEnviorment();
 
 		currentLevel = level;
@@ -72,7 +76,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
         
         UpdateLevelUI();
 
-
+        
 	}
     public void StartTest()
     {
@@ -150,11 +154,12 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		int index = pieces.IndexOf (piece);
 		if (piece!=null && currentStep<steps.Count  && direction == steps [currentStep].direction) {
 			Piece targetPiece = pieces[steps [currentStep].PieceIndex];
-			if(targetPiece == piece||Board.Instance.GetDirectionPieces(piece,direction).Contains(targetPiece)||(piece.group!=null&&piece.group.children.Contains(targetPiece)))
+            if (targetPiece == piece || (piece.group != null && piece.group.children.Contains(targetPiece)))
 			{
 				Board.Instance.MoveFrom(position,direction);
 				arrow.Stop();
 				currentStep++;
+                idleCount.Reset();
 				new DelayCall().Init(.5f,DisplayArrow);
 			}
 		}
@@ -240,6 +245,28 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		faildIsOutOfMove = false;
 		new DelayCall().Init(.5f,DisplayLoseMenu);
 	}
+
+    void Update()
+    {
+        if (inGuide)
+        {
+            idleCount.Tick(Time.deltaTime);
+            if (idleCount.Expired())
+            {
+                idleCount.Reset();
+                if (currentStep < steps.Count)
+                {
+                    if (steps[currentStep].PieceIndex < pieces.Count)
+                    {
+                        Piece piece = pieces[steps[currentStep].PieceIndex];
+                        piece.Shake();
+                    }
+                   
+                }
+            }
+        }
+    }
+
 	protected override void Awake () {
         base.Awake();
         reader = new LevelReader();

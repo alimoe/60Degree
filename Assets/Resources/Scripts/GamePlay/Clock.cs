@@ -122,7 +122,7 @@ public class Clock : Entity {
         shake.Init (this.transform, .7f, 10, 1f, 10f);
         delayCall = new DelayCall();
         delayCall.Init(.7f, Expolde);
-	    
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_RING);
 	}
     
     public void Expolde()
@@ -130,6 +130,7 @@ public class Clock : Entity {
         if (this.piece!=null && !this.piece.isDead && !this.piece.isFadeAway)
         {
             Board.Instance.CokeSurroundPiece(piece);
+            SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_EXPLODE);
         }
         Dispose();
 	}

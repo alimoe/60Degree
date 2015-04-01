@@ -99,6 +99,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board board = Board.Instance;
         reader.Load(ref board, "UserBoard");
         freezeWallIndex = reader.step;
+
     }
 
     public void SaveBoard()
@@ -108,6 +109,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         exporter.Save(ref board, ref level, "UserBoard", freezeWallIndex, LevelObjective.Eliminate);
         PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicColor, colors.Count);
         PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicSpecialItem, generateType.Count);
+        PlayerSetting.Instance.SetSetting(PlayerSetting.UserScore, ClassicHudMenu.Instance.GetScore());
+        PlayerSetting.Instance.SetSetting(PlayerSetting.UserRound, ClassicHudMenu.Instance.GetRound());
+
     }
 
     public void AddWallProgress()
@@ -241,6 +245,15 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
                 Board.Instance.GenerateFire();
             }
         }
+        if (progress >= 4.5)
+        {
+            if (generateType.Count == 5)
+            {
+                generateType.Add(GenerateType.Clock);
+                generateCounter.Reset();
+                Board.Instance.GenerateClock();
+            }
+        }
     }
 
 
@@ -288,6 +301,9 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
                         break;
                     case GenerateType.Ice:
                         Board.Instance.GenerateIce();
+                        break;
+                    case GenerateType.Clock:
+                        Board.Instance.GenerateClock();
                         break;
                     case GenerateType.Block:
 
