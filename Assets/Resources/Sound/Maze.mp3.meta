@@ -1,16 +1,8 @@
 fileFormatVersion: 2
-guid: 1c203c1f783b6ca4682f0336ba2321d8
-labels:
-- USFX
-- stereo
-- ui
-- interface
-- warning
-- error
-- denied
+guid: 32c28bbe107c7417dafbb1f8be1008cd
 AudioImporter:
   serializedVersion: 4
-  format: -1
+  format: 0
   quality: -1
   stream: 1
   3D: 1

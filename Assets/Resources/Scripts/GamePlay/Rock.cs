@@ -12,6 +12,7 @@ public class Rock : Entity {
         this.transform.localPosition = isUpper ? hexagon.upPosition: hexagon.lowPosition;
         SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
         float originalLength = spriteRender.sprite.bounds.extents.x * 2f;
+		
         float scale = hexagon.length / originalLength;
          this.transform.localScale = new Vector3(scale, scale, scale);
         this.transform.localPosition += Vector3.forward;
@@ -25,14 +26,10 @@ public class Rock : Entity {
 		fadeAway = new FadeAway ();
 		fadeAway.Init(this.gameObject, .2f, Dispose);
     }
-    public override void Dead()
-    {
-        if (fadeAway != null) fadeAway.Cancel();
-        base.Dead();
-    }
+    
     private void Dispose(object obj)
     {
-		
+		if (fadeAway != null) fadeAway.Cancel();
         EntityPool.Instance.Reclaim(this.gameObject, "Rock");
     }
 }

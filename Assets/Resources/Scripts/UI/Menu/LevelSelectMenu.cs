@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
+public class LevelSelectMenu : MenuSingleton<LevelSelectMenu> {
 	private List<LockButton> buttons;
     private UIScrollView scollBody;
     private int level = -1;
@@ -30,14 +30,15 @@ public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
 	{
 		LockButton button = obj.GetComponent<LockButton> ();
 		if (button.isLocked)return;
-        level = button.levelIndex;
-		LevelControl.Instance.LoadLevel (button.levelIndex);
+		level = buttons.IndexOf(button);
+		LevelControl.Instance.LoadLevel (button.levelIndex,level); 
 
 	}
 	private int CompareLockButton(LockButton a, LockButton b)
 	{
 		return a.index - b.index;
 	}
+
 	public override void OnOpenScreen ()
 	{
 		base.OnOpenScreen ();
@@ -52,12 +53,22 @@ public class LevelSelectMenu : MenuSingleton<LevelHudMenu> {
         if (level >= 20)
         {
             scollBody.SetDragAmount(1f, 0f, false);
+			//scollBody.ResetPosition();
         }
         else
         {
             scollBody.SetDragAmount(0f, 0f, false);
         }
 	}
+
+	public int GetLevelByIndex(int index)
+	{
+		if (index < buttons.Count) {
+			return buttons[index].levelIndex;
+		}
+		return -1;
+	}
+
 	public virtual void OnCloseScreen()
 	{
 		base.OnCloseScreen();

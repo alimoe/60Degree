@@ -49,7 +49,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
                 recordLabel.gameObject.SetActive(false);
             }
         }
-        //this.gameObject.SetActive(false);
+     	
     }
 
     public void UpdateInfo()
@@ -110,7 +110,9 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     {
         base.OnOpenScreen();
         base.OnOpenTransitionDone();
-
+		string hint = PlayerSetting.Instance.GetSetting (PlayerSetting.SpeedModePlayed) != 0 ? "Tap to start" : "Try to eliminate certain amount Puzzles in time\nTap to start";
+		PlayerSetting.Instance.SetSetting (PlayerSetting.SpeedModePlayed, 1);
+		this.ShowHint (ref hint);
     }
     public virtual void OnCloseScreen()
     {

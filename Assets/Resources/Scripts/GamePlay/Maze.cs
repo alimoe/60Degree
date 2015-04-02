@@ -6,6 +6,7 @@ public class Maze : Entity {
     private SpriteRenderer render;
 	private Counter life = new Counter(5f);
     private Counter blink = new Counter(5f);
+	private FadeAway fadeAway;
 	void Awake () {
         Init();
 	}
@@ -15,6 +16,7 @@ public class Maze : Entity {
     }
     public Maze SetUp(Hexagon hexagon, bool isUpper)
     {
+		if (fadeAway!=null)fadeAway.Cancel ();
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition : hexagon.lowPosition;
         this.transform.localScale = new Vector3( .85f,  .85f, 1f);
@@ -36,12 +38,14 @@ public class Maze : Entity {
     }
     public void ShutDown()
     {
-        new FadeAway().Init(this.gameObject, .2f, Dispose);
+		fadeAway = new FadeAway ();
+		fadeAway.Init(this.gameObject, .2f, Dispose);
     }
 
     private void Dispose(object obj)
     {
-        EntityPool.Instance.Reclaim(this.gameObject, "Maze");
+		if (fadeAway!=null)fadeAway.Cancel ();
+		EntityPool.Instance.Reclaim(this.gameObject, "Maze");
     }
     
 	public void Tick()

@@ -15,13 +15,15 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     private List<PieceColor> colors;
     private Counter generateCounter;
     private bool started;
+
     public void StartPlay()
     {
 
         UIControl.Instance.OpenMenu("SpeedHudMenu", true, false);
-        started = true;
+        
+
         InitSpeedMode();
-        //ResetMode();
+     	
         ResetColorsPriority();
         ResetGenerateType();
         Board.Instance.InitEnviorment();
@@ -56,6 +58,11 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         Board.Instance.SetColors(colors);
     }
 
+	private void SpeedModeFailed ()
+	{
+		AppControl.Instance.PauseGame("OutOfTimeMenu");
+	}
+
     private void InitSpeedMode()
     {
         Board.Instance.autoBirth = true;
@@ -64,13 +71,24 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         Board.Instance.autoGenerateCore = false;
         Board.Instance.OnEliminatePieceCallback += OnElimininate;
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
+		Board.Instance.OnCantMoveCallback += SpeedModeFailed;
         Board.Instance.SetWallLevel(0);
         generateCounter = new Counter(15);
         remainingTimer = new Counter(initialTimer);
+		started = false;
         maxLevel = PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
 
     }
+	public void HandleTap(Vector3 position)
+	{
+		if (!started) {
+			SpeedHudMenu.Instance.HideHint();
+			started = true;
 
+		}
+		Debug.Log ("started" + started);
+		Board.Instance.SelectFrom(position);
+	}
     private void GenerateSpecialItem()
     {
         generateCounter.Tick(1f);
@@ -150,6 +168,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
         Board.Instance.HideEnviorment();
         Board.Instance.OnEliminatePieceCallback -= OnElimininate;
         Board.Instance.OnMoveDoneCallback -= GenerateSpecialItem;
+		Board.Instance.OnCantMoveCallback -= SpeedModeFailed;
         generateType.Clear();
         colors.Clear();
         started = false;
@@ -181,24 +200,22 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     }
     void Update()
     {
+		//Debug.Log ("started"+ started);
+		//Debug.Log ("AppControl.Instance.IsPlaying()"+ AppControl.Instance.IsPlaying());
         if (started && AppControl.Instance.IsPlaying())
         {
-            
-            if (SpeedHudMenu.Instance != null)
+			if (SpeedHudMenu.Instance != null)
             {
                 remainingTimer.Tick(Time.deltaTime);
                 SpeedHudMenu.Instance.UpdateInfo();
                 if (remainingTimer.Expired())
                 {
-                    AppControl.Instance.PauseGame("OutOfTimeMenu");
+					SpeedModeFailed();
                 }
             }
             
         }
-        else
-        {
-            
-        }
+       	
     }
 
     private void OnElimininate(int score, PieceColor color, Vector3 worldPosition)

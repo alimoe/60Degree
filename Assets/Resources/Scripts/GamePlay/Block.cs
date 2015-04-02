@@ -63,6 +63,7 @@ public class Block : Entity {
 		this.transform.parent = hexagon.transform.parent;
 		this.transform.localPosition = hexagon.transform.localPosition;
 
+		ResetBlock ();
 
         if (hexagon.blockState == 0)
         {
@@ -90,22 +91,22 @@ public class Block : Entity {
 
         if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DENY);
 	}
-	public void OnFadeAway(object child)
-	{
-		GameObject childObj = child as GameObject;
-        EntityPool.Instance.Reclaim(childObj, "Block");
-
-	}
-	public override void Dead ()
+	private void ResetBlock()
 	{
 		while (fadeAways.Count>0) {
 			FadeAway fadeAway = fadeAways[0];
 			fadeAway.Cancel();
 			fadeAways.RemoveAt(0);
 		}
-		base.Dead ();
+	}
+	public void OnFadeAway(object child)
+	{
+		GameObject childObj = child as GameObject;
+		ResetBlock ();
+        EntityPool.Instance.Reclaim(childObj, "Block");
 
 	}
+
 	public void ShutDown()
 	{
 		foreach (var child in childs) {

@@ -88,16 +88,7 @@ public class Clock : Entity {
     }
     public void ShutDown()
     {
-        if (this.triggered)
-        {
-            Dispose();
-        }
-        else
-        {
-            this.triggered = true;
-            Shake();
-            
-        }
+		Dispose();
 		
     }
     public void Dispose()

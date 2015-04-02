@@ -256,8 +256,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                 }
                 else if (mode == GameMode.Speed)
                 {
-                    SpeedHudMenu.Instance.HideHint();
-                    Board.Instance.SelectFrom(position);
+					SpeedModeControl.Instance.HandleTap(position);
                 }
             }
 			

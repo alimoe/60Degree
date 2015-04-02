@@ -20,6 +20,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private Arrow arrow;
 	private List<Piece> pieces;
 	private List<LevelGuide> steps;
+	private int levelIndex;
     private Counter idleCount = new Counter(3f);
     
     private int[] maps = new int[5] { 4, 3, 2, 1, 0 };
@@ -64,12 +65,12 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		UIControl.Instance.OpenMenu ("LevelSelectMenu", true, false);
 		InitLevelMode ();
 	}
-	public void LoadLevel(int level)
+	public void LoadLevel(int level, int index)
 	{
 		UIControl.Instance.OpenMenu ("LevelHudMenu", true, false);
 
 		Board.Instance.InitEnviorment();
-
+		levelIndex = index;
 		currentLevel = level;
 		currentLevelName = "Level"+level;
 		LoadLevel ();
@@ -81,7 +82,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	}
 	private void UpdateSkybox()
 	{
-		int index = (int)(((currentLevel - 1) / 4)) % 5;
+		int index = (int)(((levelIndex) / 4)) % 5;
 		SkyBoxControl.Instance.OnChangeRound (maps [index] + 1);
 	}
     public void StartTest()
@@ -106,9 +107,11 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		AppControl.Instance.ResumeGame();
 		inGuide = false;
 		Board.Instance.ResetBoard ();
-		if (currentLevel + 1 <= totalLevel) {
-			currentLevel+=1;
-			LoadLevel(currentLevel);
+		currentLevel = LevelSelectMenu.Instance.GetLevelByIndex(levelIndex + 1);
+		if (currentLevel > 0) {
+			LoadLevel (currentLevel,levelIndex + 1);
+		} else {
+			ExitPlay();
 		}
 	}
 	public void DisplayGuide()
@@ -192,8 +195,9 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		step = totalStep;
 		steps = reader.guides;
 		pieces = new List<Piece>(Board.Instance.GetPieces ());
-        int index = (int)(((currentLevel - 1) / 4)) % 5;
+        int index = (int)(((levelIndex) / 4)) % 5;
         board.SetWallLevel(maps[index]);
+		LevelHudMenu.Instance.SetLevel (levelIndex + 1);
         UpdateWall();
 	}
     private void UpdateWall()

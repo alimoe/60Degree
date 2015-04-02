@@ -15,6 +15,7 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
     public static string ClassicSpecialItem = "ClassicSpecialItem";
     public static string UserScore = "UserScore";
     public static string UserRound = "UserRound";
+	public static string SpeedModePlayed = "SpeedModePlayed";
     protected override void Awake()
     {
         base.Awake();

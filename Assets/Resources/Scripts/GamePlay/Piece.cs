@@ -223,8 +223,16 @@ public class Piece : Entity {
 		}
 		if(clock!=null)
 		{
-            clock.ShutDown();
-            clock = null;
+			if(s == PieceState.Coke && !clock.triggered)
+			{
+				clock.Shake();
+			}
+			else
+			{
+				clock.ShutDown();
+				clock = null;
+			}
+            
            
 			
 		}
