@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Level Mode="1" Step="9">
+  <Hexagons>
+    <Hexagon X="0" Y="4" BlockState="0" UpperState="0" LowerState="3" />
+    <Hexagon X="2" Y="4" BlockState="0" UpperState="0" LowerState="3" />
+  </Hexagons>
+  <Pieces>
+    <Piece X="1" Y="0" Upper="1" State="0" Type="0" Core="0" />
+    <Piece X="5" Y="0" Upper="1" State="0" Type="0" Core="0" />
+    <Piece X="0" Y="1" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="5" Y="1" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="1" Y="4" Upper="1" State="1" Type="1" Core="0" />
+    <Piece X="1" Y="4" Upper="0" State="1" Type="1" Core="0" />
+    <Piece X="0" Y="6" Upper="1" State="0" Type="1" Core="0" />
+    <Piece X="0" Y="6" Upper="0" State="0" Type="0" Core="0" />
+  </Pieces>
+  <Walls />
+  <Groups>
+    <Group>
+      <Piece X="0" Y="1" Upper="0" />
+      <Piece X="1" Y="0" Upper="1" />
+    </Group>
+    <Group>
+      <Piece X="5" Y="1" Upper="0" />
+      <Piece X="5" Y="0" Upper="1" />
+    </Group>
+    <Group>
+      <Piece X="0" Y="6" Upper="1" />
+      <Piece X="0" Y="6" Upper="0" />
+    </Group>
+  </Groups>
+  <Switchers>
+    <Switcher X="0" Y="4" Upper="0" Static="0" Color="1" />
+    <Switcher X="2" Y="4" Upper="0" Static="0" Color="1" />
+  </Switchers>
+  <Clocks />
+  <Twines />
+  <Ices>
+    <Ice X="1" Y="4" Upper="1" Life="2" />
+    <Ice X="1" Y="4" Upper="0" Life="2" />
+  </Ices>
+  <Steps>
+    <Step Index="0" Direction="3" />
+    <Step Index="0" Direction="1" />
+    <Step Index="0" Direction="0" />
+    <Step Index="1" Direction="2" />
+    <Step Index="1" Direction="1" />
+    <Step Index="7" Direction="4" />
+    <Step Index="5" Direction="0" />
+    <Step Index="7" Direction="3" />
+    <Step Index="7" Direction="0" />
+  </Steps>
+</Level>
