@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
 {
 
@@ -100,7 +101,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board board = Board.Instance;
         reader.Load(ref board, "UserBoard");
         freezeWallIndex = reader.step;
-		round = PlayerSetting.Instance.GetSetting (PlayerSetting.ClassicRound);
+        round = Math.Max(1, PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound));
 		if (round > 1)SkyBoxControl.Instance.OnChangeRound (round);
 		else SkyBoxControl.Instance.Reset ();
     }

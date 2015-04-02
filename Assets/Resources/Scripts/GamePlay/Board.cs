@@ -1386,7 +1386,7 @@ public class Board : Core.MonoSingleton<Board> {
 						Hexagon next = GetHexagonByStep(last, direction, lastPiece.isUpper, 1);
 						if (next == null)
 						{
-							lastPiece.OnHitPiece(GetRevertDirection(direction), time);
+							lastPiece.OnHitPiece(GetRevertDirection(direction), time+.1f);
 						}
                         
 						ConflictAt conflictAt = new ConflictAt();

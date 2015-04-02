@@ -48,6 +48,7 @@ public class Piece : Entity {
 	private static Color32 BLACK = new Color32(60,60,60,255);
 	private Color32 defaultColor;
 	private Shake shaker;
+    private DelayCall delayCall;
     public static BoardDirection sortingDirection;
 
     public static int ComparePiece(Piece a, Piece b)
@@ -347,7 +348,12 @@ public class Piece : Entity {
     {
 		if (clock != null) {
 			clock.OnHitClock(direction);
-			if(clock.triggered)new DelayCall().Init(time, OnClock);
+            if (clock.triggered)
+            {
+                delayCall = new DelayCall();
+                delayCall.Init(time, OnClock);
+                
+            }
 		}
     }
 	private void OnClock()
@@ -429,6 +435,11 @@ public class Piece : Entity {
 		StopShake ();
 		SetState (PieceState.Normal);
 		ClearChildren ();
+        if (delayCall != null)
+        {
+            delayCall.Stop();
+            delayCall = null;
+        }
 	}
 
 	public void ResetScale()

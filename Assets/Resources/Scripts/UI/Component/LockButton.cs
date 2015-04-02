@@ -37,6 +37,8 @@ public class LockButton : MonoBehaviour {
 		isLocked = flag;
 		lockIcon.gameObject.SetActive (isLocked);
 		label.gameObject.SetActive (!isLocked);
+        UIButton button = this.GetComponent<UIButton>();
+        button.isEnabled = !isLocked;
 	}
 
 }

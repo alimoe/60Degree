@@ -242,7 +242,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                         if (result)
                         {
                             skills.RemoveAt(0);
-                            ClassicHudMenu.Instance.HideHint();
+                            if (ClassicHudMenu.Instance!=null) ClassicHudMenu.Instance.HideHint();
                             Board.Instance.GeneratePiece();
                         }
 
@@ -250,7 +250,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                     }
                     else
                     {
-                        ClassicHudMenu.Instance.HideHint();
+                        if (ClassicHudMenu.Instance != null) ClassicHudMenu.Instance.HideHint();
                         Board.Instance.SelectFrom(position);
                     }
                 }

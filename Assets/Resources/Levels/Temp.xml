@@ -1,45 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Level Mode="1" Step="15">
+<Level Mode="1" Step="4">
   <Hexagons />
   <Pieces>
     <Piece X="3" Y="0" Upper="1" State="0" Type="0" Core="0" />
-    <Piece X="0" Y="3" Upper="1" State="0" Type="2" Core="0" />
-    <Piece X="0" Y="3" Upper="0" State="2" Type="0" Core="0" />
-    <Piece X="3" Y="3" Upper="1" State="0" Type="2" Core="0" />
-    <Piece X="3" Y="3" Upper="0" State="2" Type="0" Core="0" />
-    <Piece X="0" Y="4" Upper="1" State="2" Type="0" Core="0" />
-    <Piece X="0" Y="4" Upper="0" State="2" Type="2" Core="0" />
-    <Piece X="2" Y="4" Upper="1" State="2" Type="0" Core="0" />
-    <Piece X="2" Y="4" Upper="0" State="2" Type="2" Core="0" />
+    <Piece X="0" Y="4" Upper="0" State="0" Type="0" Core="0" />
+    <Piece X="2" Y="4" Upper="0" State="0" Type="0" Core="0" />
   </Pieces>
-  <Walls />
+  <Walls>
+    <Wall Index="1" State="2" Level="-1" />
+    <Wall Index="2" State="2" Level="-1" />
+    <Wall Index="3" State="2" Level="-1" />
+    <Wall Index="4" State="2" Level="-1" />
+    <Wall Index="5" State="2" Level="-1" />
+    <Wall Index="8" State="2" Level="-1" />
+    <Wall Index="9" State="2" Level="-1" />
+    <Wall Index="10" State="2" Level="-1" />
+    <Wall Index="11" State="2" Level="-1" />
+    <Wall Index="12" State="2" Level="-1" />
+    <Wall Index="15" State="2" Level="-1" />
+    <Wall Index="16" State="2" Level="-1" />
+    <Wall Index="17" State="2" Level="-1" />
+    <Wall Index="18" State="2" Level="-1" />
+    <Wall Index="19" State="2" Level="-1" />
+  </Walls>
   <Groups />
   <Switchers />
   <Clocks />
-  <Twines>
-    <Twine X="0" Y="3" Upper="0" State="24" />
-    <Twine X="3" Y="3" Upper="0" State="24" />
-    <Twine X="0" Y="4" Upper="1" State="2" />
-    <Twine X="0" Y="4" Upper="0" State="16" />
-    <Twine X="2" Y="4" Upper="1" State="1" />
-    <Twine X="2" Y="4" Upper="0" State="8" />
-  </Twines>
+  <Twines />
   <Ices />
   <Steps>
-    <Step Index="0" Direction="0" />
-    <Step Index="0" Direction="1" />
-    <Step Index="0" Direction="2" />
-    <Step Index="0" Direction="5" />
-    <Step Index="3" Direction="0" />
+    <Step Index="2" Direction="5" />
+    <Step Index="0" Direction="3" />
+    <Step Index="1" Direction="4" />
     <Step Index="1" Direction="3" />
-    <Step Index="7" Direction="5" />
-    <Step Index="5" Direction="4" />
-    <Step Index="0" Direction="1" />
-    <Step Index="0" Direction="0" />
-    <Step Index="0" Direction="4" />
-    <Step Index="7" Direction="4" />
-    <Step Index="4" Direction="2" />
-    <Step Index="0" Direction="0" />
-    <Step Index="7" Direction="1" />
   </Steps>
 </Level>

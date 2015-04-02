@@ -71,6 +71,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
         }
         
     }
+    
     public void MuteSoundEffect(bool toggle)
     {
         if (toggle) PlayerSetting.Instance.MuteSE(1);

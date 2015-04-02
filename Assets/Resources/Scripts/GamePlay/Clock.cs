@@ -129,8 +129,12 @@ public class Clock : Entity {
     {
         if (this.piece!=null && !this.piece.isDead && !this.piece.isFadeAway)
         {
+            Explode explode = EntityPool.Instance.Use("Explode").GetComponent<Explode>();
+            explode.Setup(this.piece);
+
             Board.Instance.CokeSurroundPiece(piece);
             SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_EXPLODE);
+            
         }
         Dispose();
 	}
