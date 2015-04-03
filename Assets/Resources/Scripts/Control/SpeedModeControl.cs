@@ -133,6 +133,9 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
                     case GenerateType.Ice:
                         Board.Instance.GenerateIce();
                         break;
+					case GenerateType.Clock:
+						Board.Instance.GenerateClock();
+					break;
                     case GenerateType.Block:
 
                         if (Board.Instance.GetPieces().Length < 32)

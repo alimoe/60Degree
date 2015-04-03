@@ -11,6 +11,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	private List<UILabel> inusedTips;
     private UILabel wallTip;
 	private UISprite pauseButton;
+	private UISprite exitButton;
 	private ToggleButton bgmButton;
 	private UILabel roundTipLabel;
 	private UILabel roundLabel;
@@ -40,6 +41,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	private float headYPosition;
 	private float footYPosition;
 	private float roundXRange = 200f;
+	
 	private int level = 1;
 	private int historyRound;
 	private int historyScore;
@@ -58,6 +60,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 			{
 				tips.Add(child.GetComponent<UILabel>());
 				tips[tips.Count-1].gameObject.SetActive(false);
+				
 			}
 			if(child.name.Contains("Score"))
 			{
@@ -110,6 +113,10 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 				bgmButton = child.GetComponent<ToggleButton>();
 				
 			}
+			if (child.name.Contains("ExitButton"))
+			{
+				exitButton = child.GetComponent<UISprite>();
+			}
 			
 		}
 		inusedTips = new List<UILabel> ();
@@ -128,6 +135,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		roundFadeInCounter = new Counter (.2f);
 		roundIdleCounter = new Counter (1.3f);
 
+		//this.gameObject.SetActive (false);
 	    
 	}
     public void SetScore(int value)
@@ -192,8 +200,10 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		bgmButton.isOn = !PlayerSetting.Instance.muteBGM;
 		pauseButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
 		bgmButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
-		
-		TutorialControl.Instance.onTutorialCompleteCallback += EnablePauseMenu;
+		exitButton.gameObject.SetActive(!TutorialControl.Instance.isActive);
+		roundValue.gameObject.SetActive (!TutorialControl.Instance.isActive);
+		roundLabel.gameObject.SetActive (!TutorialControl.Instance.isActive);
+		scoreLabel.gameObject.SetActive (!TutorialControl.Instance.isActive);
         historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
         historyRound = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound);
 
@@ -205,8 +215,9 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	public override void OnCloseScreen()
 	{
 		base.OnCloseScreen ();
+		CostEnergy ();
         OnCloseTransitionDone();
-		TutorialControl.Instance.onTutorialCompleteCallback -= EnablePauseMenu;
+		
 		
 	}
     
@@ -241,8 +252,15 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	{
 		pauseButton.gameObject.SetActive (true);
 		bgmButton.gameObject.SetActive(true);
+		exitButton.gameObject.SetActive (true);
+		roundValue.gameObject.SetActive (true);
+		roundLabel.gameObject.SetActive (true);
+		scoreLabel.gameObject.SetActive (true);
 	}
-
+	public void CostEnergy()
+	{
+		skillButton.CostProgress ();
+	}
 	public void AddScore(int score, PieceColor color, Vector3 worldPosition)
 	{
         UILabel label = GetAvailableLabel();
@@ -250,11 +268,15 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		int add = (score - 2) * 100;
 		
 		label.text = "+" + add;
+
+		
+
 		label.color = convertColor(color);
 		TipAnimateTask task = new TipAnimateTask ();
 		task.label = label;
         task.speed = .2f;
-		task.birthPosition = nguiCamera.ScreenToWorldPoint (Camera.main.WorldToScreenPoint(worldPosition));
+
+		task.birthPosition = nguiCamera.ScreenToWorldPoint (Camera.main.WorldToScreenPoint (worldPosition));
 	    
 		animateTips.Add (task);
         
@@ -297,11 +319,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 
 		if (totalRound > historyRound) {
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, totalRound);
-			/*
-			achivementLabel.gameObject.SetActive(true);
-			new DelayCall().Init(4f,HideAchivement);
-			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_HIGHSCORE);
-			*/
+
 		}
 
 		roundValue.text = round.ToString ();
@@ -311,10 +329,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
         if (round>1) EnviormentControl.Instance.Blink(Wall.GetLevelColor(round - 1));
 
 	}
-	public void HideAchivement()
-	{
-		//achivementLabel.gameObject.SetActive(false);
-	}
+
     public void ReinforceWall(Vector3 worldPosition)
     {
 
@@ -323,12 +338,15 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
         UILabel label = wallTip;
         label.gameObject.SetActive(true);
         //label.text = "+1";
+		Vector3 screenPos = Camera.main.WorldToScreenPoint (worldPosition);
+		float gap = 10f;
+		screenPos = new Vector3 (Mathf.Min (Mathf.Max(label.width*.5f + gap, screenPos.x),Screen.width - label.width*.5f - gap),screenPos.y, screenPos.z);
 
         label.color = Wall.GetLevelColor(ClassicModeControl.Instance.round);
         TipAnimateTask task = new TipAnimateTask();
         task.label = label;
         task.speed = .1f;
-        task.birthPosition = nguiCamera.ScreenToWorldPoint(Camera.main.WorldToScreenPoint(worldPosition));
+		task.birthPosition = nguiCamera.ScreenToWorldPoint(screenPos);
 		level += 1;
 		//roundValue.text = level.ToString ();
 

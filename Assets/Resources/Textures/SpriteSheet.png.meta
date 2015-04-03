@@ -25,8 +25,8 @@ TextureImporter:
     21300040: SpriteIce
     21300042: SpriteWall
     21300044: SpriteSheet_23
-    21300046: SpriteSheet_26
-    21300048: SpriteSheet_25
+    21300046: SpriteSwitch
+    21300048: SpriteExplode
     21300050: SpriteChain
     21300052: SpriteBoard
     21300054: SpriteCheese
@@ -41,6 +41,8 @@ TextureImporter:
     21300072: SpriteWall5
     21300074: SpriteGlow
     21300076: SpriteRock
+    21300078: SpriteClock
+    21300080: SpriteTrigger
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -155,10 +157,10 @@ TextureImporter:
     - name: SpriteMaze
       rect:
         serializedVersion: 2
-        x: 273
-        y: 334
-        width: 114
-        height: 114
+        x: 168
+        y: 328
+        width: 139
+        height: 124
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -329,6 +331,46 @@ TextureImporter:
         y: 596
         width: 128
         height: 128
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteExplode
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 354
+        width: 193
+        height: 193
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteSwitch
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 753
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteClock
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 814
+        width: 62
+        height: 60
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: SpriteTrigger
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 902
+        width: 21
+        height: 17
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

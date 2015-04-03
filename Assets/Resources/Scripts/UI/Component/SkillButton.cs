@@ -12,7 +12,14 @@ public class SkillButton : MonoBehaviour {
 	private Transform maxIcon;
 	private int grade = 12;
 	private int progress;
+	private Arrow arrow ;
+	private Camera nguiCamera;
+	private string hint = "Once enery full, you can use a magic power by tap the triangle";
+	void Awake()
+	{
+		nguiCamera = GameObject.Find ("UI Root/Camera").GetComponent<Camera> ();
 
+	}
 	void Start () {
 		progresses = new List<Transform> ();
 		Transform[] children = this.GetComponentsInChildren<Transform> (true);
@@ -63,6 +70,12 @@ public class SkillButton : MonoBehaviour {
     {
         return 37 - progress;
     }
+	void Update()
+	{
+		if (arrow != null) {
+			ClassicHudMenu.Instance.ShowHint(ref hint);
+		}
+	}
 	public void UpdateIconAndProgress()
 	{
 		int icon = progress / grade;
@@ -78,8 +91,18 @@ public class SkillButton : MonoBehaviour {
 		//Debug.LogWarning ("icon " + icon);
 		if (icon > 0) {
 			button.isEnabled = true;
-			//sprite.color = new Color32 (255, 255, 255, 255);
-		} else {
+			if(PlayerSetting.Instance.GetSetting(PlayerSetting.HasUseSkill) == 0)
+			{
+				if(arrow == null ){
+					arrow = EntityPool.Instance.Use("Arrow").GetComponent<Arrow>();
+					Vector3 pos = Camera.main.ScreenToWorldPoint(nguiCamera.WorldToScreenPoint(this.transform.position));
+					arrow.FocusOn(new Vector3(pos.x,pos.y, -2f)).FaceTo(Board.Instance.GetPhysicDirection(BoardDirection.BottomLeft)).WithDistnace(-1.5f);
+
+				}
+
+			}
+		} 
+		else {
 			button.isEnabled = false;
 			//sprite.color = new Color32 (255, 255, 255, 109);
 		}
@@ -107,9 +130,7 @@ public class SkillButton : MonoBehaviour {
 		progress += p;
 		if (progress / grade > lastIcon) {
 			SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_SKILLUP);
-		} else {
-
-		}
+		} 
 
 
 		UpdateIconAndProgress ();
@@ -133,7 +154,11 @@ public class SkillButton : MonoBehaviour {
 			AppControl.Instance.AddSkill(new CutEdget());
 
 		}
-
+		if (arrow != null) {
+			PlayerSetting.Instance.SetSetting(PlayerSetting.HasUseSkill,1);
+			EntityPool.Instance.Reclaim (arrow.gameObject, "Arrow");
+			arrow = null;
+		}
 		CostProgress();
 
 	}

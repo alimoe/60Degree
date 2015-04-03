@@ -40,7 +40,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 	public AudioClip GAME_BROKEN;
     public AudioClip GAME_RING;
     public AudioClip GAME_EXPLODE;
-
+	public AudioClip GAME_TICK;
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;
@@ -51,7 +51,8 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
     private bool inFadeIn;
 
 	public string Track1 = "01_The Initiation";
-	public string Track2 = "03_Falling Through the Sun";
+	public string Track2 = "02_The Glow";
+	public string Track3 = "03_Falling Through the Sun";
 	
 	public List<string> Tracks;
 	public int currentTrack;
@@ -59,7 +60,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
     {
         base.Awake();
         trasitionCounter = new Counter(volume);
-		Tracks = new List<string>{Track1,Track2};
+		Tracks = new List<string>{Track1,Track2,Track3};
 
     }
     public void PlaySound(AudioClip clip)
@@ -99,13 +100,16 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 
     void Update()
     {
-		if (mLastTrack != null && !mLastTrack.mute && mLastTrack.clip == mTargetClip) {
+
+		if (mLastTrack != null && !mLastTrack.mute ) {
+
 			trackingTimer.Tick(Time.deltaTime);
 			if(trackingTimer.Expired())
 			{
 				currentTrack+=1;
 				currentTrack = currentTrack%Tracks.Count;
 				trackingTimer.Reset();
+
 				PlayTrack(Tracks[currentTrack]);
 			}
 		}

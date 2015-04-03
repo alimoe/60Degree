@@ -53,65 +53,64 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
             }
         }
     }
-	void Start()
+	private void InitTutorialData()
 	{
-		GameObject arrowObj = EntityPool.Instance.Use("Arrow");
-		arrow = arrowObj.GetComponent<Arrow>();
-		arrow.gameObject.SetActive(false);
 		steps = new List<TutorialStep>();
-
-		TutorialStep step = new TutorialStep(0,BoardDirection.Right, 0 ,0.5f,Vector2.zero,StopArrow);
+		
+		TutorialStep step = new TutorialStep(0,BoardDirection.Right, 0 ,0.5f,StopArrow);
 		steps.Add(step);
-		step = new TutorialStep(2,BoardDirection.BottomRight, 1 ,0.5f, new Vector2(.3f,0),StopArrow,StepOneComplete);
+		step = new TutorialStep(2,BoardDirection.BottomRight, 1 ,0.5f,StopArrow,StepOneComplete);
 		steps.Add(step);
 		
-		step = new TutorialStep(3,BoardDirection.TopRight,2,0,new Vector2(.3f,0),StopArrow,StepTwoComplete);
+		step = new TutorialStep(3,BoardDirection.TopRight,2,.5f,StopArrow,StepTwoComplete);
 		steps.Add(step);
 		
-		step = new TutorialStep(6,BoardDirection.TopLeft,3,0.5f,new Vector2(-.3f,0),StopArrow,StepThreeComplete);
+		step = new TutorialStep(6,BoardDirection.TopLeft,3,0.5f,StopArrow,StepThreeComplete);
 		steps.Add(step);
-        //show wall break
-		step = new TutorialStep(7,BoardDirection.Right,4,0.5f,Vector2.zero,StopArrow,StepFourComplete);
+		//show wall break
+		step = new TutorialStep(7,BoardDirection.Right,4,0.5f, StopArrow,StepFourComplete);
 		steps.Add(step);
-        //show wall out
-		step = new TutorialStep(7,BoardDirection.Right,5,0.5f,Vector2.zero,StopArrow,StepFiveComplete);
+		//show wall out
+		step = new TutorialStep(7,BoardDirection.Right,5,0.5f, StopArrow,StepFiveComplete);
 		steps.Add(step);
-        //show chain
-		step = new TutorialStep(9,BoardDirection.BottomRight,6,0.5f,new Vector2(.3f,0),StopArrow,StepSixComplete);
+		//show chain
+		step = new TutorialStep(9,BoardDirection.BottomRight,6,0.5f, StopArrow,StepSixComplete);
 		steps.Add(step);
+		
+		step = new TutorialStep(5, BoardDirection.BottomRight, 7, 0.5f, StopArrow, StepSevenComplete);
+		steps.Add(step);
+		//show block
+		step = new TutorialStep(11, BoardDirection.TopRight, 8, 0.5f, StopArrow, StepEightComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(11, BoardDirection.Right, 9, 0.5f,  StopArrow, StepNightComplete);
+		steps.Add(step);
+		//show ice 1
+		step = new TutorialStep(12, BoardDirection.Right, 10, 0.5f,  StopArrow, StepTenComplete);
+		steps.Add(step);
+		//break ice 2
+		step = new TutorialStep(14, BoardDirection.BottomRight, 11, 0.5f,  StopArrow, StepElevenComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(11, BoardDirection.Left, 12, 0.5f,  StopArrow, StepTwelveComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(11, BoardDirection.TopRight, 13, 0.5f,  StopArrow, StepThirtweenComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(19, BoardDirection.Right, 14, 0.5f,  StopArrow, StepFourtweenComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(19, BoardDirection.TopLeft, 15, 0.5f,  StopArrow, StepFifthtweenComplete);
+		steps.Add(step);
+		
+		step = new TutorialStep(20, BoardDirection.TopRight, 16, 0.5f,  StopArrow, null);
+		steps.Add(step);
+		
+		step = new TutorialStep(20, BoardDirection.None, 17, 0.5f,  StopArrow, null);
+		steps.Add(step);
+			
 
-        step = new TutorialStep(5, BoardDirection.BottomRight, 7, 0.5f, new Vector2(-.3f, 0), StopArrow, StepSevenComplete);
-        steps.Add(step);
-        //show block
-        step = new TutorialStep(11, BoardDirection.TopRight, 8, 0.5f, new Vector2(.3f, 0), StopArrow, StepEightComplete);
-        steps.Add(step);
-        
-        step = new TutorialStep(11, BoardDirection.Right, 9, 0.5f, new Vector2(0,0.2f), StopArrow, StepNightComplete);
-        steps.Add(step);
-        //show ice 1
-        step = new TutorialStep(12, BoardDirection.Right, 10, 0.5f, Vector2.zero, StopArrow, StepTenComplete);
-        steps.Add(step);
-        //break ice 2
-        step = new TutorialStep(14, BoardDirection.BottomRight, 11, 0.5f, Vector2.zero, StopArrow, StepElevenComplete);
-        steps.Add(step);
-
-        step = new TutorialStep(11, BoardDirection.Left, 12, 0.5f, Vector2.zero, StopArrow, StepTwelveComplete);
-        steps.Add(step);
-
-        step = new TutorialStep(11, BoardDirection.TopRight, 13, 0.5f, new Vector2(-0.3f, 0), StopArrow, StepThirtweenComplete);
-        steps.Add(step);
-
-        step = new TutorialStep(19, BoardDirection.Right, 14, 0.5f, Vector2.zero, StopArrow, StepFourtweenComplete);
-        steps.Add(step);
-
-        step = new TutorialStep(19, BoardDirection.TopLeft, 15, 0.5f, new Vector2(0, 0), StopArrow, StepFifthtweenComplete);
-        steps.Add(step);
-
-        step = new TutorialStep(20, BoardDirection.TopRight, 16, 0.5f, new Vector2(.3f, 0), StopArrow, null);
-        steps.Add(step);
-
-        step = new TutorialStep(20, BoardDirection.None, 17, 0.5f, Vector2.zero, StopArrow, null);
-        steps.Add(step);
 	}
 
     private void StepFifthtweenComplete()
@@ -127,8 +126,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
         //22 pieces
         pieces.Add(Board.Instance.GeneratePieceAt(3, 2, true, PieceColor.Red, false));
         pieces[pieces.Count-1].SetState(PieceState.Twine);
-
-        pieces.Add(Board.Instance.GeneratePieceAt(0, 1, true, PieceColor.Blue, false));
+		pieces.Add(Board.Instance.GeneratePieceAt(0, 1, true, PieceColor.Blue, false));
 
         
     }
@@ -136,23 +134,43 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
     
     public void InitTutorial()
     {
+			InitTutorialData ();
 			isActive = true;
-		
+			
+			GameObject arrowObj = EntityPool.Instance.Use("Arrow");
+			arrow = arrowObj.GetComponent<Arrow>();
+			arrow.Stop ();
+			
 			pieces = new List<Piece>();
 			
 			currentStep = 0;
 			
-
 			Board.Instance.autoBirth = false;
             Board.Instance.InitEnviorment();
-
+			Board.Instance.OnCorePieceEliminateCallback += OnCorePieceEliminate;	
+			ClassicModeControl.Instance.freezeWallIndex = 0;
+			
 			pieces.Add(Board.Instance.GeneratePieceAt(2,1,true,PieceColor.Red,false));
 			pieces.Add(Board.Instance.GeneratePieceAt(5,1,false,PieceColor.Red,false));
 			
-
-			EnterNewStep ();
+			StartCoroutine (TryEnterFirstStep());
+			
 		
     }
+	private void OnCorePieceEliminate()
+	{
+		ClassicModeControl.Instance.AddWallProgress ();
+	}
+	private IEnumerator TryEnterFirstStep()
+	{
+		while(ClassicHudMenu.Instance == null)
+		{
+			yield return 0;
+		}
+
+		EnterNewStep();
+
+	}
 	public void StopArrow()
 	{
 		if(arrow!=null)arrow.Stop ();
@@ -227,8 +245,8 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
         //11 piece
         pieces.Add(Board.Instance.GeneratePieceAt(1, 4, true, PieceColor.Blue, false));
         pieces.Add(Board.Instance.GeneratePieceAt(1, 5, false, PieceColor.Green, false));
-        PieceGroup group = new PieceGroup();
-        group.AddChild(pieces[pieces.Count - 1]);
+		PieceGroup group = PieceGroup.CreateInstance<PieceGroup>();
+		group.AddChild(pieces[pieces.Count - 1]);
         group.AddChild(pieces[pieces.Count - 2]);
         group.MakeChain();
         pieces.Add(Board.Instance.GeneratePieceAt(6, 0, true, PieceColor.Green, false));
@@ -252,19 +270,24 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		if(tutorialStep.onEnterCallback!=null)tutorialStep.onEnterCallback();
 		
 		ClassicHudMenu.Instance.ShowHint(ref hints[tutorialStep.hint]);
-		if (tutorialStep.direction == BoardDirection.None)arrow.Stop ();
-		else arrow.FocusOn(pieces[tutorialStep.target].transform).FaceTo(Board.Instance.GetPhysicDirection(tutorialStep.direction)).WithDistnace(tutorialStep.arrowDistance).Offset(tutorialStep.offset.x,tutorialStep.offset.y);			
+		if (tutorialStep.direction == BoardDirection.None) {
+			arrow.Stop ();
+		}
+		else {
+			Vector2 offset = Arrow.GetOffsetDirection(tutorialStep.direction,pieces[tutorialStep.target].isUpper);
+			arrow.FocusOn (pieces [tutorialStep.target].transform).FaceTo (Board.Instance.GetPhysicDirection (tutorialStep.direction)).WithDistnace (tutorialStep.arrowDistance).Offset (offset.x,offset.y);		
+		}
 	}
 	public void FinishTutorial()
 	{
 		pieces.Clear();
+		steps.Clear ();
 		ClassicHudMenu.Instance.HideHint();
+		ClassicHudMenu.Instance.AddRound(1);
 		PlayerSetting.Instance.TutorialComplete(1);
-		
+		Board.Instance.OnCorePieceEliminateCallback -= OnCorePieceEliminate;
 		Board.Instance.autoBirth = true;
-		//Board.Instance.GeneratePiece();
-		//Board.Instance.GeneratePiece();
-		ClassicHudMenu.Instance.AddRound (1);
+		EntityPool.Instance.Reclaim (arrow.gameObject, "Arrow");
 		isActive = false;
 		if (onTutorialCompleteCallback != null)onTutorialCompleteCallback ();
 	}
@@ -281,18 +304,25 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 
     public void HandleSwipe(Vector3 position, BoardDirection direction)
     {
-		Piece piece = Board.Instance.GetPieceFromPosition (position);
-		if (piece!=null && steps [currentStep].Handle (pieces.LastIndexOf(piece),direction)) {
-			Board.Instance.MoveFrom(position,direction);
+		if (currentStep < steps.Count) {
 
-			if(steps [currentStep].onCompleteCallback!=null)steps [currentStep].onCompleteCallback();
-			currentStep++;
-			if(currentStep<steps.Count)
-			{
-				new DelayCall().Init(.3f,EnterNewStep);
+			Piece piece = Board.Instance.GetPieceFromPosition (position);
+			
+			if (piece!=null && steps[currentStep].direction == direction && (pieces[steps[currentStep].target] == piece || (piece.group != null && piece.group.children.Contains(pieces[steps[currentStep].target])))) {
+				
+				
+				Board.Instance.MoveFrom(position,direction);
+				
+				if(steps [currentStep].onCompleteCallback!=null)steps [currentStep].onCompleteCallback();
+				currentStep++;
+				if(currentStep<steps.Count)
+				{
+					new DelayCall().Init(.5f,EnterNewStep);
+				}
+				
 			}
-
 		}
+
     }
 
 
@@ -306,14 +336,14 @@ public class TutorialStep
 	public Action onCompleteCallback;
 	public Action onEnterCallback;
 	public float arrowDistance;
-	public Vector2 offset;
-	public TutorialStep(int t, BoardDirection d, int h, float ad, Vector2 off,
+	
+	public TutorialStep(int t, BoardDirection d, int h, float ad,
 	                    Action complete = null, Action enter= null)
 	{
 		target = t;
 		direction = d;
 		hint = h;
-		offset = off;
+			
 		arrowDistance = ad;
 		onCompleteCallback = complete;
 		onEnterCallback = enter;

@@ -10,7 +10,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     private float generateMinStep = 10f;
     public int round = 1;
     private List<GenerateType> generateType;
-    private int freezeWallIndex = 0;
+    public int freezeWallIndex = 0;
     private LevelReader reader;
     private LevelExporter exporter;
     private List<PieceColor> colors;
@@ -31,12 +31,20 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.autoUpdateGrid = true;
         Board.Instance.autoUpdateSkillPoint = true;
 
+
         if (reader.Exist("UserBoard"))
         {
+			Board.Instance.ResetBoard ();
             LoadBoard();
+			ResetColorsPriority();
+			ResetSpecialItemLevel();
         }
         else
         {
+			this.freezeWallIndex = 1;
+			ResetColorsPriority();
+			ResetSpecialItemLevel();
+
             Board.Instance.GeneratePiece();
             Board.Instance.GeneratePiece();
             Board.Instance.GeneratePiece();
@@ -44,8 +52,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicSpecialItem, 0);
         }
 
-        ResetColorsPriority();
-        ResetSpecialItemLevel();
+        
 
         Board.Instance.OnMoveDoneCallback += GenerateSpecialItem;
         Board.Instance.OnCorePieceEliminateCallback += AddWallProgress;
@@ -337,6 +344,16 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
             }
         }
     }
+	void Start()
+	{
+		TutorialControl.Instance.onTutorialCompleteCallback += OnFinishTutorial;
+	}
+
+	public void OnFinishTutorial ()
+	{
+		ClassicHudMenu.Instance.EnablePauseMenu ();
+		StartPlay ();
+	}
 
     public void PauseGame()
     {

@@ -14,7 +14,30 @@ public class Arrow : MonoBehaviour {
 	void Awake () {
 		wave = new Wave ();
 	}
-	
+	public static Vector2 GetOffsetDirection(BoardDirection direction, bool isUpper)
+	{
+		switch (direction) {
+		case BoardDirection.BottomLeft:
+			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
+			
+		case BoardDirection.BottomRight:
+			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
+			
+		case BoardDirection.Left:
+			return Vector2.zero;
+			
+		case BoardDirection.Right:
+			return Vector2.zero;
+			
+		case BoardDirection.TopLeft:
+			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
+			
+		case BoardDirection.TopRight:
+			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
+			
+		}
+		return Vector2.zero;
+	}
 	// Update is called once per frame
 	void Update () {
         if (target != null)
@@ -39,15 +62,21 @@ public class Arrow : MonoBehaviour {
         target = null;
 		this.gameObject.SetActive (false);
 	}
+	public Arrow FocusOn(Vector3 position)
+	{
+		distance = 1f;
+		offsetX = 0;
+		offsetY = 0;
+		center = position;
+		UpdatePosition ();
+		return this;
+	}
 	public Arrow FocusOn(Transform t)
 	{
         target = t;
 		this.gameObject.SetActive (true);
-		distance = 1f;
-		offsetX = 0;
-		offsetY = 0;
-		center = target.transform.position;
-		UpdatePosition ();
+		FocusOn (target.transform.position);
+
 		return this;
 	}
 	public Arrow FaceTo(Vector3 d)

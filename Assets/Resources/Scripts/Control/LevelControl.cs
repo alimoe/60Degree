@@ -127,35 +127,12 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		{
 			BoardDirection direction = steps[currentStep].direction;
 			Piece piece = pieces[steps[currentStep].PieceIndex];
-			Vector2 offset =GetOffsetDirection(direction,piece.isUpper);//GetOffsetDirection(direction);
+			Vector2 offset = Arrow.GetOffsetDirection(direction,piece.isUpper);//GetOffsetDirection(direction);
 			arrow.FocusOn(piece.transform).FaceTo(Board.Instance.GetPhysicDirection(direction)).WithDistnace(.5f).Offset(offset.x,offset.y);
 		}
 
 	}
-	private Vector2 GetOffsetDirection(BoardDirection direction, bool isUpper)
-	{
-		switch (direction) {
-			case BoardDirection.BottomLeft:
-			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
-			
-			case BoardDirection.BottomRight:
-			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
-				
-			case BoardDirection.Left:
-			return Vector2.zero;
-			
-			case BoardDirection.Right:
-			return Vector2.zero;
-			
-			case BoardDirection.TopLeft:
-			return (!isUpper)?new Vector2(.3f,0):new Vector2(-.3f,0);
-			
-			case BoardDirection.TopRight:
-			return (!isUpper)?new Vector2(-.3f,0):new Vector2(.3f,0);
-			
-		}
-		return Vector2.zero;
-	}
+
 
 	public void HandleSwipe(Vector3 position, BoardDirection direction)
 	{
@@ -238,8 +215,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	}
 	private void DisplayWinMenu()
 	{
-		if (currentLevel > record) {
-			record = currentLevel;
+		if (levelIndex +1> record) {
+			record = levelIndex +1;
 			PlayerSetting.Instance.SetSetting (PlayerSetting.USER_LEVEL_PROGRESS,record);
 		}
 		AppControl.Instance.PauseGame("NextLevelMenu");

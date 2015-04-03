@@ -13,6 +13,7 @@ public class Block : Entity {
 	private Counter life = new Counter(5f);
 	private List<Transform> childs;
 	private List<FadeAway> fadeAways;
+	private Color32 defaultColor;
 	void Awake () {
         Init();
 	}
@@ -27,6 +28,7 @@ public class Block : Entity {
             if (child.name.Contains("UpLeft"))
             {
                 up_left = child; 
+				defaultColor = up_left.GetComponent<SpriteRenderer>().color;
                 childs.Add(child);
             }
             if (child.name.Contains("UpRight"))
@@ -98,6 +100,13 @@ public class Block : Entity {
 			fadeAway.Cancel();
 			fadeAways.RemoveAt(0);
 		}
+			
+		up_left.GetComponent<SpriteRenderer> ().color = defaultColor;
+		up_right.GetComponent<SpriteRenderer> ().color = defaultColor;
+		up_down.GetComponent<SpriteRenderer> ().color = defaultColor;
+		down_left.GetComponent<SpriteRenderer> ().color = defaultColor;
+		down_right.GetComponent<SpriteRenderer> ().color = defaultColor;
+		down_up.GetComponent<SpriteRenderer> ().color = defaultColor;
 	}
 	public void OnFadeAway(object child)
 	{

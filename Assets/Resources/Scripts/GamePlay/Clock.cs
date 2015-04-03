@@ -41,6 +41,7 @@ public class Clock : Entity {
         
 
 		UpdateTrigger ();
+		if (SoundControl.Instance != null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_TICK);
 
         return this;
     }

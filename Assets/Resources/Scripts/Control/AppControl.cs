@@ -65,7 +65,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
     {
         if (pauseStatus)
         {
-            if (mode == GameMode.Classic && state == GameState.GamePlaying)
+			if (mode == GameMode.Classic && (state == GameState.GamePlaying || state == GameState.GameOver) && !TutorialControl.Instance.isActive)
             {
                 PauseGame("PauseMenu");
                 ClassicModeControl.Instance.SaveBoard();
@@ -96,8 +96,8 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	    if (!PlayerSetting.Instance.tutorialPlayed)
         {
 			UIControl.Instance.OpenMenu("ClassicHudMenu",true);
-			TutorialControl.Instance.InitTutorial ();
-        }
+			new DelayCall().Init(.3f, TutorialControl.Instance.InitTutorial);
+		}
         else
         {
             if (mode == GameMode.Classic)

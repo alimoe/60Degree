@@ -2,9 +2,9 @@
 <Level Mode="1" Step="4">
   <Hexagons />
   <Pieces>
-    <Piece X="3" Y="0" Upper="1" State="0" Type="0" Core="0" />
-    <Piece X="0" Y="4" Upper="0" State="0" Type="0" Core="0" />
-    <Piece X="2" Y="4" Upper="0" State="0" Type="0" Core="0" />
+    <Piece X="3" Y="0" Upper="1" State="0" Type="1" Core="0" />
+    <Piece X="0" Y="4" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="2" Y="4" Upper="0" State="0" Type="1" Core="0" />
   </Pieces>
   <Walls>
     <Wall Index="1" State="2" Level="-1" />

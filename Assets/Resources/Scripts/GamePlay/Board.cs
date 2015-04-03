@@ -224,7 +224,7 @@ public class Board : Core.MonoSingleton<Board> {
 				}
 				if(valide.Count>0)
 				{
-					group = new PieceGroup();
+					group = PieceGroup.CreateInstance<PieceGroup>();
 					int index = UnityEngine.Random.Range(0,valide.Count);
 					group.AddChild(piece);
 					group.AddChild(valide[index]);

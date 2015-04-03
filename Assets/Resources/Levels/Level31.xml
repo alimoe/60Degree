@@ -2,20 +2,33 @@
 <Level Mode="1" Step="14">
   <Hexagons />
   <Pieces>
-    <Piece X="2" Y="0" Upper="1" State="0" Type="4" />
-    <Piece X="4" Y="0" Upper="1" State="0" Type="0" />
-    <Piece X="1" Y="1" Upper="1" State="0" Type="4" />
-    <Piece X="1" Y="1" Upper="0" State="0" Type="2" />
-    <Piece X="2" Y="1" Upper="0" State="0" Type="1" />
-    <Piece X="3" Y="1" Upper="0" State="0" Type="2" />
-    <Piece X="4" Y="1" Upper="1" State="0" Type="0" />
-    <Piece X="4" Y="1" Upper="0" State="0" Type="4" />
-    <Piece X="0" Y="2" Upper="1" State="0" Type="1" />
-    <Piece X="0" Y="2" Upper="0" State="0" Type="0" />
-    <Piece X="4" Y="2" Upper="1" State="0" Type="2" />
-    <Piece X="4" Y="2" Upper="0" State="0" Type="1" />
+    <Piece X="2" Y="0" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="4" Y="0" Upper="1" State="0" Type="0" Core="0" />
+    <Piece X="1" Y="1" Upper="1" State="0" Type="4" Core="0" />
+    <Piece X="1" Y="1" Upper="0" State="0" Type="2" Core="0" />
+    <Piece X="2" Y="1" Upper="0" State="0" Type="1" Core="0" />
+    <Piece X="3" Y="1" Upper="0" State="0" Type="2" Core="0" />
+    <Piece X="4" Y="1" Upper="1" State="0" Type="0" Core="0" />
+    <Piece X="4" Y="1" Upper="0" State="0" Type="4" Core="0" />
+    <Piece X="0" Y="2" Upper="1" State="0" Type="1" Core="0" />
+    <Piece X="0" Y="2" Upper="0" State="0" Type="0" Core="0" />
+    <Piece X="4" Y="2" Upper="1" State="0" Type="2" Core="0" />
+    <Piece X="4" Y="2" Upper="0" State="0" Type="1" Core="0" />
   </Pieces>
-  <Walls />
+  <Walls>
+    <Wall Index="0" State="1" Level="-1" />
+    <Wall Index="2" State="1" Level="-1" />
+    <Wall Index="4" State="1" Level="-1" />
+    <Wall Index="6" State="1" Level="-1" />
+    <Wall Index="7" State="1" Level="-1" />
+    <Wall Index="9" State="1" Level="-1" />
+    <Wall Index="11" State="1" Level="-1" />
+    <Wall Index="13" State="1" Level="-1" />
+    <Wall Index="14" State="1" Level="-1" />
+    <Wall Index="16" State="1" Level="-1" />
+    <Wall Index="18" State="1" Level="-1" />
+    <Wall Index="20" State="1" Level="-1" />
+  </Walls>
   <Groups>
     <Group>
       <Piece X="2" Y="1" Upper="0" />

@@ -212,7 +212,7 @@ public class Wall :MonoBehaviour {
 	}
     public void SetLevel(int l)
     {
-        level = (l < 0) ? 5 : l;
+        level = l;
         UpdateColor();
         UpdateIcon();
     }
@@ -279,7 +279,7 @@ public class Wall :MonoBehaviour {
 					lastTimeColor = currentColor;
 			}
 		} else {
-			targetColor = levels[level%5];
+			targetColor = levels[(level + 5 )%5];
 		}
 		Render ();
 	}
