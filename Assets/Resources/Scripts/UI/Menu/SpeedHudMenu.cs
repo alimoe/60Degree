@@ -12,6 +12,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     private int count = -1;
     private Counter tipsCounter = new Counter(3f);
     private bool showTips;
+	private Counter totalScoreCounter;
     protected override void Awake()
     {
         base.Awake();
@@ -61,6 +62,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
             count = SpeedModeControl.Instance.eliminateCount;
             progressInfo.text = count + "/" + SpeedModeControl.Instance.targetEliminateCount;
             levelInfo.text = SpeedModeControl.Instance.level.ToString();
+			totalScoreCounter.Reset();
         }
         //levelInfo.text = SpeedModeControl.Instance.level.ToString();
     }
@@ -68,7 +70,7 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     public void ShowHint(ref string message)
     {
         hintLabel.gameObject.SetActive(true);
-        hintLabel.text = message;
+		hintLabel.text = Localization.Get(message);
 
     }
     public void HideHint()
@@ -101,6 +103,12 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
 
         }
 
+		if (totalScoreCounter!=null && !totalScoreCounter.Expired ()) {
+			totalScoreCounter.Tick (Time.deltaTime);
+			float ratio = 1f + Mathf.Sin(totalScoreCounter.percent*Mathf.PI) *.2f;
+			progressInfo.transform.localScale = new Vector3(ratio,ratio,ratio);
+		}
+
     }
     public void Reset()
     {
@@ -110,11 +118,17 @@ public class SpeedHudMenu : MenuSingleton<SpeedHudMenu>
     {
         base.OnOpenScreen();
         base.OnOpenTransitionDone();
-		string hint = PlayerSetting.Instance.GetSetting (PlayerSetting.SpeedModePlayed) != 0 ? "Tap to start" : "Try to eliminate certain amount Puzzles in time\nTap to start";
+		string hint = PlayerSetting.Instance.GetSetting (PlayerSetting.SpeedModePlayed) != 0 ? "TapToStart" : "SpeedFirstHint";
 		PlayerSetting.Instance.SetSetting (PlayerSetting.SpeedModePlayed, 1);
+		totalScoreCounter = new Counter (.5f);
+		totalScoreCounter.percent = 1f;
+		UpdateInfo ();
+		progressInfo.text =  "0/10" ;
+		levelInfo.text = "1";
 		this.ShowHint (ref hint);
+
     }
-    public virtual void OnCloseScreen()
+	public override void OnCloseScreen()
     {
         base.OnCloseScreen();
         base.OnCloseTransitionDone();

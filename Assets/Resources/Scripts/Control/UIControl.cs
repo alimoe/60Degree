@@ -17,6 +17,7 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 	private Transform screenLayer;
 	private Transform overlayLayer;
 	private Transform overlayBackground;
+	private Transform loading;
 	public void Initialize () {
 		pool = new Dictionary<string, GameObject> ();
 		stack = new List<GameObject> ();
@@ -25,8 +26,9 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 		screenLayer = GameObject.Find("UI Root/Screen").transform;
 		overlayLayer = GameObject.Find("UI Root/Overlay").transform;
 		overlayBackground = GameObject.Find("UI Root/Overlay/Background").transform;
-
+		loading = GameObject.Find("UI Root/Overlay/LoadingMenu").transform;
 		overlayBackground.gameObject.SetActive (false);
+		loading.gameObject.SetActive (false);
 		Transform[] children = uiRoot.GetComponentsInChildren<Transform> (true);
 		foreach (Transform child in children) {
 			//Debug.Log("child"+child.name);
@@ -49,7 +51,14 @@ public class UIControl : Core.MonoSingleton<UIControl> {
 	{
 		return last;
 	}
-
+	public void DisplayLoading()
+	{
+		loading.gameObject.SetActive (true);
+	}
+	public void HideLoading()
+	{
+		loading.gameObject.SetActive (false);
+	}
     public void DisplayOverlayBackground(Transform transform)
     {
         if (overlayBackground.gameObject.activeInHierarchy == false)

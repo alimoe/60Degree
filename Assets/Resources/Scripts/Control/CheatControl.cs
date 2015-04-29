@@ -70,6 +70,8 @@ public class CheatControl : Core.MonoSingleton<CheatControl> {
                 PlayerSetting.Instance.SetSetting(PlayerSetting.MAX_SPEED_LEVEL, 0);
                 PlayerSetting.Instance.SetSetting(PlayerSetting.USER_LEVEL_PROGRESS, 0);
 				PlayerSetting.Instance.SetSetting(PlayerSetting.HasUseSkill, 0);
+				PlayerSetting.Instance.SetSetting(PlayerSetting.HasPlayLevel, 0);
+				PlayerSetting.Instance.SetSetting(PlayerSetting.SpeedModePlayed, 0);
 			}
             if (GUI.Button(new Rect(0, 450, 100, 30), "Clear Tutorial"))
 			{

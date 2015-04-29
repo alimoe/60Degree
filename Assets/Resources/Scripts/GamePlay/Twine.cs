@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 public class Twine : Entity {
     private Transform left;
     private Transform right;
@@ -17,13 +17,16 @@ public class Twine : Entity {
     public int life = 3;
     public Piece piece;
     public int state = 0;
+	private List<FadeIn> fadeIns;
+	private List<FadeAway> fadeAways;
     void Awake()
     {
 		Init ();
     }
     public override void Init()
 	{
-
+		fadeIns = new List<FadeIn> ();
+		fadeAways = new List<global::FadeAway> ();
 		Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
 		foreach (var child in children)
 		{
@@ -112,14 +115,19 @@ public class Twine : Entity {
         if (left != null) left.gameObject.SetActive(true);
         if (right != null) right.gameObject.SetActive(true);
         if (verticle != null) verticle.gameObject.SetActive(true);
-		
-		new FadeIn ().Init (left.gameObject, .3f, null);
-		new FadeIn ().Init (right.gameObject, .3f, null);
-		new FadeIn ().Init (verticle.gameObject, .3f, null);
+		fadeIns.Clear ();
+		fadeIns.Add (new FadeIn ().Init (left.gameObject, .3f, null));
+		fadeIns.Add (new FadeIn ().Init (right.gameObject, .3f, null));
+		fadeIns.Add (new FadeIn ().Init (verticle.gameObject, .3f, null));
+
 	}
     public void ShutDown()
     {
         EntityPool.Instance.Reclaim(this.gameObject, "Twine");
+		foreach (var i in fadeAways) {
+			i.Cancel();
+		}
+		fadeAways.Clear ();
         life = 0;
         piece = null;
 		ResetRope ();
@@ -135,7 +143,8 @@ public class Twine : Entity {
 	{
 		GameObject rope = target as GameObject;
 		SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_ROPE);
-		new FadeAway().Init(rope,.2f,OnFadeAway);
+		fadeAways.Add(new FadeAway().Init(rope,.2f,OnFadeAway));
+		
 	}
     public void OnPass(BoardDirection direction, float time)
     {
@@ -201,6 +210,17 @@ public class Twine : Entity {
 						
         
     }
+	private void ResetAnimation()
+	{
+		foreach (var i in fadeIns) {
+			i.Cancel();
+		}
+		fadeIns.Clear ();
+		foreach (var i in fadeAways) {
+			i.Cancel();
+		}
+		fadeAways.Clear ();
+	}
     public void SetUp(Piece p)
     {
         piece = p;
@@ -210,6 +230,7 @@ public class Twine : Entity {
         this.transform.localPosition = piece.transform.localPosition;
         this.transform.localScale = new Vector3(piece.scale, piece.scale, piece.scale);
         state = 0;
+		ResetAnimation ();
         if (!piece.isUpper)
         {
 			left = down_left;

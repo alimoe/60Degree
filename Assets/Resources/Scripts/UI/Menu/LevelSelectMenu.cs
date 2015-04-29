@@ -16,6 +16,7 @@ public class LevelSelectMenu : MenuSingleton<LevelSelectMenu> {
 			{
 				buttons.Add(child.GetComponent<LockButton>());
 				UIButton button = child.GetComponent<UIButton>();
+				button.isEnabled = false;
 				UIEventListener.Get(button.gameObject).onClick+=OnClick;
 			}
             if (child.name.Contains("ScrollView"))
@@ -52,12 +53,12 @@ public class LevelSelectMenu : MenuSingleton<LevelSelectMenu> {
 	    
         if (level >= 20)
         {
-            scollBody.SetDragAmount(1f, 0f, false);
+            //scollBody.SetDragAmount(1f, 0f, false);
 			//scollBody.ResetPosition();
         }
         else
         {
-            scollBody.SetDragAmount(0f, 0f, false);
+            //scollBody.SetDragAmount(0f, 0f, false);
         }
 	}
 
@@ -69,7 +70,7 @@ public class LevelSelectMenu : MenuSingleton<LevelSelectMenu> {
 		return -1;
 	}
 
-	public virtual void OnCloseScreen()
+	public override void OnCloseScreen()
 	{
 		base.OnCloseScreen();
 		base.OnCloseTransitionDone();

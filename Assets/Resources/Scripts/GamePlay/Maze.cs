@@ -7,6 +7,7 @@ public class Maze : Entity {
 	private Counter life = new Counter(5f);
     private Counter blink = new Counter(5f);
 	private FadeAway fadeAway;
+	private FadeIn fadeIn;
 	void Awake () {
         Init();
 	}
@@ -24,7 +25,11 @@ public class Maze : Entity {
         this.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
         render.color = new Color32(255, 255, 255, 255);
 		life.Reset ();
-		new FadeIn ().Init (this.gameObject, .3f, null);
+		if (fadeIn != null)fadeIn.Cancel ();
+						
+		fadeIn = new FadeIn ();
+		fadeIn.Init (this.gameObject, .3f, null);
+
         if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_MAZE);
         return this;
     }

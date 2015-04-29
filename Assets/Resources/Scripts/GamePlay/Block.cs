@@ -13,6 +13,7 @@ public class Block : Entity {
 	private Counter life = new Counter(5f);
 	private List<Transform> childs;
 	private List<FadeAway> fadeAways;
+	private List<FadeIn> fadeIns;
 	private Color32 defaultColor;
 	void Awake () {
         Init();
@@ -22,6 +23,7 @@ public class Block : Entity {
         Transform[] children = this.transform.GetComponentsInChildren<Transform>(true);
         childs = new List<Transform>();
 		fadeAways = new List<FadeAway> ();
+		fadeIns = new List<FadeIn> ();
         foreach (var child in children)
         {
 
@@ -80,15 +82,17 @@ public class Block : Entity {
 		down_left.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownLeft)!=0);
 		down_right.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownRight)!=0);
 		down_up.gameObject.SetActive ((hexagon.blockState&(int)HexagonEdget.DownUp)!=0);
-      	
+      	/*
 		foreach (var child in childs) {
 			if(child.gameObject.activeInHierarchy)
 			{
-                
-               new FadeIn().Init(child.gameObject,.2f,null);
+
+				FadeIn fadeIn = new FadeIn();
+				fadeIn.Init(child.gameObject,.2f,null);
+				fadeIns.Add(fadeIn);
 			}
 		}
-
+		*/
 		life.Reset ();
 
         if (SoundControl.Instance!=null) SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_DENY);
@@ -100,7 +104,13 @@ public class Block : Entity {
 			fadeAway.Cancel();
 			fadeAways.RemoveAt(0);
 		}
-			
+		while (fadeIns.Count>0) {
+			FadeIn fadeIn = fadeIns[0];
+			fadeIn.Cancel();
+			fadeIns.RemoveAt(0);
+		}
+		fadeAways.Clear ();
+		fadeIns.Clear ();
 		up_left.GetComponent<SpriteRenderer> ().color = defaultColor;
 		up_right.GetComponent<SpriteRenderer> ().color = defaultColor;
 		up_down.GetComponent<SpriteRenderer> ().color = defaultColor;
@@ -110,22 +120,12 @@ public class Block : Entity {
 	}
 	public void OnFadeAway(object child)
 	{
-		GameObject childObj = child as GameObject;
-		ResetBlock ();
-        EntityPool.Instance.Reclaim(childObj, "Block");
 
 	}
 
 	public void ShutDown()
 	{
-		foreach (var child in childs) {
-			if(child.gameObject.activeInHierarchy)
-			{
-				FadeAway fadeAway = new FadeAway();
-				fadeAway.Init(child.gameObject,.2f,OnFadeAway);
-				fadeAways.Add(fadeAway);
-			}
-		}
+		EntityPool.Instance.Reclaim(this.gameObject, "Block");
 	}
 
 	public void Tick()

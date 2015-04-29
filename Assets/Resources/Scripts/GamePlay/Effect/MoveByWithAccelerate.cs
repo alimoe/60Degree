@@ -9,7 +9,7 @@ public class MoveByWithAccelerate :TimeEffect {
 	private Vector3 gravityPosition;
 	public Counter trackTimer;
 	public float moveSpeed;
-	private bool inTrack;
+	
 	private float currentSpeed;
 	private bool headGravity;
 	private float G = 30f;
@@ -19,7 +19,7 @@ public class MoveByWithAccelerate :TimeEffect {
 		piece = p;
 		moveSpeed = speed;
 		currentSpeed = speed;
-		inTrack = trackTime == 0;
+		
 		trackTimer = new Counter (trackTime);
 		direction = (targetPosition - piece.transform.localPosition).normalized;
 		gravityPosition = eliminatePosition;

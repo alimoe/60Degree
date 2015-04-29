@@ -12,24 +12,24 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 	private List<TutorialStep> steps;
 	private Arrow arrow;
     private Counter idleCount = new Counter(3f);
-	private string step1Hint = "Tap on the puzzle and move to the [00ff00]right[-]";
-	private string step2Hint = "[00ff00]3[-] puzzles [00ff00]side by side[-] will be eliminated";
-    private string step3Hint = "You can move stacked puzzles from the [00ff00]bottom[-]";
-    private string step4Hint = "Eliminate the puzzle with [00ff00]a core[-] will upgrade [00ff00]wall[-]";
-	private string step5Hint = "You can break a wall by hitting it [00ff00]twice[-]";
-	private string step6Hint = "Once the wall is [00ff00]broken[-], You can wipe the puzzles out";
-    private string step7Hint = "[00ff00]Chained[-] puzzles can only be [00ff00]moved together[-]";
-    private string step8Hint = "You can [00ff00]break the chain [-]by eliminating one of these puzzles";
-    private string step9Hint = "Path could be [00ff00]blocked[-] for a while";
-    private string step10Hint = "But you can always find [00ff00]other ways[-]";
-    private string step11Hint = "[00ff00]Frozen[-] puzzle can't be move";
-    private string step12Hint = "You can [00ff00]break[-] the ice by eliminating the puzzle [00ff00]twice[-]";
-	private string step13Hint = "Once a puzzle passed over a [00ff00]black hole[-], it will [00ff00]be disabled[-]";
-    private string step14Hint = "[00ff00]Disabled[-] puzzle can't be eliminated";
-	private string step15Hint = "Puzzle might be [00ff00]tied[-] in a knot";
-	private string step16Hint = "You can untie a knotted puzzle by [00ff00]slicing[-] others by its three edgets";
-    private string step17Hint = "[00ff00]Untie[-] the final edget to free the puzzle";
-    private string step18Hint = "Tutorial Completed! \n[00ff00]Tap to Start[-]";
+	private string step1Hint = "Step1Hint";
+	private string step2Hint = "Step2Hint";
+	private string step3Hint = "Step3Hint";
+	private string step4Hint = "Step4Hint";
+	private string step5Hint = "Step5Hint";
+	private string step6Hint = "Step6Hint";
+	private string step7Hint = "Step7Hint";
+	private string step8Hint = "Step8Hint";
+	private string step9Hint = "Step9Hint";
+	private string step10Hint = "Step10Hint";
+	private string step11Hint = "Step11Hint";
+	private string step12Hint = "Step12Hint";
+	private string step13Hint = "Step13Hint";
+	private string step14Hint = "Step14Hint";
+	private string step15Hint = "Step15Hint";
+	private string step16Hint = "Step16Hint";
+	private string step17Hint = "Step17Hint";
+	private string step18Hint = "Step18Hint";
 	private string[] hints;
     protected override void Awake()
     {
@@ -149,7 +149,7 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
             Board.Instance.InitEnviorment();
 			Board.Instance.OnCorePieceEliminateCallback += OnCorePieceEliminate;	
 			ClassicModeControl.Instance.freezeWallIndex = 0;
-			
+			ClassicModeControl.Instance.round = 1;
 			pieces.Add(Board.Instance.GeneratePieceAt(2,1,true,PieceColor.Red,false));
 			pieces.Add(Board.Instance.GeneratePieceAt(5,1,false,PieceColor.Red,false));
 			
@@ -283,13 +283,17 @@ public class TutorialControl : Core.MonoSingleton<TutorialControl> {
 		pieces.Clear();
 		steps.Clear ();
 		ClassicHudMenu.Instance.HideHint();
-		ClassicHudMenu.Instance.AddRound(1);
+		//ClassicHudMenu.Instance.AddRound(1);
 		PlayerSetting.Instance.TutorialComplete(1);
 		Board.Instance.OnCorePieceEliminateCallback -= OnCorePieceEliminate;
 		Board.Instance.autoBirth = true;
 		EntityPool.Instance.Reclaim (arrow.gameObject, "Arrow");
+		ClassicModeControl.Instance.freezeWallIndex = 0;
 		isActive = false;
 		if (onTutorialCompleteCallback != null)onTutorialCompleteCallback ();
+		Board.Instance.ResetBoard();
+		Board.Instance.HideEnviorment();
+		AppControl.Instance.ExitGame ();
 	}
 	
 

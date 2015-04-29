@@ -32,8 +32,9 @@ public class OutOfMoveMenu : OverlayMenu<OutOfMoveMenu>
 	{
 		base.OnOpenScreen ();
 		
-		title.text = LevelControl.Instance.faildIsOutOfMove?"Out Of Move":"Mission Failed";
+		title.text = LevelControl.Instance.faildIsOutOfMove?Localization.Get("OutOfMove"):Localization.Get("MissionFailed");
 		failed.gameObject.SetActive (!LevelControl.Instance.faildIsOutOfMove);
+		failed.text = LevelControl.Instance.inPossiblePuzzle?Localization.Get("PuzzleLeft"):Localization.Get("PuzzleWipe");
         SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
 	}
 	void Update () {

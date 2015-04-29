@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Level Mode="1" Step="6">
   <Hexagons>
-    <Hexagon X="1" Y="4" BlockState="0" UpperState="0" LowerState="2" />
+    <Hexagon X="1" Y="1" BlockState="1" UpperState="0" LowerState="0" />
+    <Hexagon X="4" Y="1" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="1" Y="4" BlockState="0" UpperState="2" LowerState="2" />
   </Hexagons>
   <Pieces>
     <Piece X="1" Y="0" Upper="1" State="0" Type="4" Core="0" />
@@ -11,16 +13,25 @@
   </Pieces>
   <Walls>
     <Wall Index="0" State="1" Level="-1" />
+    <Wall Index="1" State="0" Level="-1" />
     <Wall Index="2" State="1" Level="-1" />
+    <Wall Index="3" State="0" Level="-1" />
     <Wall Index="4" State="1" Level="-1" />
+    <Wall Index="5" State="0" Level="-1" />
     <Wall Index="6" State="1" Level="-1" />
     <Wall Index="7" State="1" Level="-1" />
+    <Wall Index="8" State="0" Level="-1" />
     <Wall Index="9" State="1" Level="-1" />
+    <Wall Index="10" State="0" Level="-1" />
     <Wall Index="11" State="1" Level="-1" />
+    <Wall Index="12" State="0" Level="-1" />
     <Wall Index="13" State="1" Level="-1" />
     <Wall Index="14" State="1" Level="-1" />
+    <Wall Index="15" State="0" Level="-1" />
     <Wall Index="16" State="1" Level="-1" />
+    <Wall Index="17" State="0" Level="-1" />
     <Wall Index="18" State="1" Level="-1" />
+    <Wall Index="19" State="0" Level="-1" />
     <Wall Index="20" State="1" Level="-1" />
   </Walls>
   <Groups />

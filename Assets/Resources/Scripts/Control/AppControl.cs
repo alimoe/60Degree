@@ -25,6 +25,16 @@ public class AppControl : Core.MonoSingleton<AppControl> {
     protected override void Awake()
     {
         base.Awake();
+		if (Application.systemLanguage == SystemLanguage.Chinese) {
+			Localization.Load (Resources.Load ("Localization/Chinese") as TextAsset);
+			Localization.language = "Chinese";
+		} else {
+			Localization.Load (Resources.Load ("Localization/English") as TextAsset);
+			Localization.language = "English";
+		}
+			
+
+		
         InitBoard();
     }
 	void Start () {
@@ -63,14 +73,14 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 	}
     void OnApplicationPause(bool pauseStatus)
     {
-        if (pauseStatus)
-        {
-			if (mode == GameMode.Classic && (state == GameState.GamePlaying || state == GameState.GameOver) && !TutorialControl.Instance.isActive)
-            {
-                PauseGame("PauseMenu");
-                ClassicModeControl.Instance.SaveBoard();
-            }
-        }
+        if (pauseStatus) {
+			if (mode == GameMode.Classic && (state == GameState.GamePlaying || state == GameState.GameOver) && !TutorialControl.Instance.isActive) {
+					PauseGame ("PauseMenu");
+					ClassicModeControl.Instance.SaveBoard ();
+			}
+		} else {
+
+		}
     }
     public void ExitGame()
     {
@@ -118,31 +128,42 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         state = GameState.GamePlaying;
         mode = GameMode.Speed;
         CheckIsTestMode();
-        if (mode == GameMode.Speed)
-        {
-            new DelayCall().Init(.3f, SpeedModeControl.Instance.StartPlay);
-        }
-        else if (mode == GameMode.Test)
-        {
-            UIControl.Instance.OpenMenu("LevelHudMenu", true);
-            new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
-        }
+		if (!PlayerSetting.Instance.tutorialPlayed) {
+			UIControl.Instance.OpenMenu ("ClassicHudMenu", true);
+			new DelayCall ().Init (.3f, TutorialControl.Instance.InitTutorial);
+		} else {
+			if (mode == GameMode.Speed)
+			{
+				new DelayCall().Init(.3f, SpeedModeControl.Instance.StartPlay);
+			}
+			else if (mode == GameMode.Test)
+			{
+				UIControl.Instance.OpenMenu("LevelHudMenu", true);
+				new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+			}
+		}
+        
     }
 	public void StartLevelsGame()
 	{
 		state = GameState.GamePlaying;
 		mode = GameMode.Levels;
 		CheckIsTestMode ();
+		if (!PlayerSetting.Instance.tutorialPlayed) {
+			UIControl.Instance.OpenMenu ("ClassicHudMenu", true);
+			new DelayCall ().Init (.3f, TutorialControl.Instance.InitTutorial);
+		} else {
+			if (mode == GameMode.Levels)
+			{
+				new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
+			}
+			else if (mode == GameMode.Test) 
+			{
+				UIControl.Instance.OpenMenu("LevelHudMenu",true);
+				new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
+			}
+		}
 
-		if (mode == GameMode.Levels)
-		{
-			new DelayCall().Init(.3f, LevelControl.Instance.StartPlay);
-		}
-		else if (mode == GameMode.Test) 
-		{
-			UIControl.Instance.OpenMenu("LevelHudMenu",true);
-			new DelayCall().Init(.3f, LevelControl.Instance.StartTest);
-		}
 	}
 
    
@@ -166,21 +187,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         state = GameState.GamePaused;
         UIControl.Instance.OpenMenu(menu, true, true);
     }
-	public void ResetGame()
-	{
-		state = GameState.GamePlaying;
-        SkyBoxControl.Instance.Reset();
-        UIControl.Instance.CloseAllOverlay();
-        if (mode == GameMode.Classic)
-        {
-            ClassicModeControl.Instance.ResetMode();
-        }
-        
 
-		
-		
-
-	}
 	public void ResumeGame()
 	{
 		if (state == GameState.GamePaused || state == GameState.GameOver)
@@ -190,6 +197,7 @@ public class AppControl : Core.MonoSingleton<AppControl> {
         }
 		
 	}
+
     public void GameOver(string menu)
 	{
 		state = GameState.GameOver;
@@ -198,29 +206,70 @@ public class AppControl : Core.MonoSingleton<AppControl> {
 
 	public void ReportScore(int score)
 	{
+#if UNITY_IOS
 		ExternalControl.Instance.ReportGameScore (score);
+#endif
 	}
 	public void PurchaseEnergy()
 	{
-		ExternalControl.Instance.Purchase (EnergyRefill);
+#if UNITY_IOS
+		UIControl.Instance.DisplayLoading ();
+		ExternalControl.Instance.PurchaseEnergy (EnergyRefill,PurchaseFailed);
+#endif
+	}
+	public void PurchaseTime()
+	{
+#if UNITY_IOS
+		UIControl.Instance.DisplayLoading ();
+		ExternalControl.Instance.PurchaseExtraTime (ExtraTime,PurchaseFailed);
+#endif
+	}
+	public void PurchaseGuide()
+	{
+#if UNITY_IOS
+		UIControl.Instance.DisplayLoading ();
+		ExternalControl.Instance.PurchaseGuide (DisplayGuide,PurchaseFailed);
+#endif
 	}
 	public void ShowLeadboard()
 	{
+#if UNITY_IOS
 		ExternalControl.Instance.ShowGameCenterLeaderBoard ();
+#endif
+	}
+	public void PurchaseFailed()
+	{
+		UIControl.Instance.HideLoading ();
+	}
+	public void DisplayGuide()
+	{
+		UIControl.Instance.HideLoading ();
+		ResumeGame();
+		LevelControl.Instance.DisplayGuide ();
+	}
+	public void ExtraTime()
+	{
+		UIControl.Instance.HideLoading ();
+		ResumeGame();
+		SpeedModeControl.Instance.AddTime ();
 	}
     public void EnergyRefill()
     {
+		UIControl.Instance.HideLoading ();
         ResumeGame();
 		ClassicHudMenu.Instance.EnergyRefill();
     }
 
     public void HandleDrag(Vector3 position)
     {
-        if (Board.Instance.selected == null)
-        {
-            Board.Instance.SelectFrom(position);
-            if (Board.Instance.selected!=null) InputControl.Instance.ChangePressedPosition(position);
-        }
+		if (state == GameState.GamePlaying) {
+			if (Board.Instance.selected == null)
+			{
+				Board.Instance.SelectFrom(position);
+				if (Board.Instance.selected!=null) InputControl.Instance.ChangePressedPosition(position);
+			}
+		}
+        
     }
 
 	public void HandleTap(Vector3 position)
@@ -258,6 +307,10 @@ public class AppControl : Core.MonoSingleton<AppControl> {
                 {
 					SpeedModeControl.Instance.HandleTap(position);
                 }
+				else if (mode == GameMode.Levels)
+				{
+					if (LevelHudMenu.Instance != null) LevelHudMenu.Instance.HideHint();
+				}
             }
 			
 		}

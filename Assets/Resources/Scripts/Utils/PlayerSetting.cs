@@ -17,6 +17,7 @@ public class PlayerSetting : Core.MonoStrictSingleton<PlayerSetting> {
     public static string UserRound = "UserRound";
 	public static string SpeedModePlayed = "SpeedModePlayed";
 	public static string HasUseSkill = "HasUseSkill";
+	public static string HasPlayLevel = "HasPlayLevel";
     protected override void Awake()
     {
         base.Awake();

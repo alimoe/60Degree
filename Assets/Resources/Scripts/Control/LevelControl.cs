@@ -26,7 +26,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
     private int[] maps = new int[5] { 4, 3, 2, 1, 0 };
 
 	public bool faildIsOutOfMove;
-
+	public bool inPossiblePuzzle;
+	private string hint = "LevelFirstHint";
 	void Start()
 	{
 		GameObject arrowObj = EntityPool.Instance.Use("Arrow");
@@ -87,6 +88,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	}
     public void StartTest()
     {
+		UIControl.Instance.OpenMenu ("LevelHudMenu", true, false);
 		InitLevelMode ();
 		Board.Instance.InitEnviorment();
 		currentLevelName = "Temp";
@@ -97,6 +99,8 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	{
         AppControl.Instance.ResumeGame();
         inGuide = false;
+		inPossiblePuzzle = false;
+		faildIsOutOfMove = false;
 		arrow.Stop ();
 		Board.Instance.ResetBoard ();
 		LoadLevel ();
@@ -137,7 +141,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	public void HandleSwipe(Vector3 position, BoardDirection direction)
 	{
 		Piece piece = Board.Instance.GetPieceFromPosition (position);
-		int index = pieces.IndexOf (piece);
+		
 		if (piece!=null && currentStep<steps.Count  && direction == steps [currentStep].direction) {
 			Piece targetPiece = pieces[steps [currentStep].PieceIndex];
             if (targetPiece == piece || (piece.group != null && piece.group.children.Contains(targetPiece)))
@@ -174,7 +178,7 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 		pieces = new List<Piece>(Board.Instance.GetPieces ());
         int index = (int)(((levelIndex) / 4)) % 5;
         board.SetWallLevel(maps[index]);
-		LevelHudMenu.Instance.SetLevel (levelIndex + 1);
+		if(LevelHudMenu.Instance!=null)LevelHudMenu.Instance.SetLevel (levelIndex + 1);
         UpdateWall();
 	}
     private void UpdateWall()
@@ -191,12 +195,17 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 	private void UpdateLevelUI()
 	{
         if (LevelHudMenu.Instance!=null) LevelHudMenu.Instance.Update();
+		if (PlayerSetting.Instance.GetSetting (PlayerSetting.HasPlayLevel) == 0) {
+			PlayerSetting.Instance.SetSetting (PlayerSetting.HasPlayLevel,1);
+			LevelHudMenu.Instance.ShowHint(ref hint);
+		}
 	}
 
 
 
 	private void OnOperationDone()
 	{
+		if (step <= 0)return;
 		step--;
 		UpdateLevelUI ();
 		if (step <= 0) {
@@ -210,6 +219,11 @@ public class LevelControl : Core.MonoSingleton<LevelControl> {
 			if(Board.Instance.GetPieces ().Length == 0)
 			{
 				new DelayCall ().Init (.5f, DisplayWinMenu);
+			}
+			else if(Board.Instance.GetPieces ().Length < 3)
+			{
+				inPossiblePuzzle = true;
+				new DelayCall ().Init (.5f, DisplayLoseMenu);
 			}
 		}
 	}

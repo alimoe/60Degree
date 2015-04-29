@@ -1,30 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Level Mode="1" Step="3">
+<Level Mode="1" Step="7">
   <Hexagons>
     <Hexagon X="4" Y="1" BlockState="0" UpperState="2" LowerState="2" />
     <Hexagon X="2" Y="2" BlockState="0" UpperState="3" LowerState="0" />
+    <Hexagon X="0" Y="3" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="1" Y="3" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="2" Y="3" BlockState="4" UpperState="0" LowerState="0" />
+    <Hexagon X="3" Y="3" BlockState="4" UpperState="0" LowerState="0" />
   </Hexagons>
   <Pieces>
-    <Piece X="2" Y="1" Upper="0" State="0" Type="0" />
-    <Piece X="3" Y="1" Upper="0" State="0" Type="4" />
-    <Piece X="4" Y="2" Upper="1" State="0" Type="2" />
-    <Piece X="0" Y="3" Upper="1" State="0" Type="0" />
+    <Piece X="6" Y="0" Upper="1" State="0" Type="2" Core="0" />
+    <Piece X="2" Y="1" Upper="0" State="0" Type="0" Core="0" />
+    <Piece X="3" Y="1" Upper="0" State="0" Type="4" Core="0" />
+    <Piece X="0" Y="6" Upper="1" State="0" Type="0" Core="0" />
   </Pieces>
   <Walls>
-    <Wall Index="0" State="1" />
-    <Wall Index="2" State="1" />
-    <Wall Index="3" State="1" />
-    <Wall Index="6" State="2" />
-    <Wall Index="7" State="1" />
-    <Wall Index="9" State="1" />
-    <Wall Index="12" State="1" />
-    <Wall Index="14" State="2" />
-    <Wall Index="15" State="2" />
-    <Wall Index="16" State="1" />
-    <Wall Index="17" State="1" />
-    <Wall Index="18" State="2" />
-    <Wall Index="19" State="2" />
-    <Wall Index="20" State="2" />
+    <Wall Index="0" State="1" Level="-1" />
+    <Wall Index="1" State="0" Level="-1" />
+    <Wall Index="2" State="1" Level="-1" />
+    <Wall Index="3" State="1" Level="-1" />
+    <Wall Index="4" State="0" Level="-1" />
+    <Wall Index="5" State="0" Level="-1" />
+    <Wall Index="6" State="2" Level="-1" />
+    <Wall Index="7" State="1" Level="-1" />
+    <Wall Index="8" State="0" Level="-1" />
+    <Wall Index="9" State="1" Level="-1" />
+    <Wall Index="10" State="0" Level="-1" />
+    <Wall Index="11" State="0" Level="-1" />
+    <Wall Index="12" State="1" Level="-1" />
+    <Wall Index="13" State="0" Level="-1" />
+    <Wall Index="14" State="2" Level="-1" />
+    <Wall Index="15" State="2" Level="-1" />
+    <Wall Index="16" State="1" Level="-1" />
+    <Wall Index="17" State="1" Level="-1" />
+    <Wall Index="18" State="2" Level="-1" />
+    <Wall Index="19" State="2" Level="-1" />
+    <Wall Index="20" State="2" Level="-1" />
   </Walls>
   <Groups />
   <Switchers>
@@ -34,8 +45,12 @@
   <Twines />
   <Ices />
   <Steps>
-    <Step Index="2" Direction="2" />
-    <Step Index="1" Direction="0" />
+    <Step Index="3" Direction="4" />
     <Step Index="0" Direction="0" />
+    <Step Index="0" Direction="2" />
+    <Step Index="1" Direction="2" />
+    <Step Index="1" Direction="1" />
+    <Step Index="2" Direction="0" />
+    <Step Index="2" Direction="2" />
   </Steps>
 </Level>

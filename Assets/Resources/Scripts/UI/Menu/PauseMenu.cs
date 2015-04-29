@@ -40,14 +40,16 @@ public class PauseMenu : OverlayMenu<PauseMenu>
 		maxRoundValue.text = userRound > historyRound ? userRound.ToString () : historyRound.ToString ();
 		scoreValue.text = userScore > historyScore ? userScore.ToString () : historyScore.ToString ();
 
-		if (userScore > historyScore) {
+		if (userScore >= historyScore) {
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicScore, userScore);
 			AppControl.Instance.ReportScore(userScore);
 		}
 		if (userRound > historyRound) {
             PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicRound, userRound);
 		}
+		
         SoundControl.Instance.PlaySound(SoundControl.Instance.UI_TRANSITION_IN);
+
 	}
 	
 	// Update is called once per frame

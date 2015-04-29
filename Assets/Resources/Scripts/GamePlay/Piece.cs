@@ -197,6 +197,7 @@ public class Piece : Entity {
     {
         colorType = (PieceColor)color;
         defaultColor = Wall.GetColor(colorType);
+		if (SoundControl.Instance != null)SoundControl.Instance.PlaySound (SoundControl.Instance.GAME_SWITCHER);
         new TurnColor().Init(this.gameObject, .3f, defaultColor, null);
     }
 	public void SetState(object s)

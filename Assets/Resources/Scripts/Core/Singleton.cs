@@ -46,7 +46,7 @@
 			get { return null != s_instance; }
 		}
 		
-		public static T Instantiate()
+		public static T Instantiate() 
 		{
 			//DebugUtils.Assert(LogCategory.Framework, null == s_instance);
 			{

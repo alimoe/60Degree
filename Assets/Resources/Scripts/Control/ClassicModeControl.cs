@@ -11,14 +11,18 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public int round = 1;
     private List<GenerateType> generateType;
     public int freezeWallIndex = 0;
-    private LevelReader reader;
+	private LevelReader reader ;
     private LevelExporter exporter;
     private List<PieceColor> colors;
+	public bool IsFistPlay()
+	{
+		return !(reader.Exist (Application.persistentDataPath, "UserBoard.xml"));
 
+	}
     public void StartPlay()
     {
-        exporter = new LevelExporter();
-        reader = new LevelReader();
+       
+   	
         generateCounter = new Counter(generateMaxStep);
         generateType = new List<GenerateType>();
         Board.Instance.InitEnviorment();
@@ -32,7 +36,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         Board.Instance.autoUpdateSkillPoint = true;
 
 
-        if (reader.Exist("UserBoard"))
+		if (reader.Exist(Application.persistentDataPath ,"UserBoard.xml"))
         {
 			Board.Instance.ResetBoard ();
             LoadBoard();
@@ -41,7 +45,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         }
         else
         {
-			this.freezeWallIndex = 1;
+			//this.freezeWallIndex = 1;
 			ResetColorsPriority();
 			ResetSpecialItemLevel();
 
@@ -86,6 +90,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     }
     public void ResetMode()
     {
+		AppControl.Instance.ResumeGame ();
 		SkyBoxControl.Instance.Reset();
         Board.Instance.ResetBoard();
         ClassicHudMenu.Instance.Reset();
@@ -106,18 +111,24 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     public void LoadBoard()
     {
         Board board = Board.Instance;
-        reader.Load(ref board, "UserBoard");
+		reader.Load(ref board, Application.persistentDataPath ,"UserBoard.xml");
         freezeWallIndex = reader.step;
         round = Math.Max(1, PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound));
 		if (round > 1)SkyBoxControl.Instance.OnChangeRound (round);
 		else SkyBoxControl.Instance.Reset ();
+		/*
+		int valideWallIndex = freezeWallIndex % (Board.Instance.segment * 3);
+		for (int i = 0; i < valideWallIndex; i++) {
+			Board.Instance.GetWall(i).UnBroken();
+		}*/
     }
 
     public void SaveBoard()
     {
-        Level level = null;
+    	
         Board board = Board.Instance;
-        exporter.Save(ref board, ref level, "UserBoard", freezeWallIndex, LevelObjective.Eliminate);
+
+		exporter.Save (ref board, Application.persistentDataPath, "UserBoard.xml", freezeWallIndex);
         PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicColor, colors.Count);
         PlayerSetting.Instance.SetSetting(PlayerSetting.ClassicSpecialItem, generateType.Count);
         PlayerSetting.Instance.SetSetting(PlayerSetting.UserScore, ClassicHudMenu.Instance.GetScore());
@@ -136,7 +147,7 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
         int currentRound = freezeWallIndex / (3 * Board.Instance.segment) + 1;
         ClassicHudMenu.Instance.ReinforceWall(wall.transform.position);
         
-        if (round != currentRound)
+		if (currentRound > round)
         {
             round = currentRound;
             ClassicHudMenu.Instance.AddRound(round);
@@ -346,13 +357,15 @@ public class ClassicModeControl : Core.MonoSingleton<ClassicModeControl>
     }
 	void Start()
 	{
+		reader = new LevelReader();
+		exporter = new LevelExporter();
 		TutorialControl.Instance.onTutorialCompleteCallback += OnFinishTutorial;
 	}
 
 	public void OnFinishTutorial ()
 	{
-		ClassicHudMenu.Instance.EnablePauseMenu ();
-		StartPlay ();
+		//ClassicHudMenu.Instance.EnablePauseMenu ();
+		//StartPlay ();
 	}
 
     public void PauseGame()

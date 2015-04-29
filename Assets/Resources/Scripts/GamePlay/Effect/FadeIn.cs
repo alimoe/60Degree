@@ -8,7 +8,7 @@ public class FadeIn : TimeEffect {
 	private byte g;
 	private byte b;
     private byte a;
-	public void Init(GameObject target,float time, Action<object> callback )
+	public FadeIn Init(GameObject target,float time, Action<object> callback )
 	{
         //Debug.LogError("Init " + target.name);
 		render = target.GetComponent<SpriteRenderer> ();
@@ -25,8 +25,17 @@ public class FadeIn : TimeEffect {
 			onCompleteCallbackWithParam = callback;
 			TimerControl.Instance.effects+= FadeInUpdate;
 		}
+		return this;
 	}
-	
+	public void Cancel()
+	{
+		if(render!=null)render.color = new Color32(r, g, b, 255);
+		Stop ();
+	}
+	public void Stop()
+	{
+		TimerControl.Instance.effects -= FadeInUpdate;
+	}
 	void FadeInUpdate ()
 	{
 		progress.Tick (Time.deltaTime);

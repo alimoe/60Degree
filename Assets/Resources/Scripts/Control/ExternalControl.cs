@@ -8,7 +8,7 @@ using UnityEngine.SocialPlatforms;
 public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 
 	public List<string> productInfo = new List<string>();
-	#if UNITY_IPHONE
+	#if UNITY_IOS
 	[DllImport("__Internal")]
 	private static extern void InitIAPManager();
 
@@ -33,7 +33,7 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 
 	void Start () {
         InitResolution();
-#if UNITY_IPHONE
+#if UNITY_IOS
         InitIAPManager();
 		InitAppirater();
 		InitGameCenterManager();
@@ -71,18 +71,22 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 		//Debug.Log ("OnPurchaseSuccess " + s);
 		if (onPurchaseSuccessCallback != null)onPurchaseSuccessCallback ();
 	}
+	public void OnPurchaseFailed(string s){
+		//Debug.Log ("OnPurchaseSuccess " + s);
+		if (onPurchaseFailedCallback != null)onPurchaseFailedCallback ();
+	}
 
-
-
+	private Action onPurchaseFailedCallback;
 	private Action onPurchaseSuccessCallback;
 	private Action onLoginSuccessCallback;
 	private Action onReportScoreSuccessCallback;
 
 
-	public void ReportGameScore (Int64 score, Action callback = null)
+
+	public void ReportGameScore (int score, Action callback = null)
 	{
 		//onReportScoreSuccessCallback = callback;
-		#if UNITY_IPHONE
+		#if UNITY_IOS
 			ReportScore (score);
 		#endif
 		#if UNITY_ANDROID
@@ -93,7 +97,7 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 	}
 	public void ShowGameCenterLeaderBoard()
 	{
-		#if UNITY_IPHONE
+		#if UNITY_IOS
 			ShowLeadboard();
 		#endif
 		#if UNITY_ANDROID
@@ -101,10 +105,34 @@ public class ExternalControl : Core.MonoSingleton<ExternalControl> {
 		#endif
 	}
 
-	public void Purchase(Action callback)
+	public void PurchaseGuide(Action callback, Action failed = null)
 	{
 		onPurchaseSuccessCallback = callback;
-		#if UNITY_IPHONE
+		onPurchaseFailedCallback = failed;
+		#if UNITY_IOS
+		if (IsProductAvailable ()) {
+			BuyProduct("com.abacus.guidence");
+		}
+		#endif
+		
+	}
+
+	public void PurchaseExtraTime(Action callback, Action failed = null)
+	{
+		onPurchaseSuccessCallback = callback;
+		onPurchaseFailedCallback = failed;
+		#if UNITY_IOS
+		if (IsProductAvailable ()) {
+			BuyProduct("com.abacus.extraTime");
+		}
+		#endif
+
+	}
+	public void PurchaseEnergy(Action callback, Action failed = null)
+	{
+		onPurchaseSuccessCallback = callback;
+		onPurchaseFailedCallback = failed;
+		#if UNITY_IOS
 			if (IsProductAvailable ()) {
 				BuyProduct("com.abacus.energyRefill");
 			}

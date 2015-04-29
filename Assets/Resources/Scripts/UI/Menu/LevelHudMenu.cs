@@ -33,9 +33,19 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
 		stepValue.text = step.ToString ();
 
 	}
+	public void ShowHint(ref string message)
+	{
+		hintLabel.gameObject.SetActive (true);
+		hintLabel.text =Localization.Get(message);
+		
+	}
+	public void HideHint()
+	{
+		hintLabel.gameObject.SetActive (false);
+	}
 	public void SetLevel(int level)
 	{
-		titleLabel.text = "Level " + level;
+		titleLabel.text = Localization.Get("Level")+" " + level;
 	}
 	public override void OnOpenScreen ()
 	{
@@ -43,7 +53,7 @@ public class LevelHudMenu : MenuSingleton<LevelHudMenu> {
         base.OnOpenTransitionDone();
 
 	}
-    public virtual void OnCloseScreen()
+	public override void OnCloseScreen()
     {
         base.OnCloseScreen();
         base.OnCloseTransitionDone();

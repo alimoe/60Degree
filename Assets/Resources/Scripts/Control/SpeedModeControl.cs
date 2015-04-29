@@ -86,7 +86,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
 			started = true;
 
 		}
-		Debug.Log ("started" + started);
+		//Debug.Log ("started" + started);
 		Board.Instance.SelectFrom(position);
 	}
     private void GenerateSpecialItem()
@@ -179,10 +179,12 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     }
     public void ResetMode()
     {
+		AppControl.Instance.ResumeGame ();
         level = 1;
 		round = 1;
         remainingTimer = new Counter(initialTimer);
         targetEliminateCount = 10;
+		eliminateCount = 0;
         generateCounter.Reset();
         Board.Instance.SetWallLevel(0);
         SpeedHudMenu.Instance.ShowRecord(false);
@@ -198,7 +200,7 @@ public class SpeedModeControl : Core.MonoSingleton<SpeedModeControl>
     {
         remainingTimer = new Counter(initialTimer);
         SpeedHudMenu.Instance.UpdateInfo();
-        AppControl.Instance.ResumeGame();
+  		
         Board.Instance.EliminatePieces(Board.Instance.GetEdgetPieces());
     }
     void Update()

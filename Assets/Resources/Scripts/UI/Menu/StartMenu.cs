@@ -4,17 +4,13 @@ using System.Collections.Generic;
 public class StartMenu : MenuSingleton<StartMenu> {
 
 	private List<UILabel> letters;
-	private UISprite startButton;
-	private UISprite speedButton;
-	private UISprite levelButton;
+
 
 	private UISprite helpButton;
 	private UISprite staffButton;
 	private UISprite leaderboardButton;
 
-	private UILabel speedMode;
-	private UILabel classicMode;
-	private UILabel levelMode;
+
 	private Counter transitionCounter;
 	private bool transitionOutState;
     private bool transitionInState;
@@ -35,17 +31,14 @@ public class StartMenu : MenuSingleton<StartMenu> {
 		letters = new List<UILabel> ();
 		foreach (var i in children) {
 			if(i.name.Contains("Label"))letters.Add(i.GetComponent<UILabel>());
-			if(i.name.Contains("PlayButton"))startButton = i.GetComponent<UISprite>();
+			
 			if(i.name.Contains("HelpButton"))helpButton = i.GetComponent<UISprite>();
 			if(i.name.Contains("StaffButton"))staffButton = i.GetComponent<UISprite>();
-			if(i.name.Contains("SpeedButton"))speedButton = i.GetComponent<UISprite>();
-			if(i.name.Contains("LevelButton"))levelButton = i.GetComponent<UISprite>();
+
 			if(i.name.Contains("Credit"))credit = i;
 			if(i.name.Contains("LeadBoard"))leaderboardButton = i.GetComponent<UISprite>();
 
-			if(i.name.Contains("ClassicMode"))classicMode = i.GetComponent<UILabel>();
-			if(i.name.Contains("LevelMode"))levelMode = i.GetComponent<UILabel>();
-			if(i.name.Contains("SpeedMode"))speedMode = i.GetComponent<UILabel>();
+
 			if(i.name.Contains("Center"))center = i;
 
 		}

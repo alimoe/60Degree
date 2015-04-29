@@ -41,6 +41,7 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
     public AudioClip GAME_RING;
     public AudioClip GAME_EXPLODE;
 	public AudioClip GAME_TICK;
+	public AudioClip GAME_SWITCHER;
     public float volume = 0.7f;
     static AudioListener mListener;
     private AudioSource mLastTrack;
@@ -96,12 +97,15 @@ public class SoundControl : Core.MonoSingleton<SoundControl>
 		if (mLastTrack.isPlaying)mLastTrack.Pause ();
 		else if(!mLastTrack.mute)mLastTrack.Play ();
 	}
-
-
+	public void ToggleMusic(bool flag)
+	{
+		if (!flag)mLastTrack.Pause ();
+		else if(!mLastTrack.mute && flag && !mLastTrack.isPlaying)mLastTrack.Play ();
+	}
     void Update()
     {
 
-		if (mLastTrack != null && !mLastTrack.mute ) {
+		if (mLastTrack != null && !mLastTrack.mute && mLastTrack.isPlaying) {
 
 			trackingTimer.Tick(Time.deltaTime);
 			if(trackingTimer.Expired())

@@ -47,14 +47,14 @@ public class Popup : Menu {
         inTransitionIn = true;
         soundBtn.isOn = !PlayerSetting.Instance.muteSE;
        
-        SoundControl.Instance.ToggleMusic();
+      	SoundControl.Instance.ToggleMusic(false);
 
     }
     public override void OnCloseScreen()
     {
         base.OnCloseScreen();
         SoundControl.Instance.PlaySound(SoundControl.Instance.UI_TRANSITION_OUT);
-        SoundControl.Instance.ToggleMusic();
+        SoundControl.Instance.ToggleMusic(true);
     }
     public virtual void Transition()
     {

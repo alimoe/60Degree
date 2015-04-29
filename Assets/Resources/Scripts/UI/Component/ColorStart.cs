@@ -9,13 +9,13 @@ public class ColorStart : MonoBehaviour {
 	private Counter transitionCounter;
 	private UISprite sprite;
 	//
-	private Counter scaleCounter;
+	
 	public static Color32[] colors = new Color32[6]{new Color32(255,255,255,255),new Color32(255,255,0,255),new Color32(0,255,0,255),new Color32(89,255,255,255),new Color32(240,0,243,255),new Color32(255,0,0,255)};
 	void Start () {
 		sprite = this.GetComponent<UISprite> ();
 		idleCounter = new Counter (3f);
 		transitionCounter = new Counter (1f);
-		scaleCounter = new Counter (2f);
+		
 	}
 	
 	// Update is called once per frame

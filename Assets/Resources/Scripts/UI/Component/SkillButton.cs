@@ -14,7 +14,7 @@ public class SkillButton : MonoBehaviour {
 	private int progress;
 	private Arrow arrow ;
 	private Camera nguiCamera;
-	private string hint = "Once enery full, you can use a magic power by tap the triangle";
+	private string hint = "SkillHint";
 	void Awake()
 	{
 		nguiCamera = GameObject.Find ("UI Root/Camera").GetComponent<Camera> ();

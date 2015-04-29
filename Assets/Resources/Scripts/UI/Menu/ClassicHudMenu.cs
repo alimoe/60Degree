@@ -27,7 +27,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	private Camera nguiCamera;
 	private int totalScore;
 	private int totalRound;
-	private Vector3 initPosition;
+	
 	
 	private bool inTransitionIn;
 	private Counter transitionInCounter;
@@ -38,16 +38,15 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	private Counter resetSkillButtonPositionCounter;
 	private int roundStep = 0;
 	private float roundXPosition;
-	private float headYPosition;
-	private float footYPosition;
+
 	private float roundXRange = 200f;
 	
 	private int level = 1;
 	private int historyRound;
 	private int historyScore;
 
-	private string corePieceWarningMessage = "Core Puzzle [00ff00]can't be wiped[-]";
-	private string overFlowWarningMessage = "You can only wipe out [00ff00]4 puzzles[-] through broken wall at a time";
+	private string corePieceWarningMessage = "WarningCorePiece";
+	private string overFlowWarningMessage = "WarningOverFlow";
 	protected override void Awake () {
 		base.Awake ();
 		tips = new List<UILabel> ();
@@ -65,13 +64,13 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 			if(child.name.Contains("Score"))
 			{
 				scoreLabel = child.GetComponent<UILabel>();
-				headYPosition = scoreLabel.transform.localPosition.y;
+				//headYPosition = scoreLabel.transform.localPosition.y;
 				//scoreLabel.gameObject.SetActive(false);
 			}
 			if(child.name.Contains("SkillButton"))
 			{
 				skillButton = child.GetComponent<SkillButton>();
-				footYPosition = skillButton.transform.localPosition.y;
+				//footYPosition = skillButton.transform.localPosition.y;
 				//skillButton.gameObject.SetActive(false);
 			}
 			if(child.name.Contains("PauseButton"))
@@ -127,7 +126,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		threholdMaxCounter = new Counter (13f);
 		totalScoreCounter = new Counter (.5f);
 		resetSkillButtonPositionCounter = new Counter (5f);
-        initPosition = scoreLabel.transform.localPosition;
+    	
         totalScore = PlayerSetting.Instance.GetSetting(PlayerSetting.UserScore);
         totalRound = Math.Max(PlayerSetting.Instance.GetSetting(PlayerSetting.UserRound), 1);
         totalScoreCounter.percent = 1;
@@ -206,7 +205,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		scoreLabel.gameObject.SetActive (!TutorialControl.Instance.isActive);
         historyScore = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicScore);
         historyRound = PlayerSetting.Instance.GetSetting(PlayerSetting.ClassicRound);
-
+		recordLabel.gameObject.SetActive(false);
         scoreLabel.text = totalScore.ToString();
         roundValue.text = totalRound.ToString();
 
@@ -311,7 +310,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 		totalRound = round;
 		roundStep = 0;
 
-		roundTipLabel.text = "ROUND"+round.ToString ();
+		roundTipLabel.text = Localization.Get("Round")+round.ToString ();
 
 		roundTipLabel.transform.localPosition = new Vector3 (roundXPosition + roundXRange, roundTipLabel.transform.localPosition.y, roundTipLabel.transform.localPosition.z);
 
@@ -339,8 +338,9 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
         label.gameObject.SetActive(true);
         //label.text = "+1";
 		Vector3 screenPos = Camera.main.WorldToScreenPoint (worldPosition);
-		float gap = 10f;
-		screenPos = new Vector3 (Mathf.Min (Mathf.Max(label.width*.5f + gap, screenPos.x),Screen.width - label.width*.5f - gap),screenPos.y, screenPos.z);
+		float gap = 20f;
+		
+		screenPos = new Vector3 (Mathf.Min (Mathf.Max(label.width + gap, screenPos.x),Screen.width - label.width - gap),screenPos.y, screenPos.z);
 
         label.color = Wall.GetLevelColor(ClassicModeControl.Instance.round);
         TipAnimateTask task = new TipAnimateTask();
@@ -424,7 +424,7 @@ public class ClassicHudMenu : MenuSingleton<ClassicHudMenu>{
 	public void ShowHint(ref string message)
 	{
 		hintLabel.gameObject.SetActive (true);
-		hintLabel.text = message;
+		hintLabel.text = Localization.Get (message);
 
 	}
 	public void HideHint()

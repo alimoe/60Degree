@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System;
 public class OutOfTimeMenu : OverlayMenu<OutOfMoveMenu>
 {
     
     private UILabel failed;
-   
+	private UILabel title;
     protected override void Awake()
     {
         base.Awake();
@@ -17,15 +17,20 @@ public class OutOfTimeMenu : OverlayMenu<OutOfMoveMenu>
             {
                 failed = child.GetComponent<UILabel>();
             }
+			if (child.name.Contains("Title"))
+			{
+				title = child.GetComponent<UILabel>();
+			}
         }
     }
 
     public override void OnOpenScreen()
     {
         base.OnOpenScreen();
-       
-         failed.text = "MAX LEVEL:  " + PlayerSetting.Instance.GetSetting(PlayerSetting.MAX_SPEED_LEVEL);
-         SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
+		int level = Math.Max (1, PlayerSetting.Instance.GetSetting (PlayerSetting.MAX_SPEED_LEVEL));
+		failed.text = Localization.Get("MaxGrade")+" " + level;
+        SoundControl.Instance.PlaySound(SoundControl.Instance.GAME_LOSE);
+		title.text = SpeedModeControl.Instance.remainingTimer.Expired()? Localization.Get("OTime"):Localization.Get("CantMove");
     }
    
     // Update is called once per frame

@@ -10,6 +10,7 @@ public class Switcher : Entity {
     public Hexagon target;
     private Color32 defaultColor;
 	private FadeAway fadeAway;
+	private FadeIn fadeIn;
     void Awake()
     {
         Init();
@@ -32,7 +33,11 @@ public class Switcher : Entity {
         
         Random();
         UpdateColor();
-        new FadeIn().Init(this.gameObject, .3f, null);
+		if (fadeAway != null)fadeAway.Cancel ();
+		if (fadeIn != null)fadeIn.Cancel ();
+						
+		fadeIn = new FadeIn ();
+		fadeIn.Init(this.gameObject, .3f, null);
         
         return this;
     }
@@ -83,9 +88,10 @@ public class Switcher : Entity {
 	}
     public void ChangeColor(PieceColor c)
     {
+
+						
         if (isStatic) return;
-			
-        color = c;
+		color = c;
         new TurnColor().Init(this.gameObject, .1f, Wall.GetColor(color), null);
     }
 	public override void Dead ()

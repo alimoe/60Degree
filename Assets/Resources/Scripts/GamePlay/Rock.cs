@@ -3,11 +3,13 @@ using System.Collections;
 
 public class Rock : Entity {
 	private FadeAway fadeAway;
+	private FadeIn fadeIn;
     public Rock SetUp(Hexagon hexagon, bool isUpper)
     {
 
         if (fadeAway != null) fadeAway.Cancel();
-
+		if (fadeIn != null)fadeIn.Cancel ();
+						
         this.transform.parent = hexagon.transform.parent;
         this.transform.localPosition = isUpper ? hexagon.upPosition: hexagon.lowPosition;
         SpriteRenderer spriteRender = this.gameObject.GetComponent<SpriteRenderer>();
@@ -17,7 +19,8 @@ public class Rock : Entity {
          this.transform.localScale = new Vector3(scale, scale, scale);
         this.transform.localPosition += Vector3.forward;
         this.transform.localEulerAngles = isUpper ? Vector3.zero : new Vector3(0, 0, 180f);
-        new FadeIn().Init(this.gameObject, .3f, null);
+		fadeIn = new FadeIn ();
+		fadeIn.Init(this.gameObject, .3f, null);
         
         return this;
     }

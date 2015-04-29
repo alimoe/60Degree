@@ -1093,19 +1093,20 @@ public class Board : Core.MonoSingleton<Board> {
         
         if (piece != null && piece.CanMove())
         {
-            //Debug.Log("Try Move Piece");
+			//Debug.Log("Try Move Piece "+piece);
             List<Piece> pieces = GetDirectionPieces(piece, direction);
 
             //Debug.Log("Try Move");
 
 			if (CanRowPieceMove(pieces) && pieces.Count> 0)
             {
+				//Debug.Log("pieces[pieces.Count - 1] "+pieces[pieces.Count - 1]);
 				step = GetEmptyPieceSlotCount(pieces[pieces.Count - 1], direction,true);
                 
                 List<Piece> segment = new List<Piece>();
                 PieceGroup lastGroup = null;
                 
-               // Debug.Log("Before Caculate Group step" + step);
+              	//Debug.Log("Before Caculate Group step" + step);
 
                 for (int i = 0; i < pieces.Count; i++)
                 {
@@ -1128,58 +1129,83 @@ public class Board : Core.MonoSingleton<Board> {
                                     {
                                         step =  Mathf.Min(GetEmptyPieceSlotCount(l, direction, true), step) ;
                                     }
-                                    //Debug.Log("IsTwoPieceInSameRow(l,currentPiece,direction) " + IsTwoPieceInSameRow(l, currentPiece, direction));
-                                    if(IsTwoPieceInSameRow(l,currentPiece,direction))
-                                    {
-
-                                        segment.Add(l);
-                                    }
+                                    
 
                                 }
                             }
-							//Debug.Log("CurrentPiece"+currentPiece);
-							//Debug.Log("CurrentPiece"+currentPiece.group);
-                           // Debug.Log("After Caculate Group step" + step);
-                            
-                            Piece individul = null;
-
-                            for (int j = 0; j < currentPiece.group.children.Count;j++)
-                            {
-                                Piece child = currentPiece.group.children[j];
-                                if (!segment.Contains(child)&& !pieces.Contains(child))
-                                {
-                                    if (individul == null)
-                                    {
-                                        individul = child;
-                                    }
-                                    else
-                                    {
-                                        if (IsTwoPieceInSameRow(individul, child,direction))
-                                        {
-                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child, individul }, direction, step));
-                                        }
-                                        else
-                                        {
-                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child }, direction, step));
-                                            time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
-                                        }
-                                        individul = null;
-                                    }
-                                } 
-                            }
-                            if (individul!=null) time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
-                            
-                        }
-
-                    }
+					    }
+					}
                     else
                     {
                         lastGroup = null;
                     }
 
-                    segment.Add(pieces[i]);
                 }
-                
+
+				lastGroup = null;
+				for (int i = 0; i < pieces.Count; i++)
+				{
+					Piece currentPiece = pieces[i];
+					if (currentPiece.group != null)
+					{
+						if (lastGroup != currentPiece.group)
+						{
+							lastGroup = currentPiece.group;
+							
+							foreach (var l in currentPiece.group.children)
+							{
+								if (!pieces.Contains(l))
+								{
+									if(IsTwoPieceInSameRow(l,currentPiece,direction))
+									{
+										
+										segment.Add(l);
+									}
+									
+								}
+							}
+							
+							
+							Piece individul = null;
+							
+							for (int j = 0; j < currentPiece.group.children.Count;j++)
+							{
+								Piece child = currentPiece.group.children[j];
+								if (!segment.Contains(child)&& !pieces.Contains(child))
+								{
+									if (individul == null)
+									{
+										individul = child;
+									}
+									else
+									{
+										if (IsTwoPieceInSameRow(individul, child,direction))
+										{
+											time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child, individul }, direction, step));
+										}
+										else
+										{
+											time = Mathf.Max(time,MovePieceByStep(new List<Piece> { child }, direction, step));
+											time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
+										}
+										individul = null;
+									}
+								} 
+							}
+							if (individul!=null) time = Mathf.Max(time,MovePieceByStep(new List<Piece> { individul }, direction, step));
+							
+						}
+						
+					}
+					else
+					{
+						lastGroup = null;
+					}
+					
+					segment.Add(pieces[i]);
+				}
+
+				//Debug.Log("After Caculate Group step" + step);
                 time = Mathf.Max(time,MovePieceByStep(segment, direction, step));
             }
         }
@@ -1704,7 +1730,7 @@ public class Board : Core.MonoSingleton<Board> {
 			
 			Hexagon differentType = GetHexagonByStep(hexagon,direction,isUpper,1);
 			Hexagon sameType = GetHexagonByStep(hexagon,direction,isUpper,2);
-
+			//Debug.Log(differentType);
 
 			if(hexagon.CanLeave(isUpper,direction)&& differentType!=null&& differentType.IsEmpty(!isUpper) && differentType.CanEnter(!isUpper,direction) && differentType.CanLeave(!isUpper,direction) && sameType!=null && sameType.IsEmpty(isUpper)&& sameType.CanEnter(isUpper,direction))
 			{
@@ -1766,6 +1792,7 @@ public class Board : Core.MonoSingleton<Board> {
 				if(!hexagon.CanLeave(candidate.isUpper,direction))break;
 				pieces.Add (candidate);
 				candidate = loopFuc(candidate);
+
 			}
 		}
 		if (pieces.Count > 0) {
@@ -1783,9 +1810,11 @@ public class Board : Core.MonoSingleton<Board> {
 				last = hexagon.GetPiece(!isUpper);
 				if(last!=null && !pieces.Contains(last))pieces.Add(last);
 				if(!hexagon.CanLeave(!isUpper,direction))break;
+				
 				if(last == null)
 				{
 					hexagon = GetHexagonByStep(hexagon,direction,!isUpper,1);
+					
 					if(hexagon==null)break;
 					if(!hexagon.CanEnter(isUpper,direction))break;
 					last = hexagon.GetPiece(isUpper);
